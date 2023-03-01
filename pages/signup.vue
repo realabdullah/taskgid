@@ -16,25 +16,16 @@ const signUp = () => {
             <p class="signup__form-description">It’s Simpe and Easy!!</p>
 
             <form @submit.prevent="signUp">
-                <label for="name">
-                    <span class="form-label">Fullname</span>
-                    <input type="text" name="name" id="name" placeholder="Enter fullname" />
-                    <span class="form-hint">Information about the input</span>
-                </label>
+                <FormInputText input-type="text" label-for="name" label="Fullname" placeholder="Enter fullname"
+                    hint="Information about the input" />
 
-                <label for="email">
-                    <span class="form-label">Email Address</span>
-                    <input type="email" name="email" id="email" placeholder="Enter email address" />
-                    <span class="form-hint">Example. mano@gmail.com</span>
-                </label>
+                <FormInputText input-type="email" label-for="email" label="Email Address" placeholder="Enter email address"
+                    hint="Example. mano@gmail.com" />
 
-                <label for="password">
-                    <span class="form-label">Enter A Password</span>
-                    <input type="password" name="password" id="password" placeholder="Password" />
-                    <span class="form-hint">Upto 8 characters with an Uppercase, symbol and number</span>
-                </label>
+                <FormInputText input-type="password" label-for="password" label="Enter A Password" placeholder="Password"
+                    hint="Upto 8 characters with an Uppercase, symbol and number" />
 
-                <input class="submit-btn" type="submit" value="Create Account">
+                <FormInputButton width="100%" type="submit" value="Create Account" background="#3754DB" color="#FFFFFF" />
             </form>
         </div>
     </NuxtLayout>
@@ -53,18 +44,18 @@ const signUp = () => {
 
     &-header {
         font-weight: 700;
-        font-size: pxToRem(32);
-        line-height: pxToRem(38);
-        color: $colorBlack;
-        margin-bottom: pxToRem(12);
+        font-size: 32px;
+        line-height: 38px;
+        color: #000000;
+        margin-bottom: 12px;
     }
 
     &-description {
         font-weight: 400;
-        font-size: pxToRem(16);
-        line-height: pxToRem(19);
-        color: $colorGrey;
-        margin-bottom: pxToRem(48);
+        font-size: 16px;
+        line-height: 19px;
+        color: #62667E;
+        margin-bottom: 48px;
     }
 
     form {
@@ -73,67 +64,6 @@ const signUp = () => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-
-        label {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            margin-bottom: 24px;
-
-            .form-label {
-                font-weight: 400;
-                font-size: 16px;
-                line-height: 19px;
-                color: #2C2E3A;
-                margin-bottom: 14px;
-            }
-
-            input {
-                width: -webkit-fill-available;
-                background: #FBFBFE;
-                border: 0.6px solid #2746D8;
-                border-radius: 12px;
-                padding: 15px;
-                font-weight: 400;
-                font-size: 16px;
-                line-height: 19px;
-                color: #13236C;
-                margin-bottom: 8px;
-
-                &::placeholder {
-                    color: #13236C;
-                }
-            }
-
-
-            .form-hint {
-                font-weight: 400;
-                font-size: 12px;
-                line-height: 14px;
-                color: #6E7391;
-                display: block;
-            }
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: #3754DB;
-            border: none;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 16px;
-            line-height: 19px;
-            color: #FFFFFF;
-            margin-top: 24px;
-
-            &:hover {
-                cursor: pointer;
-                background: #3755dbe5;
-            }
-        }
     }
 }
 </style>

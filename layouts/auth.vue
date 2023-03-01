@@ -3,19 +3,27 @@ const route = useRoute();
 const router = useRouter();
 
 const goTo = (path: string) => {
-    return path === "/login" 
-    ? router.push("/signup") 
-    : router.push("/login");
+    return path === "/login"
+        ? router.push("/signup")
+        : router.push("/login");
 };
+
+const leftOrder = computed(() => {
+    return route.path === "/signup" ? 1 : 2;
+});
+
+const rightOrder = computed(() => {
+    return route.path === "/login" ? 1 : 2;
+});
 </script>
 
 <template>
     <div class="auth__layout">
-        <div class="auth__layout-left">
+        <div class="auth__layout-left" :style="`order: ${leftOrder}`">
             <h2 class="auth__text">Take your productivity to the next level.</h2>
-            <p class="copyright">Copyright 2021 | All  Right Reserved</p>
+            <p class="copyright">Copyright 2021 | All Right Reserved</p>
         </div>
-        <div class="auth__layout-right">
+        <div class="auth__layout-right" :style="`order: ${rightOrder}`">
             <slot />
         </div>
 
@@ -29,10 +37,9 @@ const goTo = (path: string) => {
 
 <style lang="scss" scoped>
 .auth__layout {
-    background-color: $colorWhite;
-    padding: pxToRem(20);
-    display: grid;
-    grid-template-columns: 1.5fr 2fr;
+    background-color: #FFFFFF;
+    padding: 20px;
+    display: flex;
     position: relative;
 
     .auth-cta {
@@ -55,6 +62,8 @@ const goTo = (path: string) => {
     }
 
     &-left {
+        flex-basis: 40%;
+        flex-grow: 1;
         width: 100%;
         min-height: 95vh;
         height: 100%;
@@ -65,28 +74,33 @@ const goTo = (path: string) => {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        border-radius: pxToRem(32);
-        
+        border-radius: 32px;
+
         .auth__text {
             align-self: center;
             font-weight: 600;
-            font-size: pxToRem(56);
-            line-height: pxToRem(66);
+            font-size: 56px;
+            line-height: 66px;
             letter-spacing: -0.02em;
-            color: $colorWhite;
-            max-width: pxToRem(454);
+            color: #FFFFFF;
+            max-width: 454px;
             margin: auto;
         }
 
         .copyright {
             align-self: flex-start;
             font-weight: 400;
-            font-size: pxToRem(20);
-            line-height: pxToRem(66);
-            color: $colorWhite;
-            max-width: pxToRem(454);
+            font-size: 20px;
+            line-height: 66px;
+            color: #FFFFFF;
+            max-width: 454px;
             margin: 0 auto;
         }
+    }
+
+    &-right {
+        flex-basis: 60%;
+        flex-grow: 1;
     }
 }
 </style>
