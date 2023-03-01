@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 interface inputTextProps {
-    labelFor: string;
-    label: string;
+    labelFor?: string;
+    label?: string;
     inputType: string;
-    placeholder: string;
-    hint: string;
+    placeholder?: string;
+    hint?: string;
+    required?: boolean;
 }
 
 defineProps<inputTextProps>();
@@ -13,7 +14,7 @@ defineProps<inputTextProps>();
 <template>
     <label :for="labelFor">
         <span v-if="!!label" class="form-label">{{ label }}</span>
-        <input :type="inputType" :name="labelFor" :id="labelFor" :placeholder="placeholder" />
+        <input :type="inputType" :name="labelFor" :id="labelFor" :placeholder="placeholder" :required="required" />
         <span v-if="!!hint" class="form-hint">{{ hint }}</span>
 
         <span v-if="inputType === 'password'" class="eye">

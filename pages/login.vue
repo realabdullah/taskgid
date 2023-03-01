@@ -20,7 +20,7 @@ definePageMeta({
                 <FormInputButton width="204px" type="submit" value="Log In" background="#3754DB" color="#FFFFFF" />
             </form>
 
-            <span class="login__form-footer">Forgot Password ?</span>
+            <NuxtLink to="/forget-password" class="login__form-footer">Forgot Password ?</NuxtLink>
         </div>
     </NuxtLayout>
 </template>
@@ -53,6 +53,7 @@ definePageMeta({
     }
 
     &-footer {
+        text-decoration: none;
         font-weight: 600;
         font-size: 18px;
         line-height: 22px;
