@@ -5,6 +5,12 @@ definePageMeta({
 
 const resetCodesent = ref(false);
 
+const toastText = computed(() => {
+    return resetCodesent.value
+        ? 'Please enter the OTP received on your email.'
+        : 'You would be sent a recovery Link to the email.';
+});
+
 const sendResetCode = () => {
     resetCodesent.value = true;
 }
@@ -19,10 +25,14 @@ const sendResetCode = () => {
 
             <form @submit.prevent="sendResetCode">
                 <FormInputText v-if="resetCodesent" input-type="number" placeholder="Enter OTP received" :required="true" />
-                <FormInputText v-else input-type="email" label-for="email" label="Email Address" placeholder="Enter your email address" :required="true" />
+                <FormInputText v-else input-type="email" label-for="email" label="Email Address"
+                    placeholder="Enter your email address" :required="true" />
 
-                <FormInputButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'" background="#3754DB" color="#FFFFFF" />
+                <FormInputButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'"
+                    background="#3754DB" color="#FFFFFF" />
             </form>
+
+            <Toast type="warning" message="Hi there!" :description="toastText" toast-style="outline" />
         </div>
     </div>
 </template>
@@ -72,6 +82,7 @@ const sendResetCode = () => {
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            margin-bottom: 60px
         }
 
     }
