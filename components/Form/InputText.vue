@@ -8,7 +8,16 @@ interface inputTextProps {
     required?: boolean;
 }
 
-defineProps<inputTextProps>();
+const props = defineProps<inputTextProps>();
+
+const togglePassword = () => {
+    const input = document.getElementById(props.labelFor!) as HTMLInputElement;
+    if (input.type === "password") {
+        input.type = "text";
+    } else {
+        input.type = "password";
+    }
+};
 </script>
 
 <template>
@@ -17,7 +26,7 @@ defineProps<inputTextProps>();
         <input :type="inputType" :name="labelFor" :id="labelFor" :placeholder="placeholder" :required="required" />
         <span v-if="!!hint" class="form-hint">{{ hint }}</span>
 
-        <span v-if="inputType === 'password'" class="eye">
+        <span v-if="inputType === 'password'" class="eye" @click="togglePassword">
             <IconsEye />
         </span>
     </label>
