@@ -3,7 +3,9 @@ definePageMeta({
     name: 'forget-password',
 });
 
-const resetCodesent = ref(false);
+const resetCodesent = ref<boolean>(false);
+const resetCode = ref<number>(0);
+const email = ref<string>('');
 
 const toastText = computed(() => {
     return resetCodesent.value
@@ -12,6 +14,7 @@ const toastText = computed(() => {
 });
 
 const sendResetCode = () => {
+    if (email.value === '') return;
     resetCodesent.value = true;
 }
 </script>
@@ -24,8 +27,9 @@ const sendResetCode = () => {
                 productivity in no time.</p>
 
             <form @submit.prevent="sendResetCode">
-                <FormInputText v-if="resetCodesent" input-type="number" placeholder="Enter OTP received" :required="true" />
-                <FormInputText v-else input-type="email" label-for="email" label="Email Address"
+                <FormInputText v-model="resetCode" v-if="resetCodesent" input-type="number" placeholder="Enter OTP received"
+                    :required="true" />
+                <FormInputText v-model="email" v-else input-type="email" label-for="email" label="Email Address"
                     placeholder="Enter your email address" :required="true" />
 
                 <FormInputButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'"

@@ -1,7 +1,24 @@
 <script lang="ts" setup>
+import { type } from 'os';
+
 definePageMeta({
     name: 'login',
 });
+
+type Login = {
+    email: string;
+    password: string;
+};
+
+const login = ref<Login>({
+    email: '',
+    password: ''
+});
+
+const submitForm = (login: Login) => {
+    if (login.email === '' || login.password === '') return;
+    console.log(login);
+};
 </script>
 
 <template>
@@ -10,11 +27,11 @@ definePageMeta({
         <div class="login__form">
             <h5 class="login__form-header">Welcome Back.</h5>
 
-            <form>
-                <FormInputText input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
+            <form @submit.prevent="submitForm(login)">
+                <FormInputText v-model="login.email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
                     hint="Example. mano@gmail.com" />
 
-                <FormInputText input-type="password" label-for="password" label="Enter Your Password"
+                <FormInputText v-model="login.password" input-type="password" label-for="password" label="Enter Your Password"
                     placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number" />
 
                 <FormInputButton width="204px" type="submit" value="Log In" background="#3754DB" color="#FFFFFF" />

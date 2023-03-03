@@ -1,10 +1,25 @@
 <script lang="ts" setup>
+import { type } from 'os';
+
 definePageMeta({
     name: 'signup',
 });
 
-const signUp = () => {
-    console.log('sign up');
+type SignUp = {
+    name: string;
+    email: string;
+    password: string;
+};
+
+const form = ref<SignUp>({
+    name: '',
+    email: '',
+    password: ''
+});
+
+const signUp = (obj: SignUp) => {
+    if (obj.name === '' || obj.email === '' || obj.password === '') return;
+    console.log(obj);
 };
 </script>
 
@@ -15,15 +30,15 @@ const signUp = () => {
             <h5 class="signup__form-header">Create an Account</h5>
             <p class="signup__form-description">It’s Simpe and Easy!!</p>
 
-            <form @submit.prevent="signUp">
-                <FormInputText input-type="text" label-for="name" label="Fullname" placeholder="Enter fullname"
-                    hint="Information about the input" />
+            <form @submit.prevent="signUp(form)">
+                <FormInputText v-model="form.name" input-type="text" label-for="name" label="Fullname"
+                    placeholder="Enter fullname" hint="Information about the input" />
 
-                <FormInputText input-type="email" label-for="email" label="Email Address" placeholder="Enter email address"
-                    hint="Example. mano@gmail.com" />
+                <FormInputText v-model="form.email" input-type="email" label-for="email" label="Email Address"
+                    placeholder="Enter email address" hint="Example. mano@gmail.com" />
 
-                <FormInputText input-type="password" label-for="password" label="Enter A Password" placeholder="Password"
-                    hint="Upto 8 characters with an Uppercase, symbol and number" />
+                <FormInputText v-model="form.password" input-type="password" label-for="password" label="Enter A Password"
+                    placeholder="Password" hint="Upto 8 characters with an Uppercase, symbol and number" />
 
                 <FormInputButton width="100%" type="submit" value="Create Account" background="#3754DB" color="#FFFFFF" />
             </form>
