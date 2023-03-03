@@ -6,6 +6,7 @@ interface inputTextProps {
     placeholder?: string;
     hint?: string;
     required?: boolean;
+    modelValue: string | number;
 }
 
 const props = defineProps<inputTextProps>();
@@ -23,7 +24,8 @@ const togglePassword = () => {
 <template>
     <label :for="labelFor">
         <span v-if="!!label" class="form-label">{{ label }}</span>
-        <input :type="inputType" :name="labelFor" :id="labelFor" :placeholder="placeholder" :required="required" />
+        <input :type="inputType" :value="modelValue" :name="labelFor" :id="labelFor" :placeholder="placeholder"
+            :required="required" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
         <span v-if="!!hint" class="form-hint">{{ hint }}</span>
 
         <span v-if="inputType === 'password'" class="eye" @click="togglePassword">
