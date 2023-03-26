@@ -8,6 +8,12 @@ const notification = ref(false);
 const showProfilePictureModal = ref(false);
 const photoUploaded = ref(false);
 
+const navs = [
+    { name: 'overview', route: '/dashboard' },
+    { name: 'tasks', route: '/dashboard/tasks' },
+    { name: 'settings', route: '/dashboard/settings' }
+]
+
 onMounted(() => {
     useEvent().on("showToast", (errorObj: any) => {
         errorMessage.value = errorObj.message;
@@ -41,23 +47,15 @@ onMounted(() => {
             </div>
             <div class="workspace-details">
                 <div class="workspace-detail">
-                    <h4>Me & I</h4>
-                    <p>Emmanuel’s Space</p>
+                    <h4>ABD</h4>
+                    <p>Realabd’s Space</p>
                 </div>
 
                 <div class="workspace-nav">
-                    <a href="#" class="workspace-nav__item active">
-                        <IconsOverview />
-                        <span>Overview</span>
-                    </a>
-                    <a href="#" class="workspace-nav__item">
-                        <IconsTasks />
-                        <span>Tasks</span>
-                    </a>
-                    <a href="#" class="workspace-nav__item">
-                        <IconsSettings />
-                        <span>Settings</span>
-                    </a>
+                    <NuxtLink v-for="(nav, index) in navs" :key="index" :to="nav.route" class="workspace-nav__item" :class="{ active: $route.path === nav.route }">
+                        <IconsSideNav :variant="nav.name" />
+                        <span>{{ nav.name }}</span>
+                    </NuxtLink>
                 </div>
             </div>
         </aside>
@@ -84,14 +82,14 @@ onMounted(() => {
                         <span>onifaith@gmail.com</span>
                     </div>
 
-                    <FormInputButton class="btn" value="My Profile" background="#3754DB" color="#FFFFFF" width="108px" />
+                    <BaseButton class="btn" value="My Profile" background="#3754DB" color="#FFFFFF" width="108px" />
                 </div>
             </div>
         </aside>
     </div>
 
     <!-- UPLOAD PROFILE PICTURE -->
-    <Modal v-if="showProfilePictureModal" @close-modal="showProfilePictureModal = false">
+    <BaseModal v-if="showProfilePictureModal" width="460px" @close-modal="showProfilePictureModal = false">
         <template #default>
             <div class="profile-uploader">
                 <h3>Upoad your Profile Picture</h3>
@@ -103,9 +101,9 @@ onMounted(() => {
                 <button>Upoad Picture</button>
             </div>
         </template>
-    </Modal>
+    </BaseModal>
 
-    <Toast v-if="showToast" :toast-style="toastStyle" :type="type" :message="message" :description="errorMessage" />
+    <BaseToast v-if="showToast" :toast-style="toastStyle" :type="type" :message="message" :description="errorMessage" />
 </template>
 
 <style lang="scss" scoped>
@@ -211,6 +209,7 @@ onMounted(() => {
                     font-size: 16px;
                     line-height: 19px;
                     color: #666666;
+                    text-transform: capitalize;
                 }
 
                 .active {

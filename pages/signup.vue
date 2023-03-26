@@ -41,16 +41,16 @@ const signUp = async () => {
             <p class="signup__form-description">It’s Simpe and Easy!!</p>
 
             <form @submit.prevent="signUp">
-                <FormInputText v-model="name" input-type="text" label-for="name" label="Fullname"
-                    placeholder="Enter fullname" hint="Information about the input" />
+                <BaseInput v-model="name" input-type="text" label-for="name" label="Fullname"
+                    placeholder="Enter fullname" hint="Information about the input" border-color="#2746D8" />
 
-                <FormInputText v-model="email" input-type="email" label-for="email" label="Email Address"
-                    placeholder="Enter email address" hint="Example. mano@gmail.com" />
+                <BaseInput v-model="email" input-type="email" label-for="email" label="Email Address"
+                    placeholder="Enter email address" hint="Example. mano@gmail.com" border-color="#2746D8" />
 
-                <FormInputText v-model="password" input-type="password" label-for="password" label="Enter A Password"
-                    placeholder="Password" hint="Upto 8 characters with an Uppercase, symbol and number" />
+                <BaseInput v-model="password" input-type="password" label-for="password" label="Enter A Password"
+                    placeholder="Password" hint="Upto 8 characters with an Uppercase, symbol and number" border-color="#2746D8" />
 
-                <FormInputButton width="100%" :value="submitting ? 'loading' : 'Create Account'" background="#3754DB" color="#FFFFFF" />
+                <BaseButton width="100%" :value="submitting ? 'loading' : 'Create Account'" background="#3754DB" color="#FFFFFF" />
             </form>
         </div>
     </NuxtLayout>

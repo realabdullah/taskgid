@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+defineProps<{
+    width: string;
+}>();
 </script>
 
 <template>
-    <div class="modal">
+    <div class="modal" :style="`width: ${width};`">
         <button class="close-modal" @click="$emit('close-modal')">
             <IconsClose />
         </button>
@@ -16,7 +19,6 @@
 .modal {
     background: #FFFFFF;
     border-radius: 20px;
-    width: 460px;
     max-width: 90%;
     height: 639px;
     max-height: 90vh;
@@ -26,6 +28,13 @@
     transform: translate(-50%, -50%);
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     z-index: 9;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     .close-modal {
         border: none;

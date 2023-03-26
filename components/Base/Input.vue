@@ -7,6 +7,7 @@ interface inputTextProps {
     hint?: string;
     required?: boolean;
     modelValue: string | number;
+    borderColor?: string;
 }
 
 const props = defineProps<inputTextProps>();
@@ -25,7 +26,7 @@ const togglePassword = () => {
     <label :for="labelFor">
         <span v-if="!!label" class="form-label">{{ label }}</span>
         <input :type="inputType" :value="modelValue" :name="labelFor" :id="labelFor" :placeholder="placeholder"
-            :required="required" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
+            :required="required" :style="`border: 0.6px solid ${borderColor};`" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
         <span v-if="!!hint" class="form-hint">{{ hint }}</span>
 
         <span v-if="inputType === 'password'" class="eye" @click="togglePassword">
@@ -65,8 +66,7 @@ label {
 
     input {
         width: -webkit-fill-available;
-        background: #FBFBFE;
-        border: 0.6px solid #2746D8;
+        background: transparent;
         border-radius: 12px;
         padding: 15px;
         font-weight: 400;

@@ -65,14 +65,14 @@ const handleNext = () => {
                 <p class="workspace__create-description">{{ pageHeadings.description }}</p>
 
                 <div class="workspace__create-form">
-                    <FormInputText v-if="workSpaceState === 'name'" v-model="name" input-type="text"
-                        label-for="workspace-name" label="Workspace Name" />
+                    <BaseInput v-if="workSpaceState === 'name'" v-model="name" input-type="text"
+                        label-for="workspace-name" label="Workspace Name" border-color="#2746D8" />
 
-                    <FormInputText v-else v-model="description" input-type="text" label-for="workspace-desc"
-                        label="Workspace Description" />
+                    <BaseInput v-else v-model="description" input-type="text" label-for="workspace-desc"
+                        label="Workspace Description" border-color="#2746D8" />
                 </div>
 
-                <FormInputButton width="204px" type="button"
+                <BaseButton width="204px" type="button"
                     :value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'" background="#3754DB" color="#FFFFFF"
                     @click="handleNext" />
             </div>

@@ -41,19 +41,19 @@ const submitForm = async () => {
 
 <template>
     <NuxtLayout name="auth">
-        <Toast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
+        <BaseToast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
         <template #cta>Create Account</template>
         <div class="login__form">
             <h5 class="login__form-header">Welcome Back.</h5>
 
             <form @submit.prevent="submitForm">
-                <FormInputText v-model="email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
-                    hint="Example. mano@gmail.com" />
+                <BaseInput v-model="email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
+                    hint="Example. mano@gmail.com" border-color="#2746D8" />
 
-                <FormInputText v-model="password" input-type="password" label-for="password" label="Enter Your Password"
-                    placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number" />
+                <BaseInput v-model="password" input-type="password" label-for="password" label="Enter Your Password"
+                    placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number" border-color="#2746D8" />
 
-                <FormInputButton width="204px" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
+                <BaseButton width="204px" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
             </form>
 
             <NuxtLink to="/forget-password" class="login__form-footer">Forgot Password ?</NuxtLink>

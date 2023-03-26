@@ -27,16 +27,16 @@ const sendResetCode = () => {
                 productivity in no time.</p>
 
             <form @submit.prevent="sendResetCode">
-                <FormInputText v-model="resetCode" v-if="resetCodesent" input-type="number" placeholder="Enter OTP received"
-                    :required="true" />
-                <FormInputText v-model="email" v-else input-type="email" label-for="email" label="Email Address"
-                    placeholder="Enter your email address" :required="true" />
+                <BaseInput v-model="resetCode" v-if="resetCodesent" input-type="number" placeholder="Enter OTP received"
+                    :required="true" border-color="#2746D8" />
+                <BaseInput v-model="email" v-else input-type="email" label-for="email" label="Email Address"
+                    placeholder="Enter your email address" :required="true" border-color="#2746D8" />
 
-                <FormInputButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'"
+                <BaseButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'"
                     background="#3754DB" color="#FFFFFF" />
             </form>
 
-            <Toast type="warning" message="Hi there!" :description="toastText" toast-style="outline" />
+            <BaseToast type="warning" message="Hi there!" :description="toastText" toast-style="outline" />
         </div>
     </div>
 </template>

@@ -12,7 +12,7 @@ definePageMeta({
 			<div class="homepage-welcome">
 				<h1>👋</h1>
 				<div class="homepage-welcome__texts">
-					<h2>Hi Faith,</h2>
+					<h2>Hi ABD,</h2>
 					<p>Wecome to Semicolon Task Management</p>
 				</div>
 			</div>

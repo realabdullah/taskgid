@@ -18,7 +18,7 @@ const openProfilePictureModal = () => {
             <div class="todo" :class="{ active: selected === 'profilePicture' }" @click="selectTodo('profilePicture')">
                 <div class="todo-title">
                     <IconsGetStarted variant="profile-picture" />
-                    <p>Hey Faith, Update your Profile Picture</p>
+                    <p>Hey Abd, Update your Profile Picture</p>
                 </div>
                 <button @click="openProfilePictureModal">
                     <span>Get Started</span>
