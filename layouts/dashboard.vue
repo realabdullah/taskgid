@@ -5,6 +5,8 @@ const toastStyle = ref("");
 const type = ref("");
 const message = ref("");
 const notification = ref(false);
+const showProfilePictureModal = ref(false);
+const photoUploaded = ref(false);
 
 onMounted(() => {
     useEvent().on("showToast", (errorObj: any) => {
@@ -17,7 +19,11 @@ onMounted(() => {
         setTimeout(() => {
             showToast.value = false;
         }, 2000);
-    })
+    });
+
+    useEvent().on("uploadProfilePicture", (value: boolean) => {
+        showProfilePictureModal.value = value
+    });
 });
 </script>
 
@@ -84,6 +90,20 @@ onMounted(() => {
         </aside>
     </div>
 
+    <!-- UPLOAD PROFILE PICTURE -->
+    <Modal v-if="showProfilePictureModal" @close-modal="showProfilePictureModal = false">
+        <template #default>
+            <div class="profile-uploader">
+                <h3>Upoad your Profile Picture</h3>
+                <div class="profile-container">
+                    <img src="https://i.ibb.co/kBGCJnQ/Group-67.png" alt="photo">
+                    <span v-if="!photoUploaded">Tap Icon to Select Picture</span>
+                    <IconsCheck v-if="photoUploaded" class="uploaded" variant="large" />
+                </div>
+                <button>Upoad Picture</button>
+            </div>
+        </template>
+    </Modal>
 
     <Toast v-if="showToast" :toast-style="toastStyle" :type="type" :message="message" :description="errorMessage" />
 </template>
@@ -287,6 +307,62 @@ onMounted(() => {
                 }
             }
         }
+    }
+}
+
+.profile-uploader {
+    padding: 50px;
+
+    h3 {
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 32px;
+    }
+
+    .profile-container {
+        margin-top: 50px;
+        position: relative;
+        width: 100%;
+        height: 340px;
+        border-radius: 24px;
+        cursor: pointer;
+
+        .uploaded {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        span {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0);
+            bottom: 22px;
+            display: block;
+            max-width: 189px;
+            background: #ffffff1a;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 19px;
+            color: #FFFFFF;
+            white-space: nowrap;
+        }
+    }
+
+    button {
+        margin-top: 40px;
+        width: 100%;
+        background: #3754DB;
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 19px;
+        color: #FFFFFF;
     }
 }
 </style>
