@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-
+definePageMeta({
+    middleware: ['guest']
+});
 </script>
 
 <template>
-    <h1>ABD</h1>
 </template>
