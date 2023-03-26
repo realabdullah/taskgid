@@ -4,6 +4,7 @@ const errorMessage = ref("");
 const toastStyle = ref("");
 const type = ref("");
 const message = ref("");
+const notification = ref(false);
 
 onMounted(() => {
     useEvent().on("showToast", (errorObj: any) => {
@@ -55,6 +56,16 @@ onMounted(() => {
             </div>
         </aside>
         <main class="dashboard-layout__center">
+            <header>
+                <label for="search" class="search">
+                    <input type="search" name="search" id="search" placeholder="Search your space here...">
+                    <IconsSearch class="search-icon" />
+                </label>
+
+                <div class="notification-bell">
+                    <IconsNotificationBell :notification="notification" />
+                </div>
+            </header>
             <slot />
         </main>
         <aside class="dashboard-layout__right">
@@ -192,6 +203,36 @@ onMounted(() => {
 
     &__center {
         padding: 25px 40px;
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 50px;
+
+            .search {
+                position: relative;
+                width: 100%;
+                max-width: 350px;
+
+                input {
+                    width: 100%;
+                    height: 50px;
+                    border: 0.7px solid #A8ABBD;
+                    border-radius: 12px;
+                    background: transparent;
+                    padding: 16px;
+                }
+
+                &-icon {
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(0, -50%);
+                    right: 15px;
+                    cursor: pointer;
+                }
+            }
+        }
     }
 
     &__right {
