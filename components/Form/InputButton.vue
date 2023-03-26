@@ -2,7 +2,6 @@
 defineComponent({ name: 'InputButton' });
 
 interface inputButtonProps {
-    type: string;
     value: string;
     background: string;
     color: string;
@@ -13,7 +12,10 @@ defineProps<inputButtonProps>();
 </script>
 
 <template>
-    <input class="__btn" :type="type" :value="value">
+    <button class="__btn">
+        <Loader v-if="value === 'loading'" />
+        <span v-else>{{ value }}</span>
+    </button>
 </template>
 
 <style lang="scss" scoped>

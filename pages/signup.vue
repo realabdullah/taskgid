@@ -1,25 +1,35 @@
 <script lang="ts" setup>
-import { type } from 'os';
-
 definePageMeta({
+    title: 'Sign Up',
     name: 'signup',
+    middleware: ['guest']
 });
 
-type SignUp = {
-    name: string;
-    email: string;
-    password: string;
-};
+const name = ref('');
+const email = ref('');
+const password = ref('');
+const submitting = ref(false);
 
-const form = ref<SignUp>({
-    name: '',
-    email: '',
-    password: ''
-});
+const client = useSupabaseAuthClient();
 
-const signUp = (obj: SignUp) => {
-    if (obj.name === '' || obj.email === '' || obj.password === '') return;
-    console.log(obj);
+const signUp = async () => {
+    submitting.value = true;
+    const { error } = await client.auth.signUp({
+        email: email.value,
+        password: password.value,
+        options: {
+            data: {
+                name: name.value
+            }
+        }
+    });
+    
+    if (error) {
+        submitting.value = false;
+        return;
+    }
+
+    navigateTo('/create-workspace');
 };
 </script>
 
@@ -30,17 +40,17 @@ const signUp = (obj: SignUp) => {
             <h5 class="signup__form-header">Create an Account</h5>
             <p class="signup__form-description">It’s Simpe and Easy!!</p>
 
-            <form @submit.prevent="signUp(form)">
-                <FormInputText v-model="form.name" input-type="text" label-for="name" label="Fullname"
+            <form @submit.prevent="signUp">
+                <FormInputText v-model="name" input-type="text" label-for="name" label="Fullname"
                     placeholder="Enter fullname" hint="Information about the input" />
 
-                <FormInputText v-model="form.email" input-type="email" label-for="email" label="Email Address"
+                <FormInputText v-model="email" input-type="email" label-for="email" label="Email Address"
                     placeholder="Enter email address" hint="Example. mano@gmail.com" />
 
-                <FormInputText v-model="form.password" input-type="password" label-for="password" label="Enter A Password"
+                <FormInputText v-model="password" input-type="password" label-for="password" label="Enter A Password"
                     placeholder="Password" hint="Upto 8 characters with an Uppercase, symbol and number" />
 
-                <FormInputButton width="100%" type="submit" value="Create Account" background="#3754DB" color="#FFFFFF" />
+                <FormInputButton width="100%" :value="submitting ? 'loading' : 'Create Account'" background="#3754DB" color="#FFFFFF" />
             </form>
         </div>
     </NuxtLayout>

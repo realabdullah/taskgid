@@ -39,7 +39,7 @@ const background = computed(() => {
 
 <template>
     <div class="toast"
-        :style="`border: ${toastStyle === 'outline' ? `1.6px solid ${borderColor}` : 'none'}; color: ${color}`">
+        :style="`border: ${toastStyle === 'outline' ? `1.6px solid ${borderColor}` : 'none'}; color: ${color}; background: ${background}`">
         <div class="toast__icon">
             <IconsAlert :type="type" />
         </div>
@@ -59,10 +59,9 @@ const background = computed(() => {
     max-width: 350px;
     padding: 20px;
     border-radius: 20px;
-    background: v-bind(background);
     display: flex;
     align-items: center;
-    position: relative;
+    position: fixed;
 
     &__icon {
         margin-right: 20px;

@@ -1,40 +1,59 @@
 <script lang="ts" setup>
-import { type } from 'os';
 
 definePageMeta({
+    title: 'Login',
     name: 'login',
+    middleware: ['guest']
 });
 
-type Login = {
-    email: string;
-    password: string;
-};
+const email = ref('');
+const password = ref('');
+const submitting = ref(false);
+const loginError = ref("");
+const client = useSupabaseAuthClient();
 
-const login = ref<Login>({
-    email: '',
-    password: ''
+watchEffect(() => {
+    if (email.value !== '' && password.value !== '') {
+        loginError.value = "";
+    }
 });
 
-const submitForm = (login: Login) => {
-    if (login.email === '' || login.password === '') return;
-    console.log(login);
+const submitForm = async () => {
+    submitting.value = true;
+    if (email.value === '' || password.value === '') return;
+
+    const { error } = await client.auth.signInWithPassword({
+        email: email.value,
+        password: password.value
+    });
+
+    if (error) {
+        loginError.value = error.message;
+        submitting.value = false;
+        return;
+    }
+
+    const cookie = useCookie<boolean>("userAuthenticated");
+    cookie.value = true;
+    navigateTo('/dashboard');
 };
 </script>
 
 <template>
     <NuxtLayout name="auth">
+        <Toast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
         <template #cta>Create Account</template>
         <div class="login__form">
             <h5 class="login__form-header">Welcome Back.</h5>
 
-            <form @submit.prevent="submitForm(login)">
-                <FormInputText v-model="login.email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
+            <form @submit.prevent="submitForm">
+                <FormInputText v-model="email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
                     hint="Example. mano@gmail.com" />
 
-                <FormInputText v-model="login.password" input-type="password" label-for="password" label="Enter Your Password"
+                <FormInputText v-model="password" input-type="password" label-for="password" label="Enter Your Password"
                     placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number" />
 
-                <FormInputButton width="204px" type="submit" value="Log In" background="#3754DB" color="#FFFFFF" />
+                <FormInputButton width="204px" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
             </form>
 
             <NuxtLink to="/forget-password" class="login__form-footer">Forgot Password ?</NuxtLink>

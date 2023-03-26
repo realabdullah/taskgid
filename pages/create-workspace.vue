@@ -2,20 +2,13 @@
 definePageMeta({
     title: 'Create Workspace',
     name: 'CreateWorkspace',
+    middleware: ['guest'],
 });
 
-type Workspace = {
-    name: string;
-    description: string;
-};
-
-type WorkspaceState = string;
-
-const workSpaceState = ref<WorkspaceState>('name');
-const workspace = ref<Workspace>({
-    name: '',
-    description: ''
-});
+const workSpaceState = ref('name');
+const name = ref("");
+const description = ref("");
+const submitting = ref(false);
 
 const pageHeadings = computed(() => {
     if (workSpaceState.value === 'name') {
@@ -31,16 +24,35 @@ const pageHeadings = computed(() => {
     }
 });
 
-const createWorkspace = (obj: Workspace) => {
-    if (obj.name === '' || obj.description === '') return;
-    console.log(obj);
+const client = useSupabaseClient();
+const user = useSupabaseUser();
+
+const createWorkspace = async () => {
+    submitting.value = true;
+    const payload = {
+        id: user.value?.id,
+        email: user.value?.email,
+        workspaces: [{
+            name: name.value,
+            description: description.value,
+        }]
+    }
+
+    const { error } = await client.from('users').insert(payload as any);
+
+    if (error) {
+        submitting.value = false;
+        return;
+    }
+
+    navigateTo('/login');
 };
 
 const handleNext = () => {
-    if (workSpaceState.value === 'name' && workspace.value.name !== '') {
+    if (workSpaceState.value === 'name' && name.value !== '') {
         workSpaceState.value = 'description';
     } else {
-        createWorkspace(workspace.value);
+        createWorkspace();
     }
 };
 </script>
@@ -53,15 +65,15 @@ const handleNext = () => {
                 <p class="workspace__create-description">{{ pageHeadings.description }}</p>
 
                 <div class="workspace__create-form">
-                    <FormInputText v-if="workSpaceState === 'name'" v-model="workspace.name" input-type="text"
+                    <FormInputText v-if="workSpaceState === 'name'" v-model="name" input-type="text"
                         label-for="workspace-name" label="Workspace Name" />
 
-                    <FormInputText v-else v-model="workspace.description" input-type="text" label-for="workspace-desc"
+                    <FormInputText v-else v-model="description" input-type="text" label-for="workspace-desc"
                         label="Workspace Description" />
                 </div>
 
                 <FormInputButton width="204px" type="button"
-                    :value="workSpaceState === 'name' ? 'Next' : 'Create Workspace'" background="#3754DB" color="#FFFFFF"
+                    :value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'" background="#3754DB" color="#FFFFFF"
                     @click="handleNext" />
             </div>
         </div>
