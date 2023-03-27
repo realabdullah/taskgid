@@ -26,7 +26,8 @@ const togglePassword = () => {
     <label :for="labelFor">
         <span v-if="!!label" class="form-label">{{ label }}</span>
         <input :type="inputType" :value="modelValue" :name="labelFor" :id="labelFor" :placeholder="placeholder"
-            :required="required" :style="`border: 0.6px solid ${borderColor};`" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
+            :required="required" :style="`border: 0.6px solid ${borderColor};`"
+            @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
         <span v-if="!!hint" class="form-hint">{{ hint }}</span>
 
         <span v-if="inputType === 'password'" class="eye" @click="togglePassword">
@@ -88,5 +89,17 @@ label {
         color: #6E7391;
         display: block;
     }
+}
+
+[type="date"] {
+    background: #fff url(@/assets/images/calendar.svg) 90% 50% no-repeat;
+}
+
+[type="date"]::-webkit-inner-spin-button {
+    display: none;
+}
+
+[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
 }
 </style>

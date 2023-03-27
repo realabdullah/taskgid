@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { emit } from 'process';
-
 defineProps<{
+    label: string;
     lists: [] | string[];
 }>();
 
@@ -11,87 +10,129 @@ const selectedOption = ref("");
 const selectOption = (option: string) => {
     selectedOption.value = option;
     emit("selected", option);
+    closeDetailAndSummary();
+};
+
+const closeDetailAndSummary = () => {
+    const details = document.querySelector("details");
+    const summary = document.querySelector("summary");
+
+    if (details && summary) {
+        details.removeAttribute("open");
+        summary.removeAttribute("aria-expanded");
+    }
 };
 </script>
 
 <template>
-    <details class="dropdown">
-        <summary class="dropdown-input">
-            <span class="dropdown-input__label">{{ lists[0] }}</span>
-            <span class="dropdown-input__arrow"></span>
-        </summary>
-        <div class="dropdown__modal">
-            <div class="dropdown__modal-options">
-                <button v-for="(option, index) in lists" :key="index" :class="{ active: selectedOption === option }" @click.native="selectOption(option)">{{ option }}</button>
+    <div class="select-menu">
+        <span class="label">{{ label }}</span>
+        <details class="dropdown">
+            <summary class="dropdown-input">
+                <span class="dropdown-input__label">{{ selectedOption || "Select task priority" }}</span>
+                <span class="dropdown-input__arrow"></span>
+            </summary>
+            <div class="dropdown__modal">
+                <div class="dropdown__modal-options">
+                    <button v-for="(option, index) in lists" :key="index" :class="{ active: selectedOption === option }"
+                        type="button" @click="selectOption(option)">{{ option }}</button>
+                </div>
             </div>
-        </div>
-    </details>
+        </details>
+    </div>
 </template>
 
 <style lang="scss" scoped>
-.dropdown {
-    position: relative;
+.select-menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    &-input {
-        outline: none;
-        border: 0.7px solid #A8ABBD;
-        border-radius: 12px;
-        padding: 15px;
-        background: transparent;
+    .label {
+        display: block;
+        margin-bottom: 14px;
         font-weight: 400;
         font-size: 16px;
         line-height: 19px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        &__arrow {
-            display: inline-block;
-            width: 0;
-            height: 0;
-            vertical-align: middle;
-            content: "";
-            border-style: solid;
-            border-width: 4px 4px 0;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-            border-left-color: transparent;
-        }
+        color: #2C2E3A;
     }
 
-    &__modal {
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: #FFFFFF;
-        box-shadow: 0px 12px 40px rgba(179, 179, 179, 0.1);
-        border-radius: 16px;
-        pointer-events: none;
-        z-index: 99;
+    .dropdown {
+        width: 100%;
+        position: relative;
 
-        &-options {
-            padding: 25px 20px;
+        &-input {
+            outline: none;
+            border: 0.7px solid #A8ABBD;
+            border-radius: 12px;
+            padding: 15px;
+            background: transparent;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 19px;
+            cursor: pointer;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
 
-            button {
-                border: none;
-                background: transparent;
-                border-radius: 12px;
-                padding: 15px;
-                font-weight: 400;
-                font-size: 16px;
-                line-height: 19px;
-                color: #000000;
-                text-align: left;
-                cursor: pointer;
+            &__arrow {
+                display: inline-block;
+                width: 0;
+                height: 0;
+                vertical-align: middle;
+                content: "";
+                border-style: solid;
+                border-width: 4px 4px 0;
+                border-right-color: transparent;
+                border-bottom-color: transparent;
+                border-left-color: transparent;
             }
+        }
 
-            .active {
-                background: #F6F8FD;
+        &__modal {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: #FFFFFF;
+            box-shadow: 0px 12px 40px rgba(179, 179, 179, 0.1);
+            border-radius: 16px;
+            z-index: 99;
+
+            &-options {
+                padding: 25px 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+
+                button {
+                    border: none;
+                    background: transparent;
+                    border-radius: 12px;
+                    padding: 15px;
+                    font-weight: 400;
+                    font-size: 16px;
+                    line-height: 19px;
+                    color: #000000;
+                    text-align: left;
+                    cursor: pointer;
+
+                    &:hover {
+                        background: #F6F8FD;
+                    }
+                }
+
+                .active {
+                    background: #F6F8FD;
+                }
+            }
+        }
+
+        &[open] {
+            .dropdown-input {
+                border: 1.3px solid #3754DB;
+                color: #3754DB;
             }
         }
     }

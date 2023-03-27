@@ -8,9 +8,12 @@ definePageMeta({
 const priorities = ["Less Important", "Important", "High Priority"];
 const showCreateTaskModal = ref(false);
 const taskName = ref("");
+const taskPriority = ref("");
+const taskDescription = ref("");
+const dueDate = ref(new Date().toISOString().substr(0, 10) as string);
 
-const logIt = (value: string) => {
-    console.log("emitted => ", value);
+const updateTaskPriority = (value: string) => {
+    taskPriority.value = value;
 };
 </script>
 
@@ -38,7 +41,13 @@ const logIt = (value: string) => {
                     <h1>Create Task</h1>
                     <form>
                         <BaseInput label-for="taskName" label="Task Name" input-type="text" :model-value="taskName" :required="true" border-color="#A8ABBD" />
-                        <BaseSelect :lists="priorities" @selected="logIt" />
+                        <div class="form-group">
+                            <BaseSelect label="Task Priority" :lists="priorities" @selected="updateTaskPriority" />
+                            <BaseInput label-for="date" label="Due Date" input-type="date" :model-value="dueDate" :required="true" border-color="#A8ABBD" />
+                        </div>
+                        <BaseTextArea name="taskDescription" label="Task Description" placeholder="Type your content here...." :model-value="taskDescription" :required="true" border-color="#A8ABBD" />
+
+                        <BaseButton value="Create Task" background="#3754DB" color="#FFFFFF" width="202px" type="submit" />
                     </form>
                 </div>
             </template>
@@ -102,6 +111,14 @@ const logIt = (value: string) => {
         line-height: 34px;
         color: #000000;
         margin-bottom: 15px;
+    }
+
+    form {
+        .form-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
     }
 }
 </style>

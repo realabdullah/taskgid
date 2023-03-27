@@ -56,5 +56,6 @@ defineProps<{
     left: 0;
     top: 0;
     backdrop-filter: blur(5px);
+    z-index: 1;
 }
 </style>
