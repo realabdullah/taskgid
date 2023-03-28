@@ -1,9 +1,16 @@
 <script lang="ts" setup>
+import { useStore } from "@/store";
+
 definePageMeta({
 	title: "Dashboard",
 	name: "Dashboard",
 	middleware: ["auth"],
 });
+const store = useStore();
+await store.fetchUserTasks();
+
+const user = computed(() => store.user) as any;
+const tasks = computed(() => store.tasks) as any;
 </script>
 
 <template>
@@ -12,7 +19,7 @@ definePageMeta({
 			<div class="homepage-welcome">
 				<h1>👋</h1>
 				<div class="homepage-welcome__texts">
-					<h2>Hi ABD,</h2>
+					<h2>Hi {{ user.name }},</h2>
 					<p>Wecome to Semicolon Task Management</p>
 				</div>
 			</div>
@@ -25,7 +32,7 @@ definePageMeta({
 				</div>
 			</div>
 
-			<GetStarted />
+			<GetStarted v-if="!user.profile_picture || tasks.length === 0" :user="user" :no-tasks="tasks.length === 0" />
 		</div>
 	</NuxtLayout>
 </template>

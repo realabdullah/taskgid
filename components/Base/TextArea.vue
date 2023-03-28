@@ -12,7 +12,7 @@ defineProps<{
 <template>
     <label :for="name">
         <span v-if="!!label" class="form-label">{{ label }}</span>
-        <textarea :name="name" :id="name" :placeholder="placeholder" :required="required" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"></textarea>
+        <textarea :name="name" :id="name" :placeholder="placeholder" :value="modelValue" :required="required" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"></textarea>
     </label>
 </template>
 

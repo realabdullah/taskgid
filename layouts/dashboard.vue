@@ -1,25 +1,50 @@
 <script lang="ts" setup>
-const showToast = ref(false);
-const errorMessage = ref("");
-const toastStyle = ref("");
-const type = ref("");
-const message = ref("");
-const notification = ref(false);
-const showProfilePictureModal = ref(false);
-const photoUploaded = ref(false);
+import { useStore } from "@/store/index";
 
+const store = useStore();
 const navs = [
     { name: 'overview', route: '/dashboard' },
     { name: 'tasks', route: '/dashboard/tasks' },
     { name: 'settings', route: '/dashboard/settings' }
-]
+];
+const showToast = ref(false);
+const errorObject = ref<any>({});
+const notification = ref(false);
+const showProfilePictureModal = ref(false);
+const workspaces = ref<any>([]);
+const activeWorkspace = ref("");
+
+const fetchUserInfo = async () => {
+    try {
+        const { data, error } = await useSupabaseClient()
+            .from("users_info")
+            .select("*")
+            .eq("id", useSupabaseUser().value?.id);
+
+        if (error) throw error;
+        store.setUser(data[0]);
+    } catch { }
+};
+
+const fetchUserWorkspaces = async () => {
+    try {
+        const { data, error } = await useSupabaseClient()
+            .from("workspaces")
+            .select("*")
+            .eq("user_id", useSupabaseUser().value?.id);
+
+        if (error) throw error;
+        const abd = data as any;
+        workspaces.value = abd;
+        activeWorkspace.value = abd[0].id;
+    } catch { }
+};
+await fetchUserInfo();
+await fetchUserWorkspaces();
 
 onMounted(() => {
     useEvent().on("showToast", (errorObj: any) => {
-        errorMessage.value = errorObj.message;
-        toastStyle.value = errorObj.style;
-        type.value = errorObj.type;
-        message.value = errorObj.message;
+        errorObject.value = errorObj;
         showToast.value = true;
 
         setTimeout(() => {
@@ -31,14 +56,27 @@ onMounted(() => {
         showProfilePictureModal.value = value
     });
 });
+
+const setWorkspace = (id: string) => {
+    activeWorkspace.value = id;
+};
+
+const openProfilePhotoModal = () => {
+    showProfilePictureModal.value = true;
+};
+
+const user = computed(() => store.user) as any;
+const workspaceInfo = computed(() => workspaces.value.find((workspace: any) => workspace.id === activeWorkspace.value));
+const profilePictureUrl = computed(() => store.profilePhoto);
 </script>
 
 <template>
     <div class="dashboard-layout">
         <aside class="dashboard-layout__left">
             <div class="workspace-icons">
-                <button class="workspace-avatar">
-                    <img src="https://i.ibb.co/fMm1MMv/download.jpg" alt="ABD">
+                <button v-for="workspace in workspaces" :key="workspace.id" class="workspace-avatar"
+                    :class="{ active: workspace.id === activeWorkspace }" @click="setWorkspace(workspace.id)">
+                    <img :src="profilePictureUrl" alt="ABD">
                 </button>
 
                 <button class="add-workspace">
@@ -47,12 +85,13 @@ onMounted(() => {
             </div>
             <div class="workspace-details">
                 <div class="workspace-detail">
-                    <h4>ABD</h4>
-                    <p>Realabd’s Space</p>
+                    <h4>{{ workspaceInfo.title }}</h4>
+                    <p>{{ workspaceInfo.title }}'s Space</p>
                 </div>
 
                 <div class="workspace-nav">
-                    <NuxtLink v-for="(nav, index) in navs" :key="index" :to="nav.route" class="workspace-nav__item" :class="{ active: $route.path === nav.route }">
+                    <NuxtLink v-for="(nav, index) in navs" :key="index" :to="nav.route" class="workspace-nav__item"
+                        :class="{ active: $route.path === nav.route }">
                         <IconsSideNav :variant="nav.name" />
                         <span>{{ nav.name }}</span>
                     </NuxtLink>
@@ -75,11 +114,11 @@ onMounted(() => {
         <aside class="dashboard-layout__right">
             <div class="user-sidebar">
                 <div class="user">
-                    <img src="https://i.ibb.co/fMm1MMv/download.jpg" alt="ABD">
+                    <img :src="profilePictureUrl" alt="ABD" @click="openProfilePhotoModal">
 
                     <div class="user-detail">
-                        <h5>Oni Faith Ayoola</h5>
-                        <span>onifaith@gmail.com</span>
+                        <h5>{{ user.name }}</h5>
+                        <span>{{ user.email }}</span>
                     </div>
 
                     <BaseButton class="btn" value="My Profile" background="#3754DB" color="#FFFFFF" width="108px" />
@@ -89,21 +128,9 @@ onMounted(() => {
     </div>
 
     <!-- UPLOAD PROFILE PICTURE -->
-    <BaseModal v-if="showProfilePictureModal" width="460px" @close-modal="showProfilePictureModal = false">
-        <template #default>
-            <div class="profile-uploader">
-                <h3>Upoad your Profile Picture</h3>
-                <div class="profile-container">
-                    <img src="https://i.ibb.co/kBGCJnQ/Group-67.png" alt="photo">
-                    <span v-if="!photoUploaded">Tap Icon to Select Picture</span>
-                    <IconsCheck v-if="photoUploaded" class="uploaded" variant="large" />
-                </div>
-                <button>Upoad Picture</button>
-            </div>
-        </template>
-    </BaseModal>
+    <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePictureUrl" @close="showProfilePictureModal = false" />
 
-    <BaseToast v-if="showToast" :toast-style="toastStyle" :type="type" :message="message" :description="errorMessage" />
+    <BaseToast v-if="showToast" :toast-style="errorObject.style" :type="errorObject.type" :message="errorObject.message" :description="errorObject.message" />
 </template>
 
 <style lang="scss" scoped>
@@ -136,7 +163,7 @@ onMounted(() => {
                 width: 48px;
                 height: 48px;
                 background: #3754DB;
-                border: 1.4px solid #FBBE37;
+                border: 0;
                 border-radius: 12px;
                 padding: 5px;
                 display: flex;
@@ -147,8 +174,13 @@ onMounted(() => {
                 img {
                     width: 40px;
                     height: 40px;
+                    object-fit: cover;
                     border-radius: 10px;
                 }
+            }
+
+            .active {
+                border: 1.4px solid #FBBE37;
             }
 
             .add-workspace {
@@ -279,7 +311,9 @@ onMounted(() => {
                     max-width: 90px;
                     height: 100%;
                     max-height: 90px;
+                    object-fit: cover;
                     border-radius: 16px;
+                    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
                 }
 
                 .user-detail {
@@ -306,62 +340,6 @@ onMounted(() => {
                 }
             }
         }
-    }
-}
-
-.profile-uploader {
-    padding: 50px;
-
-    h3 {
-        font-weight: 700;
-        font-size: 24px;
-        line-height: 32px;
-    }
-
-    .profile-container {
-        margin-top: 50px;
-        position: relative;
-        width: 100%;
-        height: 340px;
-        border-radius: 24px;
-        cursor: pointer;
-
-        .uploaded {
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translate(-50%, 0);
-        }
-
-        span {
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, 0);
-            bottom: 22px;
-            display: block;
-            max-width: 189px;
-            background: #ffffff1a;
-            border-radius: 12px;
-            padding: 12px;
-            font-weight: 400;
-            font-size: 16px;
-            line-height: 19px;
-            color: #FFFFFF;
-            white-space: nowrap;
-        }
-    }
-
-    button {
-        margin-top: 40px;
-        width: 100%;
-        background: #3754DB;
-        border: none;
-        border-radius: 12px;
-        padding: 20px;
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 19px;
-        color: #FFFFFF;
     }
 }
 </style>

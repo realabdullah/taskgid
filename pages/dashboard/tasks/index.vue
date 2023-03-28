@@ -5,16 +5,7 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const priorities = ["Less Important", "Important", "High Priority"];
 const showCreateTaskModal = ref(false);
-const taskName = ref("");
-const taskPriority = ref("");
-const taskDescription = ref("");
-const dueDate = ref(new Date().toISOString().substr(0, 10) as string);
-
-const updateTaskPriority = (value: string) => {
-    taskPriority.value = value;
-};
 </script>
 
 <template>
@@ -35,23 +26,7 @@ const updateTaskPriority = (value: string) => {
         </div>
 
         <!-- CREATE TASK MODAL -->
-        <BaseModal v-if="showCreateTaskModal" width="500px" @close-modal="showCreateTaskModal = false">
-            <template #default>
-                <div class="create-task">
-                    <h1>Create Task</h1>
-                    <form>
-                        <BaseInput label-for="taskName" label="Task Name" input-type="text" :model-value="taskName" :required="true" border-color="#A8ABBD" />
-                        <div class="form-group">
-                            <BaseSelect label="Task Priority" :lists="priorities" @selected="updateTaskPriority" />
-                            <BaseInput label-for="date" label="Due Date" input-type="date" :model-value="dueDate" :required="true" border-color="#A8ABBD" />
-                        </div>
-                        <BaseTextArea name="taskDescription" label="Task Description" placeholder="Type your content here...." :model-value="taskDescription" :required="true" border-color="#A8ABBD" />
-
-                        <BaseButton value="Create Task" background="#3754DB" color="#FFFFFF" width="202px" type="submit" />
-                    </form>
-                </div>
-            </template>
-        </BaseModal>
+        <CreateTask v-if="showCreateTaskModal" @close="showCreateTaskModal = false" />
     </NuxtLayout>
 </template>
 
@@ -98,26 +73,6 @@ const updateTaskPriority = (value: string) => {
         .btn {
             margin-top: 24px;
             align-self: unset;
-        }
-    }
-}
-
-.create-task {
-    padding: 50px;
-
-    h1 {
-        font-weight: 600;
-        font-size: 28px;
-        line-height: 34px;
-        color: #000000;
-        margin-bottom: 15px;
-    }
-
-    form {
-        .form-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 24px;
         }
     }
 }

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const selected = ref("");
+const showCreateTaskModal = ref(false);
 
 const selectTodo = (value: string) => {
     selected.value = value;
@@ -8,6 +9,11 @@ const selectTodo = (value: string) => {
 const openProfilePictureModal = () => {
     useEvent().emit("uploadProfilePicture", true);
 };
+
+defineProps<{
+    user: any;
+    noTasks: boolean;
+}>();
 </script>
 
 <template>
@@ -15,10 +21,10 @@ const openProfilePictureModal = () => {
         <h3>Let’s get you started</h3>
 
         <div class="get-started__todos">
-            <div class="todo" :class="{ active: selected === 'profilePicture' }" @click="selectTodo('profilePicture')">
+            <div v-if="!user.profile_picture" class="todo" :class="{ active: selected === 'profilePicture' }" @click="selectTodo('profilePicture')">
                 <div class="todo-title">
                     <IconsGetStarted variant="profile-picture" />
-                    <p>Hey Abd, Update your Profile Picture</p>
+                    <p>Hey {{ user.name }}, Update your Profile Picture</p>
                 </div>
                 <button @click="openProfilePictureModal">
                     <span>Get Started</span>
@@ -26,18 +32,21 @@ const openProfilePictureModal = () => {
                 </button>
             </div>
 
-            <div class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
+            <div v-if="noTasks" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
                 <div class="todo-title">
                     <IconsGetStarted variant="first-task" />
                     <p>Create your First Task in your Workspace</p>
                 </div>
-                <button>
+                <button @click="showCreateTaskModal = true">
                     <span>Get Started</span>
                     <IconsArrow variant="right" />
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- CREATE TASK MODAL -->
+    <CreateTask v-if="showCreateTaskModal" @close="showCreateTaskModal = false" />
 </template>
 
 <style lang="scss" scoped>
