@@ -30,15 +30,12 @@ const user = useSupabaseUser();
 const createWorkspace = async () => {
     submitting.value = true;
     const payload = {
-        id: user.value?.id,
-        email: user.value?.email,
-        workspaces: [{
-            name: name.value,
-            description: description.value,
-        }]
+        user_id: user.value?.id,
+        title: name.value,
+        description: description.value,
     }
 
-    const { error } = await client.from('users').insert(payload as any);
+    const { error } = await client.from('workspaces').insert(payload as any);
 
     if (error) {
         submitting.value = false;

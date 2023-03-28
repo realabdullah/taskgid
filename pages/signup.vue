@@ -13,23 +13,21 @@ const submitting = ref(false);
 const client = useSupabaseAuthClient();
 
 const signUp = async () => {
-    submitting.value = true;
-    const { error } = await client.auth.signUp({
-        email: email.value,
-        password: password.value,
-        options: {
-            data: {
-                name: name.value
-            }
-        }
-    });
-    
-    if (error) {
-        submitting.value = false;
-        return;
-    }
+    try {
+        submitting.value = true;
+        const { data, error } = await client.auth.signUp({
+            email: email.value,
+            password: password.value,
+        });
 
-    navigateTo('/create-workspace');
+        if (error) throw error;
+
+        const payload = { id: data.user?.id, name: name.value };
+        await useSupabaseClient().from('users_info').insert(payload as any);
+        navigateTo('/create-workspace');
+    } catch {
+        submitting.value = false;
+    }
 };
 </script>
 
