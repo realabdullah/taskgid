@@ -2,6 +2,8 @@
 definePageMeta({
     middleware: ['guest']
 });
+
+navigateTo('/login');
 </script>
 
 <template>

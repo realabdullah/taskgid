@@ -30,6 +30,9 @@ const submitForm = async () => {
     if (error) {
         loginError.value = error.message;
         submitting.value = false;
+        setTimeout(() => {
+            loginError.value = "";
+        }, 2000);
         return;
     }
 

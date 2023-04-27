@@ -46,7 +46,7 @@ defineProps<{
     </div>
 
     <!-- CREATE TASK MODAL -->
-    <CreateTask v-if="showCreateTaskModal" @close="showCreateTaskModal = false" />
+    <TasksCreate v-if="showCreateTaskModal" @close="showCreateTaskModal = false" />
 </template>
 
 <style lang="scss" scoped>
