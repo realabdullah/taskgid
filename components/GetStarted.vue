@@ -9,7 +9,7 @@ const selectTodo = (value: string) => {
 };
 
 const openProfilePictureModal = () => {
-    useEvent().emit("uploadProfilePicture", true);
+    useEvent("uploadProfilePicture", true);
 };
 </script>
 

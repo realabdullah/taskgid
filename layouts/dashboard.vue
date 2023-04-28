@@ -43,7 +43,7 @@ await fetchUserInfo();
 await fetchUserWorkspaces();
 
 onMounted(() => {
-    useEvent().on("showToast", (errorObj: any) => {
+    useListen("showToast", (errorObj: any) => {
         errorObject.value = errorObj;
         showToast.value = true;
 
@@ -52,7 +52,7 @@ onMounted(() => {
         }, 2000);
     });
 
-    useEvent().on("uploadProfilePicture", (value: boolean) => {
+    useListen("uploadProfilePicture", (value: any) => {
         showProfilePictureModal.value = value
     });
 });
