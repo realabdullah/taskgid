@@ -18,14 +18,14 @@ const getTaskStatus = (status: string) => {
 <template>
     <div class="tasks-card">
         <div class="status">
-            <span>T-25</span>
+            <span>T-{{ task.task_no }}</span>
             <span :class="getTaskStatus(task.status)">{{ task.status }}</span>
         </div>
         <p>{{ task.title }}</p>
-        <button>
+        <nuxt-link :to="`/dashboard/tasks/${task.id}`" class="task-url">
             <span>View Task</span>
             <IconsArrow variant="right" />
-        </button>
+        </nuxt-link>
     </div>
 </template>
 
@@ -84,9 +84,8 @@ const getTaskStatus = (status: string) => {
         color: #16171D;
     }
 
-    button {
-        border: 0;
-        background: transparent;
+    .task-url {
+        text-decoration: none;
         display: flex;
         align-items: center;
         gap: 12px;

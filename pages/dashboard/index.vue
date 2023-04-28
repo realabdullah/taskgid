@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-import { useStore } from "@/store";
-
 definePageMeta({
 	title: "Dashboard",
 	name: "Dashboard",
 	middleware: ["auth"],
 });
-const store = useStore();
-await store.fetchUserTasks();
 
-const user = computed(() => store.user) as any;
-const tasks = computed(() => store.tasks) as any;
+const { user, tasks } = storeToRefs(useStore());
+const { fetchTasks } = useStore();
+
+await fetchTasks();
 </script>
 
 <template>

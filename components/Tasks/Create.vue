@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+const { tasks } = storeToRefs(useStore());
+const { fetchTasks } = useStore();
+
 const priorities = ["Less Important", "Important", "High Priority"];
 const title = ref("");
 const description = ref("");
@@ -9,7 +12,7 @@ const submitting = ref(false);
 const updatePriority = (value: string) => {
     priority.value = value;
 };
-const emit = defineEmits(["close", "task-created"]);
+const emit = defineEmits(["close"]);
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 
@@ -23,6 +26,7 @@ const createTask = async () => {
         dueDate: dueDate.value,
         priority: priority.value,
         status: "Pending",
+        task_no: tasks.value.length + 1,
     };
 
     const { error } = await client.from('tasks').insert(payload as any);
@@ -32,7 +36,7 @@ const createTask = async () => {
         return;
     }
 
-    emit('task-created');
+    await fetchTasks();
     emit('close');
 };
 </script>

@@ -7,4 +7,13 @@ interface Task {
     dateAdded: string;
     dueDate: string;
     status: string;
+    task_no: number;
+}
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    profile_picture: string;
+    username: string;
 }

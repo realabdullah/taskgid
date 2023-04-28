@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+const { user, tasks } = storeToRefs(useStore());
+
 const selected = ref("");
 const showCreateTaskModal = ref(false);
 
@@ -9,11 +11,6 @@ const selectTodo = (value: string) => {
 const openProfilePictureModal = () => {
     useEvent().emit("uploadProfilePicture", true);
 };
-
-defineProps<{
-    user: any;
-    noTasks: boolean;
-}>();
 </script>
 
 <template>
@@ -32,7 +29,7 @@ defineProps<{
                 </button>
             </div>
 
-            <div v-if="noTasks" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
+            <div v-if="tasks.length === 0" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
                 <div class="todo-title">
                     <IconsGetStarted variant="first-task" />
                     <p>Create your First Task in your Workspace</p>

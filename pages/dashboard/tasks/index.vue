@@ -5,9 +5,10 @@ definePageMeta({
     middleware: ["auth"],
 });
 
-const client = useSupabaseClient();
+const { tasks } = storeToRefs(useStore());
+const { fetchTasks } = useStore();
+
 const showCreateTaskModal = ref(false);
-const tasks = ref<Task[]>([]);
 const tasksTab = ["All Tasks", "Pending", "In Progress", "Completed"];
 const activeTab = ref("All Tasks");
 const indicatorWidth = ref(0);
@@ -21,18 +22,6 @@ const setActiveTab = (tab: string) => {
 
     indicatorWidth.value = button.offsetWidth;
     indicatorLeft.value = button.offsetLeft;
-};
-
-const fetchTasks = async () => {
-    try {
-        const { data, error } = await client.from("tasks").select("*");
-
-        if (error) {
-            throw error;
-        }
-
-        tasks.value = data;
-    } catch (error) {}
 };
 
 const taskCount = computed(() => {
@@ -60,6 +49,7 @@ const filteredTasks = computed(() => {
 onMounted(() => {
     setActiveTab("All Tasks");
 });
+
 await fetchTasks();
 </script>
 
