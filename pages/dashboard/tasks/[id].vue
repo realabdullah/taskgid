@@ -7,6 +7,8 @@ definePageMeta({
 const { tasks } = storeToRefs(useStore());
 const route = useRoute();
 
+const showUpdateTaskModal = ref(false);
+
 const task = computed(() => {
     return tasks.value.find((task) => task.id === route.params.id) as Task;
 });
@@ -53,7 +55,7 @@ const getTaskStatus = (status: string) => {
                         <button class="delete">
                             <IconsDelete />
                         </button>
-                        <button class="edit">
+                        <button class="edit" @click="showUpdateTaskModal = true">
                             <IconsEdit />
                         </button>
                     </div>
@@ -78,6 +80,9 @@ const getTaskStatus = (status: string) => {
                 </div>
             </div>
         </div>
+        
+        <!-- UPDATE TASK MODAL -->
+        <TasksCreate v-if="showUpdateTaskModal" usage="update" :task-to-be-updated="task" @close="showUpdateTaskModal  = false" />
     </NuxtLayout>
 </template>
 

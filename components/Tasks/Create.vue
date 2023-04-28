@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+const props = defineProps<{
+    usage: string;
+    taskToBeUpdated?: Task;
+}>();
+
 const { tasks } = storeToRefs(useStore());
 const { fetchTasks } = useStore();
 
@@ -7,6 +12,7 @@ const title = ref("");
 const description = ref("");
 const dueDate = ref(new Date().toISOString().substr(0, 10) as string);
 const priority = ref("");
+const status = ref("Pending");
 const submitting = ref(false);
 
 const updatePriority = (value: string) => {
@@ -16,24 +22,38 @@ const emit = defineEmits(["close"]);
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 
-const createTask = async () => {
+if (props.usage === "update") {
+    title.value = props.taskToBeUpdated?.title ?? "";
+    description.value = props.taskToBeUpdated?.description ?? "";
+    dueDate.value = props.taskToBeUpdated?.dueDate ?? "";
+    updatePriority(props.taskToBeUpdated?.priority ?? "");
+    status.value = props.taskToBeUpdated?.status ?? "";
+}
+
+const handleSubmission = async () => {
     submitting.value = true;
     const payload = {
         user_id: user.value?.id,
         title: title.value,
         description: description.value,
-        dateAdded: new Date().toISOString().substr(0, 10),
+        dateAdded: props.taskToBeUpdated?.dateAdded ?? new Date().toISOString().substr(0, 10),
         dueDate: dueDate.value,
         priority: priority.value,
-        status: "Pending",
-        task_no: tasks.value.length + 1,
-    };
-
-    const { error } = await client.from('tasks').insert(payload as any);
-
-    if (error) {
-        submitting.value = false;
-        return;
+        status: status.value,
+        task_no: props.taskToBeUpdated?.task_no ?? tasks.value.length + 1,
+    }
+    if (props.usage === "create") {
+        const { error } = await client.from('tasks').insert(payload as any);
+        if (error) {
+            submitting.value = false;
+            return;
+        }
+    } else {
+        const { error } = await client.from('tasks').update(payload as any).eq('id', props.taskToBeUpdated?.id);
+        if (error) {
+            submitting.value = false;
+            return;
+        }
     }
 
     await fetchTasks();
@@ -45,8 +65,8 @@ const createTask = async () => {
     <BaseModal width="500px" @close-modal="$emit('close')">
         <template #default>
             <div class="create-task">
-                <h1>Create Task</h1>
-                <form @submit.prevent="createTask">
+                <h1>{{ usage === "create" ? "Create Task" : "Edit This Task." }}</h1>
+                <form @submit.prevent="handleSubmission">
                     <BaseInput label-for="title" label="Task Name" input-type="text" v-model="title" :required="true"
                         border-color="#A8ABBD" />
                     <div class="form-group">
@@ -57,7 +77,7 @@ const createTask = async () => {
                     <BaseTextArea name="description" label="Task Description" placeholder="Type your content here...."
                         v-model="description" :required="true" border-color="#A8ABBD" />
 
-                    <BaseButton value="Create Task" background="#3754DB" color="#FFFFFF" width="202px" type="submit" />
+                    <BaseButton :value="usage === 'create' ? 'Create Task' : 'Save Task'" background="#3754DB" color="#FFFFFF" width="202px" type="submit" />
                 </form>
             </div>
         </template>

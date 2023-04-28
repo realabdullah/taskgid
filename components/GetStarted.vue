@@ -43,7 +43,7 @@ const openProfilePictureModal = () => {
     </div>
 
     <!-- CREATE TASK MODAL -->
-    <TasksCreate v-if="showCreateTaskModal" @close="showCreateTaskModal = false" />
+    <TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
 </template>
 
 <style lang="scss" scoped>

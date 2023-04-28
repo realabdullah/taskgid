@@ -87,7 +87,7 @@ await fetchTasks();
         </div>
 
         <!-- CREATE TASK MODAL -->
-        <TasksCreate v-if="showCreateTaskModal" @task-created="fetchTasks" @close="showCreateTaskModal = false" />
+        <TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
     </NuxtLayout>
 </template>
 
