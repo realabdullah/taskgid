@@ -5,9 +5,9 @@ export const useStore = defineStore("store", () => {
     
     const user = ref({} as User);
     const profilePhoto = ref("");
-    const tasks = ref<Task[]>([]);
+    const tasks = ref<Task[]>();
 
-    const setUser = (newUser: any) => {
+    const setUser = (newUser: User) => {
         user.value = newUser;
         profilePhoto.value = newUser.profile_picture;
     }

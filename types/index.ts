@@ -17,3 +17,18 @@ interface User {
     profile_picture: string;
     username: string;
 }
+
+interface Toast {
+    toastStyle: string;
+    type: string;
+    message: string;
+    description: string;
+}
+
+interface Workspace {
+    id: string;
+    user_id: string;
+    created_at: string;
+    title: string;
+    description: string;
+}

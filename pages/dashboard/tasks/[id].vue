@@ -37,6 +37,11 @@ const deleteTask = async () => {
 
     const { error } = await client.from('tasks').delete().eq('id', task.value.id);
     if (error) {
+        useEvent("showToast", { 
+            style: "solid", type: "error", 
+            message: "Failed!", 
+            description: "An error occured while trying to delete task." 
+        });
         return;
     }
 

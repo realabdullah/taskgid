@@ -2,17 +2,34 @@
 import { useStore } from "@/store/index";
 
 const store = useStore();
+
+// DATA PROPERTIES
 const navs = [
     { name: 'overview', route: '/dashboard' },
     { name: 'tasks', route: '/dashboard/tasks' },
     { name: 'settings', route: '/dashboard/settings' }
 ];
 const showToast = ref(false);
-const errorObject = ref<any>({});
+const errorObject = ref({} as Toast);
 const notification = ref(false);
 const showProfilePictureModal = ref(false);
-const workspaces = ref<any>([]);
+const workspaces = ref<Workspace[]>([]);
 const activeWorkspace = ref("");
+
+// COMPUTED VALUES
+const user = computed(() => store.user);
+const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? {} as Workspace);
+const profilePictureUrl = computed(() => store.profilePhoto);
+
+
+// METHODS
+const setWorkspace = (id: string) => {
+    activeWorkspace.value = id;
+};
+
+const openProfilePhotoModal = () => {
+    showProfilePictureModal.value = true;
+};
 
 const fetchUserInfo = async () => {
     try {
@@ -34,40 +51,31 @@ const fetchUserWorkspaces = async () => {
             .eq("user_id", useSupabaseUser().value?.id);
 
         if (error) throw error;
-        const abd = data as any;
-        workspaces.value = abd;
-        activeWorkspace.value = abd[0].id;
+        const res = data as Workspace[];
+        workspaces.value = res;
+        activeWorkspace.value = res[0].id;
     } catch { }
 };
-await fetchUserInfo();
-await fetchUserWorkspaces();
 
+// LIFECYCLE HOOKS
 onMounted(() => {
-    useListen("showToast", (errorObj: any) => {
-        errorObject.value = errorObj;
+    useListen("showToast", (errorObj) => {
+        errorObject.value = errorObj as Toast;
         showToast.value = true;
 
         setTimeout(() => {
             showToast.value = false;
-        }, 2000);
+        }, 3500);
     });
 
-    useListen("uploadProfilePicture", (value: any) => {
-        showProfilePictureModal.value = value
+    useListen("uploadProfilePicture", (value) => {
+        showProfilePictureModal.value = value as boolean;
     });
 });
 
-const setWorkspace = (id: string) => {
-    activeWorkspace.value = id;
-};
-
-const openProfilePhotoModal = () => {
-    showProfilePictureModal.value = true;
-};
-
-const user = computed(() => store.user) as any;
-const workspaceInfo = computed(() => workspaces.value.find((workspace: any) => workspace.id === activeWorkspace.value));
-const profilePictureUrl = computed(() => store.profilePhoto);
+// FETCH DATA
+await fetchUserInfo();
+await fetchUserWorkspaces();
 </script>
 
 <template>
@@ -110,6 +118,7 @@ const profilePictureUrl = computed(() => store.profilePhoto);
                 </div>
             </header>
             <slot />
+            <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type" :message="errorObject.message" :description="errorObject.description" />
         </main>
         <aside class="dashboard-layout__right">
             <div class="user-sidebar">
@@ -129,8 +138,6 @@ const profilePictureUrl = computed(() => store.profilePhoto);
 
     <!-- UPLOAD PROFILE PICTURE -->
     <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePictureUrl" @close="showProfilePictureModal = false" />
-
-    <BaseToast v-if="showToast" :toast-style="errorObject.style" :type="errorObject.type" :message="errorObject.message" :description="errorObject.message" />
 </template>
 
 <style lang="scss" scoped>
@@ -253,6 +260,7 @@ const profilePictureUrl = computed(() => store.profilePhoto);
     }
 
     &__center {
+        position: relative;
         padding: 25px 40px;
 
         header {
@@ -283,6 +291,13 @@ const profilePictureUrl = computed(() => store.profilePhoto);
                     cursor: pointer;
                 }
             }
+        }
+
+        .toast {
+            position: absolute;
+            top: 80px;
+            right: 40px;
+            z-index: 1000;
         }
     }
 

@@ -1,14 +1,7 @@
 <script lang="ts" setup>
 defineComponent({ name: 'Toast' });
 
-interface toastProps {
-    toastStyle: string;
-    type: string;
-    message: string;
-    description: string;
-}
-
-const props = defineProps<toastProps>();
+const props = defineProps<Toast>();
 
 const borderColor = ref("");
 const color = ref("");
@@ -61,7 +54,6 @@ const background = computed(() => {
     border-radius: 20px;
     display: flex;
     align-items: center;
-    position: fixed;
 
     &__icon {
         margin-right: 20px;

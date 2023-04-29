@@ -11,7 +11,7 @@ export const useTasks = () => {
     
             if (error) throw error;
 
-            return data as any;
+            return data as Task[];
         } catch (error) {
             console.log(error);
         }
