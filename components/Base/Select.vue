@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-defineProps<{
+const props = defineProps<{
     label: string;
     lists: [] | string[];
+    selectedValue?: string;
 }>();
 
 const emit = defineEmits(['selected']);
@@ -22,6 +23,10 @@ const closeDetailAndSummary = () => {
         summary.removeAttribute("aria-expanded");
     }
 };
+
+onMounted(() => {
+    selectedOption.value = props.selectedValue ?? "";
+});
 </script>
 
 <template>

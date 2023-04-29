@@ -4,13 +4,21 @@ definePageMeta({
     middleware: ["auth"],
 });
 
-const { tasks } = storeToRefs(useStore());
 const route = useRoute();
 
 const showUpdateTaskModal = ref(false);
+const showDeleteModal = ref(false);
 
-const task = computed(() => {
-    return tasks.value.find((task) => task.id === route.params.id) as Task;
+const task = ref<Task>({
+    id: "",
+    user_id: "",
+    title: "",
+    description: "",
+    dateAdded: "",
+    dueDate: "",
+    priority: "",
+    status: "",
+    task_no: 0,
 });
 
 const getTaskStatus = (status: string) => {
@@ -23,6 +31,29 @@ const getTaskStatus = (status: string) => {
             return "completed";
     }
 };
+
+const deleteTask = async () => {
+    const client = useSupabaseClient();
+
+    const { error } = await client.from('tasks').delete().eq('id', task.value.id);
+    if (error) {
+        return;
+    }
+
+    navigateTo('/dashboard/tasks');
+};
+
+const fetchTask = async () => {
+    const client = useSupabaseClient();
+    const { data, error } = await client.from('tasks').select().eq('id', route.params.id);
+    if (error) {
+        return;
+    }
+
+    task.value = data[0];
+};
+
+await fetchTask();
 </script>
 
 <template>
@@ -52,7 +83,7 @@ const getTaskStatus = (status: string) => {
                             <IconsCompleted />
                             <span>This task has been completed</span>
                         </div>
-                        <button class="delete">
+                        <button class="delete" @click="showDeleteModal = true">
                             <IconsDelete />
                         </button>
                         <button class="edit" @click="showUpdateTaskModal = true">
@@ -80,9 +111,25 @@ const getTaskStatus = (status: string) => {
                 </div>
             </div>
         </div>
-        
+
         <!-- UPDATE TASK MODAL -->
-        <TasksCreate v-if="showUpdateTaskModal" usage="update" :task-to-be-updated="task" @close="showUpdateTaskModal  = false" />
+        <TasksCreate v-if="showUpdateTaskModal" usage="update" :task-to-be-updated="task"
+            @close="showUpdateTaskModal = false" />
+
+        <!-- DELETE TASK -->
+        <BaseModal v-if="showDeleteModal" width="500px" @close-modal="showDeleteModal = false">
+            <template #default>
+                <div class="delete-task">
+                    <h1>Delete Task</h1>
+                    <p>Are you sure you want to delete the task 
+                        <b>‘{{ task.title }}’</b> ? This task is {{ task.status.toLowerCase() }}.</p>
+                    <div class="delete-task__ctas">
+                        <BaseButton value="No" background="#3754DB" color="#FFFFFF" width="120px" @click="showDeleteModal = false" />
+                        <BaseButton value="Yes" background="#FFF0F0" color="#B80020" width="120px" @click="deleteTask" />
+                    </div>
+                </div>
+            </template>
+        </BaseModal>
     </NuxtLayout>
 </template>
 
@@ -259,4 +306,30 @@ const getTaskStatus = (status: string) => {
             }
         }
     }
-}</style>
+}
+
+.delete-task {
+    padding: 50px;
+
+    h1 {
+        font-weight: 600;
+        font-size: 28px;
+        line-height: 34px;
+        color: #000000;
+    }
+
+    p {
+        margin-top: 15px;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 24px;
+        color: #666666;
+    }
+
+    &__ctas {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+}
+</style>

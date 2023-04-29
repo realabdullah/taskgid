@@ -38,7 +38,7 @@ const submitForm = async () => {
 
     const cookie = useCookie<boolean>("userAuthenticated");
     cookie.value = true;
-    navigateTo('/dashboard');
+    navigateTo('/dashboard', { replace: true });
 };
 </script>
 

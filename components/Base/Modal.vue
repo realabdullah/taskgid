@@ -20,7 +20,6 @@ defineProps<{
     background: #FFFFFF;
     border-radius: 20px;
     max-width: 90%;
-    height: 639px;
     max-height: 90vh;
     position: absolute;
     top: 50%;

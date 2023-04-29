@@ -70,7 +70,7 @@ const handleSubmission = async () => {
                     <BaseInput label-for="title" label="Task Name" input-type="text" v-model="title" :required="true"
                         border-color="#A8ABBD" />
                     <div class="form-group">
-                        <BaseSelect label="Task Priority" :lists="priorities" @selected="updatePriority" />
+                        <BaseSelect label="Task Priority" :lists="priorities" :selected-value="priority" @selected="updatePriority" />
                         <BaseInput label-for="date" label="Due Date" input-type="date" :model-value="dueDate"
                             :required="true" border-color="#A8ABBD" />
                     </div>
