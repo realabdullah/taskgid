@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { useStore } from "@/store/index";
 
-const store = useStore();
+const { fetchUserInfo } = useStore();
+const { user, profilePhoto } = storeToRefs(useStore());
 
 // DATA PROPERTIES
 const navs = [
@@ -17,9 +18,7 @@ const workspaces = ref<Workspace[]>([]);
 const activeWorkspace = ref("");
 
 // COMPUTED VALUES
-const user = computed(() => store.user);
 const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? {} as Workspace);
-const profilePictureUrl = computed(() => store.profilePhoto);
 
 
 // METHODS
@@ -29,18 +28,6 @@ const setWorkspace = (id: string) => {
 
 const openProfilePhotoModal = () => {
     showProfilePictureModal.value = true;
-};
-
-const fetchUserInfo = async () => {
-    try {
-        const { data, error } = await useSupabaseClient()
-            .from("users_info")
-            .select("*")
-            .eq("id", useSupabaseUser().value?.id);
-
-        if (error) throw error;
-        store.setUser(data[0]);
-    } catch { }
 };
 
 const fetchUserWorkspaces = async () => {
@@ -84,7 +71,7 @@ await fetchUserWorkspaces();
             <div class="workspace-icons">
                 <button v-for="workspace in workspaces" :key="workspace.id" class="workspace-avatar"
                     :class="{ active: workspace.id === activeWorkspace }" @click="setWorkspace(workspace.id)">
-                    <img :src="profilePictureUrl" alt="ABD">
+                    <img :src="profilePhoto" alt="ABD">
                 </button>
 
                 <button class="add-workspace">
@@ -123,7 +110,7 @@ await fetchUserWorkspaces();
         <aside class="dashboard-layout__right">
             <div class="user-sidebar">
                 <div class="user">
-                    <img :src="profilePictureUrl" alt="ABD" @click="openProfilePhotoModal">
+                    <img :src="profilePhoto" alt="ABD" @click="openProfilePhotoModal">
 
                     <div class="user-detail">
                         <h5>{{ user.name }}</h5>
@@ -137,7 +124,7 @@ await fetchUserWorkspaces();
     </div>
 
     <!-- UPLOAD PROFILE PICTURE -->
-    <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePictureUrl" @close="showProfilePictureModal = false" />
+    <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePhoto" @close="showProfilePictureModal = false" />
 </template>
 
 <style lang="scss" scoped>

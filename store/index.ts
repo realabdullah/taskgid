@@ -16,11 +16,24 @@ export const useStore = defineStore("store", () => {
         tasks.value = await fetchUserTasks();
     };
 
+    const fetchUserInfo = async () => {
+        try {
+            const { data, error } = await useSupabaseClient()
+                .from("users_info")
+                .select("*")
+                .eq("id", useSupabaseUser().value?.id);
+    
+            if (error) throw error;
+            setUser(data[0]);
+        } catch { }
+    };
+
     return {
         user,
         profilePhoto,
         tasks,
         setUser,
         fetchTasks,
+        fetchUserInfo,
     }
 });

@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 defineComponent({ name: 'Toast' });
 
+interface Toast {
+    toastStyle: string;
+    type: string;
+    message: string;
+    description: string;
+}
+
 const props = defineProps<Toast>();
 
 const borderColor = ref("");
