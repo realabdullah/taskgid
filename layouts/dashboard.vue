@@ -104,6 +104,7 @@ await fetchUserWorkspaces();
                     <IconsNotificationBell :notification="notification" />
                 </div>
             </header>
+            <NuxtLoadingIndicator color="#3754DB" />
             <slot />
             <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type" :message="errorObject.message" :description="errorObject.description" />
         </main>
