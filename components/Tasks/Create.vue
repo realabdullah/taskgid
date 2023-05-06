@@ -40,7 +40,7 @@ const handleSubmission = async () => {
         dueDate: dueDate.value,
         priority: priority.value,
         status: status.value,
-        task_no: props.taskToBeUpdated?.task_no ?? tasks.value.length + 1,
+        task_no: props.taskToBeUpdated?.task_no ?? tasks.value ? tasks.value.length + 1 : 1,
     }
     if (props.usage === "create") {
         const { error } = await client.from('tasks').insert(payload as any);
