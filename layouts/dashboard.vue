@@ -20,7 +20,6 @@ const activeWorkspace = ref("");
 // COMPUTED VALUES
 const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? {} as Workspace);
 
-
 // METHODS
 const setWorkspace = (id: string) => {
     activeWorkspace.value = id;
