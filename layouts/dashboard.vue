@@ -70,7 +70,7 @@ await fetchUserWorkspaces();
             <div class="workspace-icons">
                 <button v-for="workspace in workspaces" :key="workspace.id" class="workspace-avatar"
                     :class="{ active: workspace.id === activeWorkspace }" @click="setWorkspace(workspace.id)">
-                    <img :src="profilePhoto" alt="ABD">
+                    <img :src="profilePhoto" alt="dispay picture">
                 </button>
 
                 <button class="add-workspace">
@@ -80,7 +80,7 @@ await fetchUserWorkspaces();
             <div class="workspace-details">
                 <div class="workspace-detail">
                     <h4>{{ workspaceInfo.title }}</h4>
-                    <p>{{ workspaceInfo.title }}'s Space</p>
+                    <p>{{ workspaceInfo.title || user.name }}'s Space</p>
                 </div>
 
                 <div class="workspace-nav">
