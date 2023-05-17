@@ -11,6 +11,7 @@ const password = ref('');
 const submitting = ref(false);
 
 const client = useSupabaseAuthClient();
+const { sendWelcomeEmail } = useEmail();
 
 const signUp = async () => {
     try {
@@ -24,6 +25,7 @@ const signUp = async () => {
 
         const payload = { id: data.user?.id, name: name.value };
         await useSupabaseClient().from('users_info').insert(payload as any);
+        await sendWelcomeEmail(email.value, name.value);
         navigateTo('/create-workspace');
     } catch {
         submitting.value = false;

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 definePageMeta({
     title: 'Login',
     name: 'login',
@@ -48,11 +47,12 @@ const submitForm = async () => {
             <h5 class="login__form-header">Welcome Back.</h5>
 
             <form @submit.prevent="submitForm">
-                <BaseInput v-model="email" input-type="email" label-for="email" label="Email Address" placeholder="anon@anon.anon"
-                    hint="Example. mano@gmail.com" border-color="#2746D8" />
+                <BaseInput v-model="email" input-type="email" label-for="email" label="Email Address"
+                    placeholder="anon@anon.anon" hint="Example. mano@gmail.com" border-color="#2746D8" />
 
                 <BaseInput v-model="password" input-type="password" label-for="password" label="Enter Your Password"
-                    placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number" border-color="#2746D8" />
+                    placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number"
+                    border-color="#2746D8" />
 
                 <BaseButton width="204px" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
             </form>
