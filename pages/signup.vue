@@ -24,7 +24,7 @@ const signUp = async () => {
         if (error) throw error;
 
         const payload = { id: data.user?.id, name: name.value };
-        await useSupabaseClient().from('users_info').insert(payload as any);
+        await useSupabaseClient().from('users').insert(payload as any);
         await sendWelcomeEmail(email.value, name.value);
         navigateTo('/create-workspace');
     } catch {

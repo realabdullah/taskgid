@@ -19,7 +19,7 @@ export const useStore = defineStore("store", () => {
     const fetchUserInfo = async () => {
         try {
             const { data, error } = await useSupabaseClient()
-                .from("users_info")
+                .from("users")
                 .select("*")
                 .eq("id", useSupabaseUser().value?.id);
     

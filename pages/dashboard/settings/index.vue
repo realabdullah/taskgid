@@ -30,7 +30,7 @@ const handleEditProfile = async () => {
         password: password.value,
     });
 
-    const { error } = await client.from('users_info').update(payload).eq('id', user.value.id);
+    const { error } = await client.from('users').update(payload).eq('id', user.value.id);
 
     if (updateError || error) {
         return;

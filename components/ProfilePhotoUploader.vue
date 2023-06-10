@@ -29,7 +29,7 @@ const uploadProfilePicture = async () => {
         if (error) throw error;
 
         pictureUrl.value = useGetPhotoUrl().photoUrl(`profilePhotos/profile-${userId}.png`, 'images');
-        await useSupabaseClient().from('users_info').update({profile_picture: pictureUrl.value}).eq('id', userId);
+        await useSupabaseClient().from('users').update({profile_picture: pictureUrl.value}).eq('id', userId);
         store.profilePhoto = pictureUrl.value;
         uploading.value = false;
         photoUploaded.value = true;
