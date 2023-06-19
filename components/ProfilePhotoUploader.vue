@@ -61,8 +61,10 @@ const previewImage = (e: any) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
-        pictureUrl.value = e?.target.result as string;
-        pictureSelected.value = true;
+        if (e.target !== null) {
+            pictureUrl.value = e.target.result as string;
+            pictureSelected.value = true;
+        }
     };
 
     reader.readAsDataURL(file);

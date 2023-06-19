@@ -6,38 +6,31 @@ definePageMeta({
 });
 
 const { user } = storeToRefs(useStore());
-const client = useSupabaseClient();
+const { editUser } = useUser();
 
-const name = ref(user.value.name);
-const email = ref(user.value.email);
-const password = ref("");
+const name = ref("");
+const email = ref("");
 const showModal = ref(false);
 const modalState = ref("edit-profile");
 
 const openOrCloseModal = (status: boolean, state: string) => {
+    if (state === "edit-profile") {
+        name.value = user.value.name;
+        email.value = user.value.email;
+    }
     modalState.value = state;
     showModal.value = status;
 };
 
 const handleEditProfile = async () => {
-    const payload = {
+    const userInfo: User = {
+        ...user.value,
         name: name.value,
-        email: email.value,
+        email: email.value
     };
 
-    const { error: updateError } = await client.auth.updateUser({
-        email: email.value,
-        password: password.value,
-    });
-
-    const { error } = await client.from('users').update(payload).eq('id', user.value.id);
-
-    if (updateError || error) {
-        return;
-    }
-
-    user.value.name = name.value;
-    user.value.email = email.value;
+    await editUser(userInfo);
+    user.value = userInfo;
     openOrCloseModal(false, "");
 };
 
@@ -53,7 +46,8 @@ const logOut = () => {
         <div class="settings-page">
             <h3>Settings</h3>
             <div class="log-out">
-                <BaseButton value="Log Out" background="#B80020" color="#FFFFFF" width="125px" @click="openOrCloseModal(true, 'log-out')" />
+                <BaseButton value="Log Out" background="#B80020" color="#FFFFFF" width="125px"
+                    @click="openOrCloseModal(true, 'log-out')" />
             </div>
 
             <div class="settings-page__card">
@@ -75,14 +69,8 @@ const logOut = () => {
                         </div>
                     </div>
 
-                    <div class="card-content__box">
-                        <div class="details">
-                            <span>Password</span>
-                            <span>**********</span>
-                        </div>
-                    </div>
-
-                    <BaseButton style="align-self: flex-end;" value="Edit" background="#3754DB" color="#FFFFFF" width="125px"  @click="openOrCloseModal(true, 'edit-profile')" />
+                    <BaseButton style="align-self: flex-end;" value="Edit" background="#3754DB" color="#FFFFFF"
+                        width="125px" @click="openOrCloseModal(true, 'edit-profile')" />
                 </div>
             </div>
         </div>
@@ -92,17 +80,20 @@ const logOut = () => {
                 <div class="edit-profile">
                     <h1>{{ modalState === "edit-profile" ? "Edit Profile" : "You are about to log out" }}</h1>
                     <form v-if="modalState === 'edit-profile'" @submit.prevent="handleEditProfile">
-                        <BaseInput label-for="name" label="Fullname" input-type="text" v-model="name" :required="true" border-color="#2746D8" />
-                        <BaseInput label-for="email" label="Email Address" input-type="email" v-model="email" :required="true" border-color="#2746D8" />
-                        <BaseInput label-for="password" label="Password" input-type="password" v-model="password" :required="true" border-color="#2746D8" />
+                        <BaseInput label-for="name" label="Fullname" input-type="text" v-model="name" :required="true"
+                            border-color="#2746D8" />
+                        <BaseInput label-for="email" label="Email Address" input-type="email" v-model="email"
+                            :required="true" border-color="#2746D8" />
 
                         <BaseButton value="Save" background="#3754DB" color="#FFFFFF" width="140px" type="submit" />
                     </form>
                     <div v-else class="">
                         <p>You can always log on to your task manager and continue from where you left off..</p>
                         <div class="buttons">
-                            <BaseButton value="Cancel" background="#3754DB" color="#FFFFFF" width="140px" @click="openOrCloseModal(false, '')" />
-                            <BaseButton value="Log Out" background="#FFF0F0" color="#B80020" width="140px" @click="logOut" />
+                            <BaseButton value="Cancel" background="#3754DB" color="#FFFFFF" width="140px"
+                                @click="openOrCloseModal(false, '')" />
+                            <BaseButton value="Log Out" background="#FFF0F0" color="#B80020" width="140px"
+                                @click="logOut" />
                         </div>
                     </div>
                 </div>
@@ -204,5 +195,4 @@ const logOut = () => {
         display: flex;
         gap: 20px;
     }
-}
-</style>
+}</style>
