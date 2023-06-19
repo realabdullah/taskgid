@@ -30,7 +30,7 @@ await fetchTasks();
 				</div>
 			</div>
 
-			<GetStarted v-if="!user.profile_picture || tasks.length === 0" :user="user" :no-tasks="tasks.length === 0" />
+			<GetStarted v-if="!user.profile_picture || tasks && tasks.length === 0" />
 		</div>
 	</NuxtLayout>
 </template>

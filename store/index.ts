@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 
 export const useStore = defineStore("store", () => {
     const { fetchUserTasks } = useTasks();
+    const { getUser } = useUser();
     
     const user = ref({} as User);
     const profilePhoto = ref("");
@@ -18,13 +19,9 @@ export const useStore = defineStore("store", () => {
 
     const fetchUserInfo = async () => {
         try {
-            const { data, error } = await useSupabaseClient()
-                .from("users")
-                .select("*")
-                .eq("id", useSupabaseUser().value?.id);
-    
-            if (error) throw error;
-            setUser(data[0]);
+            const userId = useCookie("user_id") as Ref<string>;
+            const user = await getUser(userId.value);
+            setUser(user);
         } catch { }
     };
 

@@ -9,7 +9,8 @@ const email = ref('');
 const password = ref('');
 const submitting = ref(false);
 const loginError = ref("");
-const client = useSupabaseAuthClient();
+
+const { loginUser } = useUser();
 
 watchEffect(() => {
     if (email.value !== '' && password.value !== '') {
@@ -21,21 +22,19 @@ const submitForm = async () => {
     submitting.value = true;
     if (email.value === '' || password.value === '') return;
 
-    const { error } = await client.auth.signInWithPassword({
-        email: email.value,
-        password: password.value
-    });
+    const response = await loginUser(email.value, password.value);
 
-    if (error) {
-        loginError.value = error.message;
+    if (response) {
+        const userId = useCookie("user_id") as Ref<string>;
+        userId.value = response.id;
+        navigateTo('/dashboard');
+    } else {
+        loginError.value = "Invalid Credentials!";
         submitting.value = false;
         setTimeout(() => {
             loginError.value = "";
         }, 2000);
-        return;
     }
-    
-    navigateTo('/dashboard');
 };
 </script>
 

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import bcrypt from 'bcryptjs';
+
 definePageMeta({
     title: 'Sign Up',
     name: 'signup',
@@ -10,26 +12,25 @@ const email = ref('');
 const password = ref('');
 const submitting = ref(false);
 
-const client = useSupabaseAuthClient();
+const { addUser } = useUser();
 const { sendWelcomeEmail } = useEmail();
 
 const signUp = async () => {
-    try {
-        submitting.value = true;
-        const { data, error } = await client.auth.signUp({
-            email: email.value,
-            password: password.value,
-        });
-
-        if (error) throw error;
-
-        const payload = { id: data.user?.id, name: name.value };
-        await useSupabaseClient().from('users').insert(payload as any);
-        await sendWelcomeEmail(email.value, name.value);
-        navigateTo('/create-workspace');
-    } catch {
-        submitting.value = false;
+    submitting.value = true;
+    const salt = bcrypt.genSaltSync(10);
+    const user: User = {
+        id: window.crypto.randomUUID(),
+        name: name.value,
+        email: email.value,
+        password: bcrypt.hashSync(password.value, salt),
+        username: name.value.toLowerCase().replace(/\s/g, ''),
+        profile_picture: 'https://ui-avatars.com/api/?name=' + name.value,
     }
+    const status = await addUser(user);
+    await sendWelcomeEmail(email.value, name.value);
+    const cookie = useCookie("user_id");
+    cookie.value = user.id;
+    status ? navigateTo('/create-workspace') : submitting.value = false;
 };
 </script>
 

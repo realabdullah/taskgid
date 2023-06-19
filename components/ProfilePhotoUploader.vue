@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { useStore } from "@/store/index";
-
 const store = useStore();
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);

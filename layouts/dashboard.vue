@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { useStore } from "@/store/index";
-
 const { fetchUserInfo } = useStore();
 const { user, profilePhoto } = storeToRefs(useStore());
+const { getUserWorkspaces } = useUser();
 
 // DATA PROPERTIES
 const navs = [
@@ -29,39 +28,24 @@ const openProfilePhotoModal = () => {
     showProfilePictureModal.value = true;
 };
 
-const fetchUserWorkspaces = async () => {
-    try {
-        const { data, error } = await useSupabaseClient()
-            .from("workspaces")
-            .select("*")
-            .eq("user_id", useSupabaseUser().value?.id);
+useListen("showToast", (errorObj) => {
+    errorObject.value = errorObj as Toast;
+    showToast.value = true;
 
-        if (error) throw error;
-        const res = data as Workspace[];
-        workspaces.value = res;
-        activeWorkspace.value = res[0].id;
-    } catch { }
-};
+    setTimeout(() => {
+        showToast.value = false;
+    }, 3500);
+});
 
-// LIFECYCLE HOOKS
-onMounted(() => {
-    useListen("showToast", (errorObj) => {
-        errorObject.value = errorObj as Toast;
-        showToast.value = true;
-
-        setTimeout(() => {
-            showToast.value = false;
-        }, 3500);
-    });
-
-    useListen("uploadProfilePicture", (value) => {
-        showProfilePictureModal.value = value as boolean;
-    });
+useListen("uploadProfilePicture", (value) => {
+    showProfilePictureModal.value = value as boolean;
 });
 
 // FETCH DATA
 await fetchUserInfo();
-await fetchUserWorkspaces();
+const response = await getUserWorkspaces(user.value.id);
+workspaces.value = response ? response : [];
+activeWorkspace.value = workspaces.value[0]?.id ?? "";
 </script>
 
 <template>
@@ -70,12 +54,12 @@ await fetchUserWorkspaces();
             <div class="workspace-icons">
                 <button v-for="workspace in workspaces" :key="workspace.id" class="workspace-avatar"
                     :class="{ active: workspace.id === activeWorkspace }" @click="setWorkspace(workspace.id)">
-                    <img :src="profilePhoto" alt="dispay picture">
+                    <img :src="workspace.dispay_picture" alt="workspacepicture">
                 </button>
 
-                <button class="add-workspace">
+                <nuxt-link to="/create-workspace" class="add-workspace">
                     <IconsPlus />
-                </button>
+                </nuxt-link>
             </div>
             <div class="workspace-details">
                 <div class="workspace-detail">
@@ -105,7 +89,8 @@ await fetchUserWorkspaces();
             </header>
             <NuxtLoadingIndicator color="#3754DB" />
             <slot />
-            <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type" :message="errorObject.message" :description="errorObject.description" />
+            <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type"
+                :message="errorObject.message" :description="errorObject.description" />
         </main>
         <aside class="dashboard-layout__right">
             <div class="user-sidebar">
@@ -124,7 +109,8 @@ await fetchUserWorkspaces();
     </div>
 
     <!-- UPLOAD PROFILE PICTURE -->
-    <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePhoto" @close="showProfilePictureModal = false" />
+    <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePhoto"
+        @close="showProfilePictureModal = false" />
 </template>
 
 <style lang="scss" scoped>
@@ -181,11 +167,12 @@ await fetchUserWorkspaces();
                 width: 38px;
                 height: 38px;
                 background: rgba(255, 255, 255, 0.2);
-                border: none;
                 border-radius: 10px;
                 padding: 8px;
                 color: #3754DB;
-                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 

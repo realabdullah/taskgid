@@ -14,4 +14,5 @@ export default defineNuxtConfig({
     devServer: {
 		port: 1234,
 	},
+    ssr: false,
 });

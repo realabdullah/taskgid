@@ -8,9 +8,7 @@ const selectTodo = (value: string) => {
     selected.value = value;
 };
 
-const openProfilePictureModal = () => {
-    useEvent("uploadProfilePicture", true);
-};
+const openProfilePictureModal = () => useEvent("uploadProfilePicture", true);
 </script>
 
 <template>
@@ -29,7 +27,7 @@ const openProfilePictureModal = () => {
                 </button>
             </div>
 
-            <div v-if="tasks.length === 0" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
+            <div v-if="tasks && tasks.length === 0" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
                 <div class="todo-title">
                     <IconsGetStarted variant="first-task" />
                     <p>Create your First Task in your Workspace</p>

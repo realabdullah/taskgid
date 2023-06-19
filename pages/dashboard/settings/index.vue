@@ -41,11 +41,9 @@ const handleEditProfile = async () => {
     openOrCloseModal(false, "");
 };
 
-const logOut = async () => {
-    const { error } = await client.auth.signOut();
-    if (error) {
-        return;
-    }
+const logOut = () => {
+    const userId = useCookie("user_id") as Ref<string>;
+    userId.value = "";
     navigateTo("/login");
 };
 </script>

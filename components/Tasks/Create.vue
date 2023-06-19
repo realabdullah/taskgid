@@ -4,8 +4,9 @@ const props = defineProps<{
     taskToBeUpdated?: Task;
 }>();
 
-const { tasks } = storeToRefs(useStore());
+const { user, tasks } = storeToRefs(useStore());
 const { fetchTasks } = useStore();
+const { addUserTask, updateUserTask } = useTasks();
 
 const priorities = ["Less Important", "Important", "High Priority"];
 const title = ref("");
@@ -19,8 +20,6 @@ const updatePriority = (value: string) => {
     priority.value = value;
 };
 const emit = defineEmits(["close"]);
-const client = useSupabaseClient();
-const user = useSupabaseUser();
 
 if (props.usage === "update") {
     title.value = props.taskToBeUpdated?.title ?? "";
@@ -32,7 +31,8 @@ if (props.usage === "update") {
 
 const handleSubmission = async () => {
     submitting.value = true;
-    const payload = {
+    const payload: Task = {
+        id: String(window.crypto.getRandomValues(new Uint32Array(1))[0]),
         user_id: user.value?.id,
         title: title.value,
         description: description.value,
@@ -40,20 +40,15 @@ const handleSubmission = async () => {
         dueDate: dueDate.value,
         priority: priority.value,
         status: status.value,
-        task_no: props.taskToBeUpdated?.task_no ?? tasks.value ? tasks.value.length + 1 : 1,
+        task_no: 1,
     }
+    if (props.taskToBeUpdated) payload.task_no = props.taskToBeUpdated.task_no;
+    else if (tasks.value) payload.task_no = tasks.value.length + 1;
+
     if (props.usage === "create") {
-        const { error } = await client.from('tasks').insert(payload as any);
-        if (error) {
-            submitting.value = false;
-            return;
-        }
+        addUserTask(payload);
     } else {
-        const { error } = await client.from('tasks').update(payload as any).eq('id', props.taskToBeUpdated?.id);
-        if (error) {
-            submitting.value = false;
-            return;
-        }
+        updateUserTask(payload);
     }
 
     await fetchTasks();

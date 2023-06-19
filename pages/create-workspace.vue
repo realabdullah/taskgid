@@ -2,13 +2,15 @@
 definePageMeta({
     title: 'Create Workspace',
     name: 'CreateWorkspace',
-    middleware: ['guest'],
+    middleware: ['auth'],
 });
 
 const workSpaceState = ref('name');
 const name = ref("");
 const description = ref("");
 const submitting = ref(false);
+
+const { addWorkspace } = useUser();
 
 const pageHeadings = computed(() => {
     if (workSpaceState.value === 'name') {
@@ -24,25 +26,19 @@ const pageHeadings = computed(() => {
     }
 });
 
-const client = useSupabaseClient();
-const user = useSupabaseUser();
-
 const createWorkspace = async () => {
     submitting.value = true;
-    const payload = {
-        user_id: user.value?.id,
+    const userId = useCookie("user_id") as Ref<string>;
+    const payload: Workspace = {
+        id: window.crypto.randomUUID(),
+        user_id: userId.value,
         title: name.value,
         description: description.value,
-    }
-
-    const { error } = await client.from('workspaces').insert(payload as any);
-
-    if (error) {
-        submitting.value = false;
-        return;
-    }
-
-    navigateTo('/login');
+        created_at: new Date().toISOString(),
+        dispay_picture: 'https://ui-avatars.com/api/?name=' + name.value,
+    };
+    const status = await addWorkspace(payload);
+    status ? navigateTo('/dashboard') : submitting.value = false;
 };
 
 const handleNext = () => {
