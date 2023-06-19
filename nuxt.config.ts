@@ -10,7 +10,12 @@ export default defineNuxtConfig({
     pinia: {
         autoImports: ["defineStore", "storeToRefs"],
     },
-
+    runtimeConfig: {
+        public: {
+            imageUploadUrl: process.env.IMAGE_UPLOAD_URL,
+            imageUploadKey: process.env.IMAGE_UPLOAD_KEY,
+        },
+    },
     devServer: {
 		port: 1234,
 	},

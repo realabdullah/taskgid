@@ -64,6 +64,19 @@ export const useUser = () => {
         }
     };
 
+    // edit a user info
+    const editUser = async (user: User) => {
+        try {
+            const db = await dbPromise;
+            const tx = db.transaction('usersDB', 'readwrite');
+            const store = tx.objectStore('usersDB');
+            await store.put(user);
+            await tx.done;
+        } catch (error) {
+            console.log("edit user error => ", error);
+        }
+    };
+
     const addWorkspace = async (workspace: Workspace) => {
         try {
             const db = await dbPromise;
@@ -91,5 +104,5 @@ export const useUser = () => {
         }
     };
 
-    return { addUser, loginUser, getUser, addWorkspace, getUserWorkspaces };
+    return { addUser, loginUser, getUser, editUser, addWorkspace, getUserWorkspaces };
 };

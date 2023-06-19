@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+const envKeys = useRuntimeConfig();
+const { getUser, editUser } = useUser();
 const store = useStore();
+
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);
 const pictureFile = ref("");
@@ -15,26 +18,39 @@ const emit = defineEmits(["close"]);
 
 const uploadProfilePicture = async () => {
     try {
-        const userId = useSupabaseUser().value?.id;
         uploading.value = true;
-        const { data, error } = await useSupabaseClient()
-            .storage
-            .from("images")
-            .upload(`profilePhotos/profile-${userId}.png`, pictureFile.value, {
-                upsert: true,
-            });
+        const uploadUrl = envKeys.public.imageUploadUrl;
+        const apiKey = envKeys.public. imageUploadKey;
+        const formData = new FormData();
+        formData.append("image", pictureFile.value);
+        formData.append("key", apiKey);
 
-        if (error) throw error;
+        const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData,
+        });
 
-        pictureUrl.value = useGetPhotoUrl().photoUrl(`profilePhotos/profile-${userId}.png`, 'images');
-        await useSupabaseClient().from('users').update({profile_picture: pictureUrl.value}).eq('id', userId);
-        store.profilePhoto = pictureUrl.value;
-        uploading.value = false;
-        photoUploaded.value = true;
+        const data = await response.json();
+        console.log(data);
+        if (data.status === 200 && data.success) {
+            pictureUrl.value = data.data.url;
+            store.profilePhoto = data.data.url;
 
-        setTimeout(() => {
-            emit("close");
-        }, 3000);
+            // update user in db
+            const userId = useCookie("user_id") as Ref<string>;
+            const user: User = await getUser(userId.value);
+            user.profile_picture = data.data.url;
+            await editUser(user);
+
+            uploading.value = false;
+            photoUploaded.value = true;
+
+            setTimeout(() => {
+                emit("close");
+            }, 3000);
+        } else {
+            uploading.value = false;
+        }    
     } catch {
         uploading.value = false;
     }
@@ -45,7 +61,7 @@ const previewImage = (e: any) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
-        pictureUrl.value = e.target.result as string;
+        pictureUrl.value = e?.target.result as string;
         pictureSelected.value = true;
     };
 
@@ -60,7 +76,7 @@ const previewImage = (e: any) => {
             <div class="profile-uploader">
                 <h3>{{ photoUploaded ? "Profile picture taken" : !!pictureUrl ? "Change your profile picture" : "Upload your profile picture" }}</h3>
                 <label class="profile-container" for="profilePicture">
-                    <img :src="pictureUrl || 'https://i.ibb.co/kBGCJnQ/Group-67.png'" alt="photo">
+                    <img :src="pictureUrl" alt="photo">
                     <span v-if="!photoUploaded">Tap to {{ !!pictureUrl ? "change" : "select" }} picture</span>
                     <IconsCheck v-if="photoUploaded" class="uploaded" variant="large" />
 
