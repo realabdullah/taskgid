@@ -11,7 +11,7 @@ const { addUserTask, updateUserTask } = useTasks();
 const priorities = ["Less Important", "Important", "High Priority"];
 const title = ref("");
 const description = ref("");
-const dueDate = ref(new Date().toISOString().substr(0, 10) as string);
+const dueDate = ref();
 const priority = ref("");
 const status = ref("Pending");
 const submitting = ref(false);
@@ -19,7 +19,7 @@ const submitting = ref(false);
 const updatePriority = (value: string) => {
     priority.value = value;
 };
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "success"]);
 
 if (props.usage === "update") {
     title.value = props.taskToBeUpdated?.title ?? "";
@@ -31,9 +31,12 @@ if (props.usage === "update") {
 
 const handleSubmission = async () => {
     submitting.value = true;
+    const workspaceId: Ref<string> = useCookie("workspaceId");
+
     const payload: Task = {
-        id: String(window.crypto.getRandomValues(new Uint32Array(1))[0]),
+        id: props.taskToBeUpdated?.id ?? String(window.crypto.getRandomValues(new Uint32Array(1))[0]),
         user_id: user.value?.id,
+        workspace_id: workspaceId.value,
         title: title.value,
         description: description.value,
         dateAdded: props.taskToBeUpdated?.dateAdded ?? new Date().toISOString().substr(0, 10),
@@ -52,7 +55,7 @@ const handleSubmission = async () => {
     }
 
     await fetchTasks();
-    emit('close');
+    emit(props.usage === "create" ? "close" : "success");
 };
 </script>
 
@@ -65,14 +68,16 @@ const handleSubmission = async () => {
                     <BaseInput label-for="title" label="Task Name" input-type="text" v-model="title" :required="true"
                         border-color="#A8ABBD" />
                     <div class="form-group">
-                        <BaseSelect label="Task Priority" :lists="priorities" :selected-value="priority" @selected="updatePriority" />
-                        <BaseInput label-for="date" label="Due Date" input-type="date" :model-value="dueDate"
-                            :required="true" border-color="#A8ABBD" />
+                        <BaseSelect label="Task Priority" :lists="priorities" :selected-value="priority"
+                            @selected="updatePriority" />
+                        <BaseInput label-for="date" label="Due Date" input-type="date" v-model="dueDate" :required="true"
+                            border-color="#A8ABBD" />
                     </div>
                     <BaseTextArea name="description" label="Task Description" placeholder="Type your content here...."
                         v-model="description" :required="true" border-color="#A8ABBD" />
 
-                    <BaseButton :value="usage === 'create' ? 'Create Task' : 'Save Task'" background="#3754DB" color="#FFFFFF" width="202px" type="submit" />
+                    <BaseButton :value="usage === 'create' ? 'Create Task' : 'Save Task'" background="#3754DB"
+                        color="#FFFFFF" width="202px" type="submit" />
                 </form>
             </div>
         </template>

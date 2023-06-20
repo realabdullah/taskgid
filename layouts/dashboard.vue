@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const { fetchUserInfo } = useStore();
+const { fetchUserInfo, fetchTasks } = useStore();
 const { user, profilePhoto } = storeToRefs(useStore());
 const { getUserWorkspaces } = useUser();
 
@@ -22,6 +22,8 @@ const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace
 // METHODS
 const setWorkspace = (id: string) => {
     activeWorkspace.value = id;
+    workspaceId.value = id;
+    fetchTasks();
 };
 
 const openProfilePhotoModal = () => {
@@ -34,7 +36,7 @@ useListen("showToast", (errorObj) => {
 
     setTimeout(() => {
         showToast.value = false;
-    }, 3500);
+    }, 4000);
 });
 
 useListen("uploadProfilePicture", (value) => {
@@ -46,6 +48,8 @@ await fetchUserInfo();
 const response = await getUserWorkspaces(user.value.id);
 workspaces.value = response ? response : [];
 activeWorkspace.value = workspaces.value[0]?.id ?? "";
+const workspaceId = useCookie("workspaceId");
+workspaceId.value = activeWorkspace.value;
 </script>
 
 <template>
@@ -77,20 +81,22 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
             </div>
         </aside>
         <main class="dashboard-layout__center">
-            <header>
-                <label for="search" class="search">
-                    <input type="search" name="search" id="search" placeholder="Search your space here...">
-                    <IconsSearch class="search-icon" />
-                </label>
+            <div class="container">
+                <header>
+                    <label for="search" class="search">
+                        <input type="search" name="search" id="search" placeholder="Search your space here...">
+                        <IconsSearch class="search-icon" />
+                    </label>
 
-                <div class="notification-bell">
-                    <IconsNotificationBell :notification="notification" />
-                </div>
-            </header>
-            <NuxtLoadingIndicator color="#3754DB" />
-            <slot />
-            <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type"
-                :message="errorObject.message" :description="errorObject.description" />
+                    <div class="notification-bell">
+                        <IconsNotificationBell :notification="notification" />
+                    </div>
+                </header>
+                <NuxtLoadingIndicator color="#3754DB" />
+                <slot />
+                <BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type"
+                    :message="errorObject.message" :description="errorObject.description" />
+            </div>
         </main>
         <aside class="dashboard-layout__right">
             <div class="user-sidebar">
@@ -108,6 +114,8 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
         </aside>
     </div>
 
+    <div class="mobile">Please view on a much larger screen. 🫠</div>
+
     <!-- UPLOAD PROFILE PICTURE -->
     <ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePhoto"
         @close="showProfilePictureModal = false" />
@@ -120,13 +128,29 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
     max-height: 100vh;
     background: #F6F8FD;
     display: grid;
-    grid-template-columns: 300px 1fr 300px;
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 300px);
+
+    @media screen and (max-width: 550px) {
+        display: none;
+    }
+
+    @media screen and (max-width: 1044px) {
+        grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    }
+
+    @media screen and (max-width: 700px) {
+        grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+    }
 
     &__left {
         height: 100vh;
         display: flex;
         gap: 20px;
         background: #FFFFFF;
+
+        @media screen and (max-width: 700px) {
+            gap: 0;
+        }
 
         .workspace-icons {
             width: 100%;
@@ -192,6 +216,10 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
                 align-items: flex-start;
                 gap: 4px;
 
+                @media screen and (max-width: 700px) {
+                    display: none;
+                }
+
                 h4 {
                     font-weight: 700;
                     font-size: 20px;
@@ -223,6 +251,12 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
                     line-height: 19px;
                     color: #666666;
                     text-transform: capitalize;
+
+                    span {
+                        @media screen and (max-width: 700px) {
+                            display: none;
+                        }
+                    }
                 }
 
                 .active {
@@ -235,58 +269,82 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
 
     &__center {
         position: relative;
-        padding: 25px 40px;
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
 
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 50px;
+        .container {
+            padding: 25px 40px;
 
-            .search {
-                position: relative;
-                width: 100%;
-                max-width: 350px;
+            @media screen and (max-width: 700px) {
+                padding: 25px 20px;
+            }
 
-                input {
+            header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 13px;
+                margin-bottom: 50px;
+
+                .search {
+                    position: relative;
                     width: 100%;
-                    height: 50px;
-                    border: 0.7px solid #A8ABBD;
-                    border-radius: 12px;
-                    background: transparent;
-                    padding: 16px;
-                }
+                    max-width: 350px;
 
-                &-icon {
-                    position: absolute;
-                    top: 50%;
-                    transform: translate(0, -50%);
-                    right: 15px;
-                    cursor: pointer;
+                    input {
+                        width: 100%;
+                        height: 50px;
+                        border: 0.7px solid #A8ABBD;
+                        border-radius: 12px;
+                        background: transparent;
+                        padding: 16px;
+
+                        &::placeholder {
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+
+                    &-icon {
+                        position: absolute;
+                        top: 50%;
+                        transform: translate(0, -50%);
+                        right: 15px;
+                        cursor: pointer;
+                    }
                 }
             }
-        }
 
-        .toast {
-            position: absolute;
-            top: 80px;
-            right: 40px;
-            z-index: 1000;
+            .toast {
+                position: absolute;
+                top: 80px;
+                right: 40px;
+                z-index: 1000;
+            }
         }
     }
 
     &__right {
+        // height: 100vh;
+        width: 100%;
+        max-width: 258px;
+        background: #FFFFFF;
+        border-radius: 24px;
+        padding: 20px;
+        margin: 20px;
+        // position: fixed;
+        // right: 20px;
+        // top: 20px;
+        // bottom: 20px;
+
+        @media screen and (max-width: 1044px) {
+            display: none;
+        }
 
         .user-sidebar {
-            width: 100%;
-            max-width: 258px;
-            background: #FFFFFF;
-            border-radius: 24px;
-            padding: 20px;
-            position: fixed;
-            right: 20px;
-            top: 20px;
-            bottom: 20px;
+
 
             .user {
                 display: flex;
@@ -329,6 +387,21 @@ activeWorkspace.value = workspaces.value[0]?.id ?? "";
                 }
             }
         }
+    }
+}
+
+.mobile {
+    display: none;
+
+    @media screen and (max-width: 550px) {
+        display: block;
+        width: 100%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        padding: 16px;
     }
 }
 </style>

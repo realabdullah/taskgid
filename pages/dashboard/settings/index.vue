@@ -69,7 +69,7 @@ const logOut = () => {
                         </div>
                     </div>
 
-                    <BaseButton style="align-self: flex-end;" value="Edit" background="#3754DB" color="#FFFFFF"
+                    <BaseButton class="edit-btn" value="Edit" background="#3754DB" color="#FFFFFF"
                         width="125px" @click="openOrCloseModal(true, 'edit-profile')" />
                 </div>
             </div>
@@ -115,6 +115,10 @@ const logOut = () => {
     .log-out {
         display: flex;
         justify-content: flex-end;
+
+        @media screen and (max-width: 700px) {
+            display: block;
+        }
     }
 
     &__card {
@@ -137,6 +141,10 @@ const logOut = () => {
             align-items: flex-start;
             gap: 15px;
 
+            @media screen and (max-width: 700px) {
+                padding: 32px 16px;
+            }
+
             &__box {
                 width: 100%;
                 box-sizing: border-box;
@@ -146,6 +154,14 @@ const logOut = () => {
                 gap: 25px;
                 border: 0.2px solid #B8B8B8;
                 border-radius: 16px;
+
+                @media screen and (max-width: 700px) {
+                    gap: 15px;
+
+                    svg {
+                        display: none;
+                    }
+                }
 
                 .details {
                     display: flex;
@@ -195,4 +211,14 @@ const logOut = () => {
         display: flex;
         gap: 20px;
     }
-}</style>
+}
+
+.edit-btn {
+    align-self: flex-end;
+
+    @media screen and (max-width: 700px) {
+        width: 100%;
+        max-width: unset;
+    }
+}
+</style>

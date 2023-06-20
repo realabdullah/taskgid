@@ -8,6 +8,14 @@ definePageMeta({
 const { user, tasks } = storeToRefs(useStore());
 const { fetchTasks } = useStore();
 
+// get work inspirational quotes
+const getQuotes = async () => {
+    const response = await fetch("https://type.fit/api/quotes");
+    const data = await response.json();
+    const randomQuote = data[Math.floor(Math.random() * data.length)];
+    console.log("randomQuote => ", randomQuote);
+};
+
 await fetchTasks();
 </script>
 
@@ -26,7 +34,7 @@ await fetchTasks();
 				<h4>Motivation to help you work.</h4>
 				<div class="motivation-banner__ctas">
 					<IconsClose class="close" />
-					<button>Get Started</button>
+					<button @click="getQuotes">Get Started</button>
 				</div>
 			</div>
 
@@ -48,6 +56,11 @@ await fetchTasks();
 			font-weight: 600;
 			font-size: 56px;
 			line-height: 67px;
+
+            @media screen and (max-width: 700px) {
+                font-size: 36px;
+                line-height: 43px;
+            }
 		}
 
 		&__texts {
@@ -61,6 +74,11 @@ await fetchTasks();
 				font-size: 36px;
 				line-height: 43px;
 				color: #000000;
+
+                @media screen and (max-width: 700px) {
+                    font-size: 24px;
+                    line-height: 29px;
+                }
 			}
 
 			p {
@@ -68,6 +86,11 @@ await fetchTasks();
 				font-size: 20px;
 				line-height: 24px;
 				color: #636363;
+
+                @media screen and (max-width: 700px) {
+                    font-size: 16px;
+                    line-height: 19px;
+                }
 			}
 		}
 	}
@@ -80,6 +103,10 @@ await fetchTasks();
 		background: linear-gradient(266.06deg, #0f1a4abf 1.1%, #00000060 81.65%, #00000060 109.25%);
 		border-radius: 20px;
 		height: 146px;
+
+        @media screen and (max-width: 700px) {
+            flex-direction: column;
+        }
 
 		h4 {
 			width: 100%;
@@ -102,6 +129,10 @@ await fetchTasks();
 				height: 24px;
 				color: #FFFFFF;
 				cursor: pointer;
+
+                @media screen and (max-width: 700px) {
+                    display: none;
+                }
 			}
 
 			button {

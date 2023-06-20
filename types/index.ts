@@ -1,5 +1,6 @@
 interface Task {
     id: string;
+    workspace_id: string;
     user_id: string;
     title: string;
     description: string;

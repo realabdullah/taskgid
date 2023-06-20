@@ -24,30 +24,17 @@ const setActiveTab = (tab: string) => {
     indicatorLeft.value = button.offsetLeft;
 };
 
-const taskCount = computed(() => {
-    return (value: string) => {
-        return tasks.value.filter((task) => {
-            if (value === "All Tasks") {
-                return task;
-            }
+const taskCount = computed(() => (value: string) =>
+  tasks.value ? tasks.value.filter(task => value === "All Tasks" || task.status === value).length : 0
+);
 
-            return task.status === value;
-        }).length;
-    };
-});
 
-const filteredTasks = computed(() => {
-    return tasks.value.filter((task) => {
-        if (activeTab.value === "All Tasks") {
-            return task;
-        }
-
-        return task.status === activeTab.value;
-    });
-});
+const filteredTasks = computed(() =>
+  tasks.value ? tasks.value.filter(task => activeTab.value === "All Tasks" || task.status === activeTab.value) : []
+);
 
 onMounted(() => {
-    setActiveTab("All Tasks");
+    if (tasks.value && tasks.value.length > 0) setActiveTab("All Tasks");
 });
 
 await fetchTasks();
@@ -61,11 +48,11 @@ await fetchTasks();
                     <h1>Tasks</h1>
                     <p>Your tasks in your space.</p>
                 </div>
-                <BaseButton v-if="tasks.length > 0" class="btn" value="Create Task" background="#3754DB" color="#FFFFFF" width="169px"
+                <BaseButton v-if="tasks && tasks.length > 0" class="btn" value="Create Task" background="#3754DB" color="#FFFFFF" width="169px"
                     @click="showCreateTaskModal = true" />
             </div>
 
-            <div v-if="tasks.length > 0" class="task-page__list">
+            <div v-if="tasks && tasks.length > 0" class="task-page__list">
                 <div class="tasks-bar">
                     <button v-for="(tab, index) in tasksTab" :key="index" :class="{ active: activeTab === tab }"
                         @click="setActiveTab(tab)">
@@ -83,7 +70,7 @@ await fetchTasks();
                 <TasksEmpty v-else :description="`You have no task ${activeTab.toLowerCase()} yet.`" :extra-text="`Get productive. Have a Task ${activeTab}.`" />
             </div>
 
-            <TasksEmpty v-else button-text="Create a Task" description="You have no task created in your workspace yet." extra-text="Get productive. Create a Task Now." />
+            <TasksEmpty v-else button-text="Create a Task" description="You have no task created in your workspace yet." extra-text="Get productive. Create a Task Now." @create-task="showCreateTaskModal = true" />
         </div>
 
         <!-- CREATE TASK MODAL -->
@@ -98,6 +85,13 @@ await fetchTasks();
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 13px;
+
+        @media screen and (max-width: 700px) {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
 
         .texts {
             h1 {
@@ -121,13 +115,21 @@ await fetchTasks();
         margin-top: 42px;
 
         .tasks-bar {
-            width: fit-content;
+            // width: fit-content;
+            width: 100%;
             display: flex;
             align-items: center;
             gap: 28px;
             padding-bottom: 14px;
             border-bottom: 0.34px solid #A9A9A9;
             position: relative;
+            overflow: hidden;
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
 
             button {
                 border: 0;
@@ -142,6 +144,7 @@ await fetchTasks();
                     font-size: 16px;
                     line-height: 19px;
                     color: #808080;
+                    white-space: nowrap;
                 }
 
                 .count {

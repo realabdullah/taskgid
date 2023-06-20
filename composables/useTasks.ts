@@ -19,9 +19,26 @@ export const useTasks = () => {
             const tasks = await store.getAll();
             await tx.done;
 
-            return tasks;
+            const workspaceId = useCookie("workspaceId") as Ref<string>;
+
+            return tasks.filter((task: Task) => task.workspace_id === workspaceId.value) || [];
         } catch (error) {
             console.log("fetch user tasks error => ", error);
+        }
+    };
+
+    // fecth a task from the db
+    const fetchUserTask = async (taskId: string) => {
+        try {
+            let task: Task = {} as Task;
+            const db = await dbPromise;
+            const tx = db.transaction(userId.value, 'readonly');
+            const store = tx.objectStore(userId.value);
+            task = await store.get(taskId);
+            await tx.done;
+            return task || {} as Task;
+        } catch (error) {
+            console.log("fetch user task error => ", error);
         }
     };
 
@@ -42,22 +59,28 @@ export const useTasks = () => {
             const store = tx.objectStore(userId.value);
             await store.put(task);
             await tx.done;
+
+            return true;
         } catch (error) {
             console.log("update task error => ", error);
+            return false;
         }
     };
 
-    const deleteUserTask = async (task: Task) => {
+    const deleteUserTask = async (id: string) => {
         try {
             const db = await dbPromise;
             const tx = db.transaction(userId.value, 'readwrite');
             const store = tx.objectStore(userId.value);
-            await store.delete(task.id);
+            await store.delete(id);
             await tx.done;
+
+            return true;
         } catch (error) {
             console.log("delete task error => ", error);
+            return false;
         }
     };
 
-    return { fetchUserTasks, addUserTask, updateUserTask, deleteUserTask };
+    return { fetchUserTasks, fetchUserTask, addUserTask, updateUserTask, deleteUserTask };
 };

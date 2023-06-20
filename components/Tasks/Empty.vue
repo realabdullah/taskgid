@@ -17,7 +17,7 @@ defineProps<EmptyProps>();
         <p>{{ extraText }}</p>
 
         <BaseButton v-if="!!buttonText" class="btn" :value="buttonText" background="#3754DB" color="#FFFFFF"
-            width="213px" />
+            width="213px" @click="$emit('create-task')" />
     </div>
 </template>
 
