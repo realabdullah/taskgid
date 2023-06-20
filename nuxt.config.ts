@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     css: ["~/assets/scss/main.scss"],
-    modules: ["@nuxtjs/supabase", "@pinia/nuxt"],
+    modules: ["@pinia/nuxt"],
 
     imports: {
         dirs: ["store"],
