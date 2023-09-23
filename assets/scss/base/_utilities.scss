@@ -1,0 +1,255 @@
+$colors: (
+	"darkBlue": $col-darkBlue,
+	"purple": $col-purple,
+	"pink": $col-pink,
+	"white": $col-white,
+	"lightPurple": $col-lightPurple,
+	"pink-2": $col-pink-2,
+	"gradient-purple": $gradient-purple,
+	"blue": $col-blue,
+	"lightBlue": $col-lightBlue,
+	"grey": $col-grey,
+	"grey-2": $col-grey-2,
+	"grey-3": $col-grey-3,
+	"danger": $col-danger,
+	"black": $col-black,
+	"transparent": transparent,
+) !default;
+
+@each $color, $value in $colors {
+	.col-#{$color} {
+		color: $value;
+	}
+
+	.bg-#{$color} {
+		background: $value;
+	}
+}
+
+// weights
+$weights: (
+	"light": 300,
+	"regular": 400,
+	"medium": 500,
+	"semiBold": 600,
+	"bold": 700,
+	"black": 900,
+) !default;
+
+@each $weight, $value in $weights {
+	.fw-#{$weight} {
+		font-weight: $value;
+	}
+}
+
+// displays
+$displays: (
+	"flex": flex,
+	"inline-flex": inline-flex,
+	"grid": grid,
+	"inline-grid": inline-grid,
+	"block": block,
+	"inline-block": inline-block,
+	"none": none,
+) !default;
+
+@each $display, $value in $displays {
+	.d-#{$display} {
+		display: $value;
+	}
+}
+
+// flex wraps
+$flex-wraps: (
+	"nowrap": nowrap,
+	"wrap": wrap,
+	"wrap-reverse": wrap-reverse,
+) !default;
+
+@each $flex-wrap, $value in $flex-wraps {
+	.flex-#{$flex-wrap} {
+		flex-wrap: $value;
+	}
+}
+
+// flex-directions
+$flex-directions: (
+	"row": row,
+	"row-reverse": row-reverse,
+	"column": column,
+	"column-reverse": column-reverse,
+) !default;
+
+@each $flex-direction, $value in $flex-directions {
+	.fd-#{$flex-direction} {
+		flex-direction: $value;
+	}
+}
+
+// justify-content
+$justify-contents: (
+	"flex-start": flex-start,
+	"flex-end": flex-end,
+	"center": center,
+	"space-between": space-between,
+	"space-around": space-around,
+	"space-evenly": space-evenly,
+) !default;
+
+@each $justify-content, $value in $justify-contents {
+	.jc-#{$justify-content} {
+		justify-content: $value;
+	}
+}
+
+// align-items
+$align-items: (
+	"flex-start": flex-start,
+	"flex-end": flex-end,
+	"center": center,
+	"baseline": baseline,
+	"stretch": stretch,
+) !default;
+
+@each $align-item, $value in $align-items {
+	.ai-#{$align-item} {
+		align-items: $value;
+	}
+}
+
+// align-self
+$align-selfs: (
+	"auto": auto,
+	"flex-start": flex-start,
+	"flex-end": flex-end,
+	"center": center,
+	"baseline": baseline,
+	"stretch": stretch,
+) !default;
+
+@each $align-self, $value in $align-selfs {
+	.as-#{$align-self} {
+		align-self: $value;
+	}
+}
+
+// positions
+$positions: (
+	"static": static,
+	"relative": relative,
+	"absolute": absolute,
+	"fixed": fixed,
+	"sticky": sticky,
+) !default;
+
+@each $position, $value in $positions {
+	.pos-#{$position} {
+		position: $value;
+	}
+}
+
+// text decorations
+$text-decorations: (
+	"underline": underline,
+	"overline": overline,
+	"line-through": line-through,
+	"none": none,
+) !default;
+
+@each $text-decoration, $value in $text-decorations {
+	.td-#{$text-decoration} {
+		text-decoration: $value;
+	}
+}
+
+// text aligns
+$text-aligns: (
+	"left": left,
+	"right": right,
+	"center": center,
+	"justify": justify,
+) !default;
+
+@each $text-align, $value in $text-aligns {
+	.ta-#{$text-align} {
+		text-align: $value;
+	}
+}
+
+// cursor
+$cursors: (
+	"pointer": pointer,
+	"default": default,
+	"none": none,
+) !default;
+
+@each $cursor, $value in $cursors {
+	.cursor-#{$cursor} {
+		cursor: $value;
+	}
+}
+
+// z-index
+$z-indexes: (
+	"1": 1,
+	"2": 2,
+	"3": 3,
+	"4": 4,
+	"5": 5,
+	"6": 6,
+	"7": 7,
+	"8": 8,
+	"9": 9,
+	"10": 10,
+) !default;
+
+@each $z-index, $value in $z-indexes {
+	.z-#{$z-index} {
+		z-index: $value;
+	}
+}
+
+// text wraps
+$text-wraps: (
+	"normal": normal,
+	"nowrap": nowrap,
+	"pre": pre,
+	"pre-line": pre-line,
+	"pre-wrap": pre-wrap,
+) !default;
+
+@each $text-wrap, $value in $text-wraps {
+	.text-#{$text-wrap} {
+		white-space: $value;
+	}
+}
+
+// overflow
+$overflows: (
+	"visible": visible,
+	"hidden": hidden,
+	"scroll": scroll,
+	"auto": auto,
+) !default;
+
+@each $overflow, $value in $overflows {
+	.overflow-#{$overflow} {
+		overflow: $value;
+	}
+
+	.overflow-x-#{$overflow} {
+		overflow-x: $value;
+	}
+
+	.overflow-y-#{$overflow} {
+		overflow-y: $value;
+	}
+}
+
+.w-100 {
+	width: 100%;
+}
+
+.h-100 {
+	height: 100%;
+}

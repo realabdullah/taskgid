@@ -1,10 +1,7 @@
 <script lang="ts" setup>
 definePageMeta({
-    middleware: ['guest']
+	middleware: ["guest"],
 });
 
-navigateTo('/login');
+navigateTo("/login");
 </script>
-
-<template>
-</template>

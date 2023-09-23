@@ -1,2 +1,8 @@
-@import "./reset";
-@import "./font";
+@import "./abstracts/variables";
+@import "./abstracts/mixins";
+
+@import "./base/reset";
+@import "./base/animations";
+@import "./base/fonts";
+@import "./base/globals";
+@import "./base/utilities";

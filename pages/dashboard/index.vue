@@ -5,117 +5,88 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { user, tasks } = storeToRefs(useStore());
-const { fetchTasks } = useStore();
+const { user, tasks, profilePhoto } = storeToRefs(useStore());
 
-await fetchTasks();
+const { fetchUserInfo } = useStore();
+
+const showGetStarted = computed(() => tasks.value.length === 0 || profilePhoto.value === "");
+
+await fetchUserInfo();
 </script>
 
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="homepage">
-			<div class="homepage-welcome">
+			<div class="homepage-welcome d-flex ai-strech">
 				<h1>👋</h1>
-				<div class="homepage-welcome__texts">
-					<h2>Hi {{ user.name }},</h2>
-					<p>Wecome to Semicolon Task Management</p>
+				<div class="homepage-welcome__texts d-flex fd-column ai-flex-start">
+					<h2 class="fw-semiBold col-black">Hi {{ user.name }},</h2>
+					<p class="fw-regular col-grey-2">Wecome to your task management!</p>
 				</div>
 			</div>
 
-			<div class="motivation-banner">
-				<h4>Motivation to help you work.</h4>
-				<div class="motivation-banner__ctas">
-					<IconsClose class="close" />
-					<button>Get Started</button>
+			<div class="motivation-banner d-flex jc-space-between">
+				<h4 class="col-white fw-semiBold w-100">Motivation to help you work.</h4>
+				<div class="motivation-banner__ctas d-flex fd-column jc-space-between ai-flex-end">
+					<IconsClose class="close col-white cursor-pointer" />
+					<button class="bg-blue col-white fw-medium cursor-pointer">Get Started</button>
 				</div>
 			</div>
 
-			<GetStarted v-if="!user.profile_picture || tasks.length === 0" :user="user" :no-tasks="tasks.length === 0" />
+			<GetStarted v-if="showGetStarted" />
 		</div>
 	</NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
 .homepage {
-
 	&-welcome {
-		display: flex;
-		align-items: stretch;
-		gap: 18px;
-		margin-bottom: 30px;
+		@include gap(1.8rem);
+		margin-bottom: 3rem;
 
 		h1 {
-			font-weight: 600;
-			font-size: 56px;
-			line-height: 67px;
+			@include font(5.6rem, 6.7rem);
 		}
 
 		&__texts {
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 8px;
+			@include gap(0.8rem);
 
 			h2 {
-				font-weight: 600;
-				font-size: 36px;
-				line-height: 43px;
-				color: #000000;
+				@include font(3.6rem, 4.3rem);
 			}
 
 			p {
-				font-weight: 400;
-				font-size: 20px;
-				line-height: 24px;
-				color: #636363;
+				@include font(2rem, 2.4rem);
 			}
 		}
 	}
 
 	.motivation-banner {
-		margin-bottom: 30px;
-		display: flex;
-		justify-content: space-between;
-		padding: 25px;
+		margin-bottom: 3rem;
+		padding: 2.5rem;
 		background: linear-gradient(266.06deg, #0f1a4abf 1.1%, #00000060 81.65%, #00000060 109.25%);
-		border-radius: 20px;
-		height: 146px;
+		border-radius: 2rem;
+		height: 14.6rem;
 
 		h4 {
-			width: 100%;
-			max-width: 189px;
-			font-weight: 600;
-			font-size: 22px;
-			line-height: 28px;
-			color: #FFFFFF;
+			max-width: 18.9rem;
+			@include font(2.2rem, 2.8rem);
 			margin: auto 0;
 		}
 
 		&__ctas {
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			align-items: flex-end;
-
 			.close {
-				width: 24px;
-				height: 24px;
-				color: #FFFFFF;
-				cursor: pointer;
+				width: 2.4rem;
+				height: 2.4rem;
 			}
 
 			button {
 				border: none;
-				width: 150px;
-				height: 40px;
-				background: #3754DB;
-				color: #FFFFFF;
-				border-radius: 12px;
-				font-weight: 500;
-				font-size: 14px;
-				line-height: 17px;
-				cursor: pointer;
-				box-shadow: #33373a33 0px 8px 24px;
+				width: 15rem;
+				height: 4rem;
+				border-radius: 1.2rem;
+				@include font(1.4rem, 1.7rem);
+				box-shadow: #33373a33 0 0.8rem 2.4rem;
 			}
 		}
 	}

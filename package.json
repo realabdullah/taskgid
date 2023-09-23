@@ -1,24 +1,40 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "start": "node .output/server/index.mjs"
-  },
-  "devDependencies": {
-    "@nuxtjs/supabase": "^0.3.1",
-    "nuxt": "^3.2.3",
-    "sass": "^1.58.3"
-  },
-  "dependencies": {
-    "@pinia/nuxt": "^0.4.7",
-    "jwt-decode": "^3.1.2",
-    "mitt": "^3.0.0",
-    "nodemailer": "^6.9.2",
-    "pinia": "^2.0.33",
-    "vue-email": "^0.2.3"
-  }
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"start": "node .output/server/index.mjs",
+		"lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
+		"lint:prettier": "prettier --check .",
+		"lint": "yarn lint:js && yarn lint:prettier",
+		"lintfix": "prettier --write --list-different . && yarn lint:js --fix"
+	},
+	"devDependencies": {
+		"@nuxt/devtools": "^0.8.4",
+		"@nuxt/eslint-config": "^0.2.0",
+		"@nuxtjs/eslint-config-typescript": "^12.1.0",
+		"@nuxtjs/supabase": "^0.3.1",
+		"@pinia-plugin-persistedstate/nuxt": "^1.1.2",
+		"@typescript-eslint/eslint-plugin": "^6.7.2",
+		"@typescript-eslint/parser": "^6.7.2",
+		"eslint": "^8.50.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.0",
+		"nuxt": "^3.7.3",
+		"prettier": "^3.0.3",
+		"sass": "^1.58.3",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"@pinia/nuxt": "^0.4.7",
+		"@types/nodemailer": "^6.4.10",
+		"jwt-decode": "^3.1.2",
+		"mitt": "^3.0.0",
+		"nodemailer": "^6.9.2",
+		"pinia": "^2.0.33",
+		"vue-email": "^0.2.3"
+	}
 }

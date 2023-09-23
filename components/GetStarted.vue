@@ -5,109 +5,88 @@ const selected = ref("");
 const showCreateTaskModal = ref(false);
 
 const selectTodo = (value: string) => {
-    selected.value = value;
+	selected.value = value;
 };
 
 const openProfilePictureModal = () => {
-    useEvent("uploadProfilePicture", true);
+	useEvent("uploadProfilePicture", true);
 };
 </script>
 
 <template>
-    <div class="get-started">
-        <h3>Let’s get you started</h3>
+	<div class="get-started">
+		<h3 class="fw-bold col-black">Let’s get you started</h3>
 
-        <div class="get-started__todos">
-            <div v-if="!user.profile_picture" class="todo" :class="{ active: selected === 'profilePicture' }" @click="selectTodo('profilePicture')">
-                <div class="todo-title">
-                    <IconsGetStarted variant="profile-picture" />
-                    <p>Hey {{ user.name }}, Update your Profile Picture</p>
-                </div>
-                <button @click="openProfilePictureModal">
-                    <span>Get Started</span>
-                    <IconsArrow variant="right" />
-                </button>
-            </div>
+		<div class="get-started__todos d-flex fd-column w-100">
+			<button
+				v-if="!!user.profile_picture"
+				class="todo bg-white d-flex ai-center jc-space-between cursor-pointer"
+				:class="{ active: selected === 'profilePicture' }"
+				@click="selectTodo('profilePicture')">
+				<div class="todo-title d-flex ai-center">
+					<IconsGetStarted variant="profile-picture" />
+					<p class="fw-regular col-grey-3">Hey {{ user.name }}, Update your Profile Picture</p>
+				</div>
+				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="openProfilePictureModal">
+					<span>Get Started</span>
+					<IconsArrow variant="right" />
+				</button>
+			</button>
 
-            <div v-if="tasks.length === 0" class="todo" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
-                <div class="todo-title">
-                    <IconsGetStarted variant="first-task" />
-                    <p>Create your First Task in your Workspace</p>
-                </div>
-                <button @click="showCreateTaskModal = true">
-                    <span>Get Started</span>
-                    <IconsArrow variant="right" />
-                </button>
-            </div>
-        </div>
-    </div>
+			<button v-if="tasks.length === 0" class="todo bg-white d-flex ai-center jc-space-between cursor-pointer" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
+				<div class="todo-title d-flex ai-center">
+					<IconsGetStarted variant="first-task" />
+					<p class="fw-regular col-grey-3">Create your First Task in your Workspace</p>
+				</div>
+				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="showCreateTaskModal = true">
+					<span>Get Started</span>
+					<IconsArrow variant="right" />
+				</button>
+			</button>
+		</div>
+	</div>
 
-    <!-- CREATE TASK MODAL -->
-    <TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
+	<!-- CREATE TASK MODAL -->
+	<TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
 </template>
 
 <style lang="scss" scoped>
 .get-started {
+	h3 {
+		@include font(2rem, 2.4rem);
+		margin-bottom: 2.5rem;
+	}
 
-    h3 {
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 24px;
-        color: #000000;
-        margin-bottom: 25px;
-    }
+	&__todos {
+		@include gap(2rem);
 
-    &__todos {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+		.todo {
+			padding: 1.2rem 1.4rem;
+			border-radius: 1.6rem;
 
-        .todo {
-            padding: 12px 14px;
-            background: #FFFFFF;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
+			&-title {
+				@include gap(1.4rem);
 
-            &-title {
-                display: flex;
-                align-items: center;
-                gap: 14px;
+				p {
+					@include font(1.6rem, 1.9rem);
+				}
+			}
 
-                p {
-                    font-weight: 400;
-                    font-size: 16px;
-                    line-height: 19px;
-                    color: #666666;
-                }
-            }
+			button {
+				@include font(1.6rem, 1.9rem);
+				@include gap(1.5rem);
+			}
+		}
 
-            button {
-                border: none;
-                background: transparent;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                color: #666666;
-                font-weight: 400;
-                font-size: 16px;
-                line-height: 19px;
-                cursor: pointer;
-            }
-        }
+		.active {
+			border: 0.2rem solid $col-lightBlue;
 
-        .active {
-            border: 2px solid #8098FF;
-
-            .todo-title p,
-            button {
-                font-weight: 600;
-                color: #3754DB;
-            }
-        }
-    }
+			.todo-title p,
+			button {
+				font-weight: 600 !important;
+				color: $col-blue !important;
+			}
+		}
+	}
 }
 </style>

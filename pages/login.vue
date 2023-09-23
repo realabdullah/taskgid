@@ -1,102 +1,93 @@
 <script lang="ts" setup>
 definePageMeta({
-    title: 'Login',
-    name: 'login',
-    middleware: ['guest']
+	title: "Login",
+	name: "login",
+	middleware: ["guest"],
 });
 
-const email = ref('');
-const password = ref('');
+const form = reactive({
+	email: "",
+	password: "",
+});
 const submitting = ref(false);
 const loginError = ref("");
 const client = useSupabaseAuthClient();
 
 watchEffect(() => {
-    if (email.value !== '' && password.value !== '') {
-        loginError.value = "";
-    }
+	if (form.email !== "" && form.password !== "") loginError.value = "";
 });
 
 const submitForm = async () => {
-    submitting.value = true;
-    if (email.value === '' || password.value === '') return;
+	try {
+		if (form.email === "" || form.password === "") return;
+		submitting.value = true;
+		const { error } = await client.auth.signInWithPassword({
+			email: form.email,
+			password: form.password,
+		});
 
-    const { error } = await client.auth.signInWithPassword({
-        email: email.value,
-        password: password.value
-    });
-
-    if (error) {
-        loginError.value = error.message;
-        submitting.value = false;
-        setTimeout(() => {
-            loginError.value = "";
-        }, 2000);
-        return;
-    }
-    
-    navigateTo('/dashboard');
+		if (error) throw new Error(error.message);
+		submitting.value = false;
+		navigateTo("/dashboard");
+	} catch (error) {
+		loginError.value = error as string;
+		submitting.value = false;
+		setTimeout(() => {
+			loginError.value = "";
+		}, 2000);
+	}
 };
 </script>
 
 <template>
-    <NuxtLayout name="auth">
-        <BaseToast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
-        <template #cta>Create Account</template>
-        <div class="login__form">
-            <h5 class="login__form-header">Welcome Back.</h5>
+	<NuxtLayout name="auth">
+		<BaseToast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
+		<template #cta>Create Account</template>
+		<div class="login__form d-flex fd-column jc-center ai-flex-start w-100 h-100">
+			<h5 class="login__form-header fw-bold col-black">Welcome Back.</h5>
 
-            <form @submit.prevent="submitForm">
-                <BaseInput v-model="email" input-type="email" label-for="email" label="Email Address"
-                    placeholder="anon@anon.anon" hint="Example. mano@gmail.com" border-color="#2746D8" />
+			<form class="d-flex fd-column jc-center ai-center w-100" @submit.prevent="submitForm">
+				<BaseInput
+					v-model="form.email"
+					input-type="email"
+					label-for="email"
+					label="Email Address"
+					placeholder="anon@anon.anon"
+					hint="Example. mano@gmail.com"
+					border-color="#2746D8"
+					:required="true" />
 
-                <BaseInput v-model="password" input-type="password" label-for="password" label="Enter Your Password"
-                    placeholder="Enter password" hint="Upto 8 characters with an Uppercase, symbol and number"
-                    border-color="#2746D8" />
+				<BaseInput
+					v-model="form.password"
+					input-type="password"
+					label-for="password"
+					label="Enter Your Password"
+					placeholder="Enter password"
+					hint="Upto 8 characters with an Uppercase, symbol and number"
+					border-color="#2746D8"
+					:required="true" />
 
-                <BaseButton width="204px" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
-            </form>
+				<BaseButton width="20.4rem" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
+			</form>
 
-            <NuxtLink to="/forget-password" class="login__form-footer">Forgot Password ?</NuxtLink>
-        </div>
-    </NuxtLayout>
+			<NuxtLink to="/forget-password" class="login__form-footer col-blue td-none fw-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
+		</div>
+	</NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
 .login__form {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+	max-width: 40rem;
+	margin: 0 auto;
 
-    &-header {
-        font-weight: 700;
-        font-size: 32px;
-        line-height: 38px;
-        color: #000000;
-        margin-bottom: 32px;
-    }
+	&-header {
+		@include font(3.2rem, 3.8rem);
+		margin-bottom: 3.2rem;
+	}
 
-    form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    &-footer {
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 18px;
-        line-height: 22px;
-        color: #3754DB;
-        margin-top: 52px;
-        cursor: pointer;
-    }
+	&-footer {
+		@include font(1.8rem, 2.2rem);
+		margin-top: 5.2rem;
+	}
 }
 </style>

@@ -1,17 +1,11 @@
 export const useGetPhotoUrl = () => {
-    const client = useSupabaseClient();
+	const client = useSupabaseClient();
 
-    const photoUrl = (path: string, bucket: string) => {
-        try {
-            const { data } = client.storage
-                .from(bucket)
-                .getPublicUrl(path);
+	const photoUrl = (path: string, bucket: string) => {
+		const { data } = client.storage.from(bucket).getPublicUrl(path);
 
-            return data.publicUrl;
-        } catch (error) {
-            throw error;
-        }
-    }
+		return data.publicUrl;
+	};
 
-    return { photoUrl };
+	return { photoUrl };
 };

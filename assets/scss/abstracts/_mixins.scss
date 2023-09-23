@@ -1,0 +1,11 @@
+@mixin font($font-size, $line-height) {
+	font-size: $font-size;
+	line-height: $line-height;
+}
+
+@mixin gap($gap) {
+	gap: $gap;
+	-webkit-gap: $gap;
+	-moz-gap: $gap;
+	-ms-gap: $gap;
+}
