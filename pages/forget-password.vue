@@ -38,7 +38,7 @@ const sendResetCode = () => {
 <style lang="scss" scoped>
 .reset-page {
 	width: 100%;
-	height: 100vh;
+	height: 100dvh;
 	background-image: url("~/assets/images/passwordresetbg.png");
 	background-repeat: no-repeat;
 	background-size: cover;

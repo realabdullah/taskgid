@@ -1,20 +1,34 @@
 <script lang="ts" setup>
-const route = useRoute();
+import "v-calendar/style.css";
+import { DatePicker } from "v-calendar";
 
-const { user, profilePhoto, workspaces, activeWorkspace } = storeToRefs(useStore());
-const { fetchUserWorkspaces, setActiveWorkspace } = useStore();
+const { user, profilePhoto, workspaces, activeWorkspace, tasks } = storeToRefs(useStore());
 
 const navs = [
-	{ name: "overview", route: "/dashboard" },
-	{ name: "tasks", route: "/dashboard/tasks" },
+	{ name: "overview", route: `/dashboard/${activeWorkspace.value}` },
+	{ name: "tasks", route: `/dashboard/${activeWorkspace.value}/tasks` },
 	{ name: "settings", route: "/dashboard/settings" },
 ];
 const showToast = ref(false);
 const errorObject = ref({} as Toast);
 const notification = ref(false);
 const showProfilePictureModal = ref(false);
+const date = ref(new Date());
+const currentCalendarTab = ref("calendar");
 
 const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? ({} as Workspace));
+
+const calendarData = computed(() => [
+	...tasks.value.map((task) => ({
+		dates: [task.dueDate],
+		dot: {
+			color: task.status === "completed" ? "#00FF00" : "#FF0000",
+		},
+		popover: {
+			label: task.title + " is due.",
+		},
+	})),
+]);
 
 onMounted(() => {
 	useListen("showToast", (errorObj) => {
@@ -30,70 +44,95 @@ onMounted(() => {
 		showProfilePictureModal.value = value as boolean;
 	});
 });
-
-await fetchUserWorkspaces();
-
-if (route.query.workspace) {
-	setActiveWorkspace(route.query.workspace as string);
-	route.query = {};
-}
 </script>
 
 <template>
-	<div class="dashboard-layout">
-		<aside class="dashboard-layout__left" aria-label="Dashboard Navigation">
-			<div class="workspace-icons">
+	<NuxtLoadingIndicator :height="2" color="#3754db" />
+	<div class="dashboard-layout bg-greyishBlue w-100 d-flex pos-fixed overflow-y-auto">
+		<aside class="dashboard-layout__left w-100 pos-fixed overflow-y-auto overflow-x-hidden d-flex bg-white" aria-label="Dashboard Navigation">
+			<div class="workspace-icons w-100 bg-blue d-flex fd-column ai-center">
 				<button
 					v-for="workspace in workspaces"
 					:key="workspace.id"
-					class="workspace-avatar"
+					class="workspace-avatar bg-blue d-flex ai-center jc-center cursor-pointer"
 					:class="{ active: workspace.id === activeWorkspace }"
-					@click="setActiveWorkspace(workspace.id, 'switch')">
+					@click="(activeWorkspace = workspace.id), navigateTo({ name: 'dashboard', params: { workspace: workspace.id } })">
 					<img :src="`https://ui-avatars.com/api/?name=${workspace.title}&background=fff&color=0000FF`" alt="workspace" />
 				</button>
 
-				<button class="add-workspace" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
+				<button class="add-workspace col-blue cursor-pointer" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
 			</div>
-			<div class="workspace-details">
-				<div class="workspace-detail">
-					<h4>{{ workspaceInfo.title }}</h4>
-					<p>{{ workspaceInfo.title || user.name }}'s Space</p>
+			<div class="workspace-details w-100 d-flex fd-column ai-flex-start">
+				<div class="workspace-detail d-flex fd-column ai-flex-start">
+					<h4 class="fw-bold col-darkBlue">{{ workspaceInfo.title }}</h4>
+					<p class="fw-regular col-grey-3">{{ workspaceInfo.title || user.name }}'s Space</p>
 				</div>
 
-				<div class="workspace-nav">
-					<NuxtLink v-for="(nav, index) in navs" :key="index" :to="nav.route" class="workspace-nav__item" :class="{ active: $route.path === nav.route }">
+				<div class="workspace-nav d-flex ai-flex-start fd-column">
+					<NuxtLink
+						v-for="(nav, index) in navs"
+						:key="index"
+						:to="nav.route"
+						class="workspace-nav__item d-flex ai-center td-none fw-regular tt-capitalize"
+						:class="$route.path === nav.route ? 'fw-bold col-blue' : 'col-grey-3'">
 						<IconsSideNav :variant="nav.name" />
 						<span>{{ nav.name }}</span>
 					</NuxtLink>
 				</div>
 			</div>
 		</aside>
-		<main class="dashboard-layout__center">
-			<header>
-				<label for="search" class="search">
-					<input id="search" type="search" name="search" placeholder="Search your space here..." />
-					<IconsSearch class="search-icon" />
+		<main class="dashboard-layout__center pos-relative w-100">
+			<header class="pos-sticky bg-greyishBlue d-flex ai-center jc-space-between">
+				<label for="search" class="search pos-relative w-100">
+					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
+					<IconsSearch class="search-icon pos-absolute cursor-pointer" />
 				</label>
 
-				<div class="notification-bell">
+				<button class="notification-bell bg-transparent cursor-pointer">
 					<IconsNotificationBell :notification="notification" />
-				</div>
+				</button>
 			</header>
 			<NuxtLoadingIndicator color="#3754DB" />
-			<slot />
-			<BaseToast v-if="showToast" class="toast" :toast-style="errorObject.toastStyle" :type="errorObject.type" :message="errorObject.message" :description="errorObject.description" />
+			<div style="padding-bottom: 5rem">
+				<slot />
+			</div>
+			<BaseToast
+				v-if="showToast"
+				class="toast pos-absolute z-9"
+				:toast-style="errorObject.toastStyle"
+				:type="errorObject.type"
+				:message="errorObject.message"
+				:description="errorObject.description" />
 		</main>
 		<aside class="dashboard-layout__right" aria-label="Dashboard Options">
-			<div class="user-sidebar">
-				<div class="user">
-					<img :src="profilePhoto" alt="ABD" @click="showProfilePictureModal = true" />
+			<div class="user-sidebar w-100 bg-white pos-fixed overflow-y-auto overflow-x-hidden">
+				<div class="user d-flex ai-center jc-center fd-column">
+					<img :src="profilePhoto" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
 
-					<div class="user-detail">
-						<h5>{{ user.name }}</h5>
-						<span>{{ user.email }}</span>
+					<div class="user-detail ta-center">
+						<h5 class="fw-bold col-darkBlue">{{ user.name }}</h5>
+						<span class="fw-regular col-grey-3">{{ user.email }}</span>
 					</div>
 
 					<BaseButton class="btn" value="My Profile" background="#3754DB" color="#FFFFFF" width="108px" />
+
+					<div class="calendar bg-whitishBlue w-100">
+						<div class="calendar__header bg-white d-flex ai-center">
+							<button
+								class="w-100 cursor-pointer"
+								:class="currentCalendarTab === 'calendar' ? 'active bg-blue col-white fw-medium' : 'bg-transparent col-grey fw-regular'"
+								@click="currentCalendarTab = 'calendar'">
+								Calendar
+							</button>
+							<button
+								class="w-100 cursor-pointer"
+								:class="currentCalendarTab === 'reminder' ? 'active bg-blue col-white fw-medium' : 'bg-transparent col-grey fw-regular'"
+								@click="currentCalendarTab = 'reminder'">
+								Reminder
+							</button>
+						</div>
+						<DatePicker v-if="currentCalendarTab === 'calendar'" v-model="date" :attributes="calendarData" transparent borderless />
+					</div>
 				</div>
 			</div>
 		</aside>
@@ -105,215 +144,205 @@ if (route.query.workspace) {
 
 <style lang="scss" scoped>
 .dashboard-layout {
-	width: 100%;
-	height: 100%;
-	max-height: 100vh;
-	background: #f6f8fd;
-	display: grid;
-	grid-template-columns: 300px 1fr 300px;
+	height: 100dvh;
+	padding-bottom: 2rem;
 
 	&__left {
-		height: 100vh;
-		display: flex;
-		gap: 20px;
-		background: #ffffff;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		max-width: 28rem;
+		height: 100dvh;
+		@include gap(2rem);
+
+		@media screen and (max-width: 787px) {
+			max-width: 20rem;
+			@include gap(0rem);
+		}
 
 		.workspace-icons {
-			width: 100%;
-			max-width: 70px;
-			background: #3754db;
-			padding: 16px;
-			padding-top: 100px;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 16px;
+			max-width: 7rem;
+			padding: 1.6rem;
+			padding-top: 10rem;
+			gap: 1.6rem;
+
+			@media screen and (max-width: 787px) {
+				max-width: 5rem;
+			}
 
 			.workspace-avatar {
-				width: 48px;
-				height: 48px;
-				background: #3754db;
-				border: 0;
-				border-radius: 12px;
-				padding: 5px;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				cursor: pointer;
+				width: 4.8rem;
+				height: 4.8rem;
+				border-radius: 1.2rem;
+				padding: 0.5rem;
+
+				@media screen and (max-width: 787px) {
+					width: 3.8rem;
+					height: 3.8rem;
+				}
 
 				img {
-					width: 40px;
-					height: 40px;
+					width: 4rem;
+					height: 4rem;
 					object-fit: cover;
-					border-radius: 10px;
+					border-radius: 1rem;
+
+					@media screen and (max-width: 787px) {
+						width: 3.2rem;
+						height: 3.2rem;
+					}
 				}
 			}
 
 			.active {
-				border: 1.4px solid #fbbe37;
+				border: 0.14rem solid $col-yellowShade;
 			}
 
 			.add-workspace {
-				width: 38px;
-				height: 38px;
-				background: rgba(255, 255, 255, 0.2);
-				border: none;
-				border-radius: 10px;
-				padding: 8px;
-				color: #3754db;
-				cursor: pointer;
+				width: 3.8rem;
+				height: 3.8rem;
+				background: #ffffff33;
+				border-radius: 1rem;
+				padding: 0.8rem;
+
+				@media screen and (max-width: 787px) {
+					width: 3.2rem;
+					height: 3.2rem;
+				}
 			}
 		}
 
 		.workspace-details {
-			width: 100%;
-			max-width: 230px;
-			padding: 20px;
-			padding-top: 100px;
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 80px;
+			max-width: 23rem;
+			padding: 2rem;
+			padding-top: 10rem;
+			@include gap(8rem);
+
+			@media screen and (max-width: 787px) {
+				max-width: 18rem;
+			}
 
 			.workspace-detail {
-				display: flex;
-				flex-direction: column;
-				align-items: flex-start;
-				gap: 4px;
+				@include gap(0.4rem);
 
 				h4 {
-					font-weight: 700;
-					font-size: 20px;
-					line-height: 24px;
-					color: #101c56;
+					@include font(2rem, 2.4rem);
 				}
 
 				p {
-					font-weight: 400;
-					font-size: 14px;
-					line-height: 17px;
-					color: #666666;
+					@include font(1.4rem, 1.7rem);
 				}
 			}
 
 			.workspace-nav {
-				display: flex;
-				align-items: flex-start;
-				flex-direction: column;
-				gap: 30px;
+				@include gap(3rem);
 
 				&__item {
-					display: flex;
-					align-items: center;
-					gap: 10px;
-					text-decoration: none;
-					font-weight: 400;
-					font-size: 16px;
-					line-height: 19px;
-					color: #666666;
-					text-transform: capitalize;
-				}
-
-				.active {
-					font-weight: 700;
-					color: #3754db;
+					@include gap(1rem);
+					@include font(1.6rem, 1.9rem);
 				}
 			}
 		}
 	}
 
 	&__center {
-		position: relative;
-		padding: 25px 40px;
+		margin-left: 28rem;
+		margin-right: calc(25.8rem + 2rem);
+		padding: 2.5rem 4rem;
+
+		@media screen and (max-width: 1110px) {
+			margin-right: 0;
+		}
+
+		@media screen and (max-width: 787px) {
+			margin-left: 20rem;
+		}
 
 		header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 50px;
+			top: 2.5rem;
+			margin-bottom: 5rem;
 
 			.search {
-				position: relative;
-				width: 100%;
-				max-width: 350px;
+				max-width: 35rem;
 
 				input {
-					width: 100%;
-					height: 50px;
-					border: 0.7px solid #a8abbd;
-					border-radius: 12px;
-					background: transparent;
-					padding: 16px;
+					height: 5rem;
+					border: 0.07rem solid #a8abbd;
+					border-radius: 1.2rem;
+					padding: 1.6rem;
 				}
 
 				&-icon {
-					position: absolute;
 					top: 50%;
 					transform: translate(0, -50%);
-					right: 15px;
-					cursor: pointer;
+					right: 1.5rem;
 				}
 			}
 		}
 
 		.toast {
-			position: absolute;
-			top: 80px;
-			right: 40px;
-			z-index: 1000;
+			top: 8rem;
+			right: 4rem;
 		}
 	}
 
 	&__right {
+		@media screen and (max-width: 1110px) {
+			display: none !important;
+		}
 		.user-sidebar {
-			width: 100%;
-			max-width: 258px;
-			background: #ffffff;
-			border-radius: 24px;
-			padding: 20px;
-			position: fixed;
-			right: 20px;
-			top: 20px;
-			bottom: 20px;
+			max-width: 25.8rem;
+			border-radius: 2.4rem;
+			padding: 2rem;
+			right: 2rem;
+			top: 2rem;
+			bottom: 2rem;
 
 			.user {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				flex-direction: column;
-				gap: 24px;
+				@include gap(2.4rem);
 
 				img {
-					width: 100%;
-					max-width: 90px;
-					height: 100%;
-					max-height: 90px;
+					max-width: 9rem;
+					max-height: 9rem;
 					object-fit: cover;
-					border-radius: 16px;
-					box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+					border-radius: 1.6rem;
+					box-shadow: #110c2e26 0 4.8rem 10rem 0;
 				}
 
 				.user-detail {
-					text-align: center;
-
 					h5 {
-						font-weight: 700;
-						font-size: 20px;
-						line-height: 24px;
-						color: #101c56;
-						margin-bottom: 5px;
+						@include font(2rem, 2.4rem);
+						margin-bottom: 0.5rem;
 					}
 
 					span {
-						font-weight: 400;
-						font-size: 14px;
-						line-height: 17px;
-						color: #666666;
+						@include font(1.4rem, 1.7rem);
 					}
 				}
 
 				.btn {
 					align-self: center;
+				}
+
+				.calendar {
+					max-width: 21.8rem;
+					border-radius: 1.2rem;
+					padding: 1.6rem;
+					margin-top: 8.2rem;
+					margin-bottom: 2rem;
+
+					&__header {
+						padding: 0.4rem 0.3rem;
+						margin-bottom: 2rem;
+						border-radius: 0.4rem;
+						@include gap(0.4rem);
+
+						button {
+							@include font(1rem, normal);
+							padding: 0.8rem 1.6rem;
+							border-radius: 0.4rem;
+						}
+					}
 				}
 			}
 		}

@@ -3,6 +3,8 @@ defineProps<{
 	task: Task;
 }>();
 
+const { activeWorkspace } = storeToRefs(useStore());
+
 const getTaskStatus = (status: string) => {
 	switch (status) {
 		case "Pending":
@@ -22,7 +24,7 @@ const getTaskStatus = (status: string) => {
 			<span :class="getTaskStatus(task.status)">{{ task.status }}</span>
 		</div>
 		<p>{{ task.title }}</p>
-		<nuxt-link :to="`/dashboard/tasks/${task.id}`" class="task-url">
+		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url">
 			<span>View Task</span>
 			<IconsArrow variant="right" />
 		</nuxt-link>

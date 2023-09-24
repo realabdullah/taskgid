@@ -19,16 +19,16 @@ const openProfilePictureModal = () => {
 
 		<div class="get-started__todos d-flex fd-column w-100">
 			<button
-				v-if="!!user.profile_picture"
+				v-if="user.profile_picture === ''"
 				class="todo bg-white d-flex ai-center jc-space-between cursor-pointer"
 				:class="{ active: selected === 'profilePicture' }"
 				@click="selectTodo('profilePicture')">
 				<div class="todo-title d-flex ai-center">
 					<IconsGetStarted variant="profile-picture" />
-					<p class="fw-regular col-grey-3">Hey {{ user.name }}, Update your Profile Picture</p>
+					<p class="fw-regular col-grey-3 ta-left">Hey {{ user.name }}, Update your Profile Picture</p>
 				</div>
 				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="openProfilePictureModal">
-					<span>Get Started</span>
+					<span class="text-nowrap">Get Started</span>
 					<IconsArrow variant="right" />
 				</button>
 			</button>
@@ -39,7 +39,7 @@ const openProfilePictureModal = () => {
 					<p class="fw-regular col-grey-3">Create your First Task in your Workspace</p>
 				</div>
 				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="showCreateTaskModal = true">
-					<span>Get Started</span>
+					<span class="text-nowrap">Get Started</span>
 					<IconsArrow variant="right" />
 				</button>
 			</button>
@@ -69,6 +69,7 @@ const openProfilePictureModal = () => {
 
 				p {
 					@include font(1.6rem, 1.9rem);
+					max-width: 30rem;
 				}
 			}
 

@@ -1,5 +1,4 @@
 $colors: (
-	"darkBlue": $col-darkBlue,
 	"purple": $col-purple,
 	"pink": $col-pink,
 	"white": $col-white,
@@ -8,11 +7,15 @@ $colors: (
 	"gradient-purple": $gradient-purple,
 	"blue": $col-blue,
 	"lightBlue": $col-lightBlue,
+	"darkBlue": $col-darkBlue,
+	"whitishBlue": $col-whitishBlue,
+	"greyishBlue": $col-greyishBlue,
 	"grey": $col-grey,
 	"grey-2": $col-grey-2,
 	"grey-3": $col-grey-3,
 	"danger": $col-danger,
 	"black": $col-black,
+	"yellowShade": $col-yellowShade,
 	"transparent": transparent,
 ) !default;
 
@@ -173,6 +176,20 @@ $text-aligns: (
 @each $text-align, $value in $text-aligns {
 	.ta-#{$text-align} {
 		text-align: $value;
+	}
+}
+
+// text transforms
+$text-transforms: (
+	"uppercase": uppercase,
+	"lowercase": lowercase,
+	"capitalize": capitalize,
+	"none": none,
+) !default;
+
+@each $text-transform, $value in $text-transforms {
+	.tt-#{$text-transform} {
+		text-transform: $value;
 	}
 }
 

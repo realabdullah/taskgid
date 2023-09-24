@@ -66,11 +66,12 @@ export const useStore = defineStore(
 			}
 		};
 
-		const setActiveWorkspace = async (value: string, usage = "page-load") => {
-			if (usage === "page-load") {
+		const setActiveWorkspace = async (value = "", usage = "page-load") => {
+			if (value === "") activeWorkspace.value = workspaces.value[0].id;
+			if (value && usage === "page-load") {
 				const workspace = workspaces.value.find((workspace: Workspace) => workspace.title === value || workspace.id === value);
 				activeWorkspace.value = workspace ? workspace.id : workspaces.value[0].id;
-			} else activeWorkspace.value = value;
+			} else if (value !== "") activeWorkspace.value = value;
 			await fetchUserTasks();
 		};
 

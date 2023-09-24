@@ -5,7 +5,6 @@ const props = defineProps<{
 }>();
 
 const { tasks, activeWorkspace } = storeToRefs(useStore());
-const { fetchUserTasks } = useStore();
 
 const priorities = ["Less Important", "Important", "High Priority"];
 const title = ref("");
@@ -55,8 +54,7 @@ const handleSubmission = async () => {
 				.eq("id", props.taskToBeUpdated?.id);
 			if (error) throw new Error(error.message);
 		}
-
-		await fetchUserTasks();
+		submitting.value = false;
 		emit("close");
 	} catch (error) {
 		submitting.value = false;
@@ -73,7 +71,7 @@ const handleSubmission = async () => {
 					<BaseInput v-model="title" label-for="title" label="Task Name" input-type="text" :required="true" border-color="#A8ABBD" />
 					<div class="form-group">
 						<BaseSelect label="Task Priority" :lists="priorities" :selected-value="priority" @selected="updatePriority" />
-						<BaseInput label-for="date" label="Due Date" input-type="date" :model-value="dueDate" :required="true" border-color="#A8ABBD" />
+						<BaseInput v-model="dueDate" label-for="date" label="Due Date" input-type="date" :required="true" border-color="#A8ABBD" />
 					</div>
 					<BaseTextArea v-model="description" name="description" label="Task Description" placeholder="Type your content here...." :required="true" border-color="#A8ABBD" />
 

@@ -1,0 +1,22 @@
+.vc-container {
+	width: 100% !important;
+
+	.vc-header {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
+	.vc-pane,
+	.vc-weeks {
+		min-width: 100% !important;
+	}
+
+	.vc-weeks {
+		padding: 1.6rem 0 !important;
+	}
+
+	.vc-day-content {
+		width: 100% !important;
+		height: 3rem !important;
+	}
+}

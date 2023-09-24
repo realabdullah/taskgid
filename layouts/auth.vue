@@ -13,34 +13,41 @@ const route = useRoute();
 		<div class="auth__layout-right w-100" :style="`order: ${route.path === '/login' ? 1 : 2}`">
 			<slot />
 		</div>
+	</div>
 
-		<div class="auth-cta pos-absolute">
-			<button class="bg-white col-blue fw-medium cursor-pointer" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
-				<slot name="cta" />
-			</button>
-		</div>
+	<div class="auth-cta pos-fixed">
+		<button class="bg-white col-blue fw-medium cursor-pointer" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
+			<slot name="cta" />
+		</button>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .auth__layout {
-	.auth-cta {
-		top: 4.4rem;
-		right: 12rem;
+	max-width: 150rem;
+	margin: 0 auto;
 
-		button {
-			@include font(1.6rem, 1.9rem);
-			width: 18rem;
-			border-radius: 1.2rem;
-			padding: 1.5rem 3rem;
-			border: 0.17rem solid $col-blue;
-		}
+	@media screen and (max-width: 787px) {
+		width: 100%;
+		padding: 2rem;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 
 	&-left {
 		max-width: 68rem;
-		height: 100vh;
+		height: 100dvh;
 		padding: 2rem;
+
+		@media screen and (max-width: 1010px) {
+			max-width: 50rem;
+		}
+
+		@media screen and (max-width: 787px) {
+			display: none !important;
+		}
 
 		.inner {
 			background-image: url("~/assets/images/authleft.png");
@@ -55,6 +62,11 @@ const route = useRoute();
 			letter-spacing: -0.02rem;
 			max-width: 45.4rem;
 			margin: auto;
+
+			@media screen and (max-width: 1010px) {
+				max-width: 100%;
+				padding: 2rem;
+			}
 		}
 
 		.copyright {
@@ -67,6 +79,38 @@ const route = useRoute();
 	&-right {
 		margin-left: 12rem;
 		max-width: calc(100% - 68rem);
+
+		@media screen and (max-width: 1010px) {
+			max-width: calc(100% - 50rem);
+		}
+
+		@media screen and (max-width: 787px) {
+			margin-left: 0;
+			max-width: 100%;
+		}
+
+		@media screen and (min-width: 788px) and (max-width: 1150px) {
+			margin: 2rem;
+			max-width: 100%;
+		}
+	}
+}
+
+.auth-cta {
+	top: 4.4rem;
+	right: 12rem;
+
+	@media screen and (max-width: 787px) {
+		top: 2rem;
+		right: 4rem;
+	}
+
+	button {
+		@include font(1.6rem, 1.9rem);
+		width: 18rem;
+		border-radius: 1.2rem;
+		padding: 1.5rem 3rem;
+		border: 0.17rem solid $col-blue;
 	}
 }
 </style>

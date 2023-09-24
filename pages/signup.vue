@@ -98,6 +98,11 @@ const signUp = async () => {
 .signup__form {
 	max-width: 40rem;
 
+	@media screen and (max-width: 787px) {
+		max-width: 100%;
+		padding: 0 2rem;
+	}
+
 	&-header {
 		@include font(3.2rem, 3.8rem);
 		margin-bottom: 1.2rem;

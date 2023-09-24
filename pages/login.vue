@@ -5,6 +5,9 @@ definePageMeta({
 	middleware: ["guest"],
 });
 
+const { activeWorkspace } = storeToRefs(useStore());
+const { fetchUserWorkspaces, setActiveWorkspace } = useStore();
+
 const form = reactive({
 	email: "",
 	password: "",
@@ -27,8 +30,12 @@ const submitForm = async () => {
 		});
 
 		if (error) throw new Error(error.message);
-		submitting.value = false;
-		navigateTo("/dashboard");
+		setTimeout(async () => {
+			await fetchUserWorkspaces();
+			setActiveWorkspace();
+			submitting.value = false;
+			navigateTo({ name: "dashboard", params: { workspace: activeWorkspace.value } });
+		}, 2000);
 	} catch (error) {
 		loginError.value = error as string;
 		submitting.value = false;

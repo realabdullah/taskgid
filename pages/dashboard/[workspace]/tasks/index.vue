@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 definePageMeta({
 	title: "Tasks - Dashboard",
-	name: "Tasks",
+	name: "tasks",
 	middleware: ["auth"],
 });
 
-const { tasks } = storeToRefs(useStore());
+const { tasks, activeWorkspace } = storeToRefs(useStore());
+const { setActiveWorkspace } = useStore();
 
 const showCreateTaskModal = ref(false);
 const tasksTab = ["All Tasks", "Pending", "In Progress", "Completed"];
@@ -18,7 +19,7 @@ const setActiveTab = (tab: string) => {
 
 	const index = tasksTab.indexOf(tab);
 	const button = document.querySelectorAll(".tasks-bar button")[index] as HTMLElement;
-
+	if (!button) return;
 	indicatorWidth.value = button.offsetWidth;
 	indicatorLeft.value = button.offsetLeft;
 };
@@ -48,30 +49,32 @@ const filteredTasks = computed(() => {
 onMounted(() => {
 	setActiveTab("All Tasks");
 });
+
+await setActiveWorkspace(activeWorkspace.value, "switch");
 </script>
 
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="task-page">
-			<div class="task-page__header">
+			<div class="task-page__header d-flex ai-center jc-space-between">
 				<div class="texts">
-					<h1>Tasks</h1>
-					<p>Your tasks in your space.</p>
+					<h1 class="fw-semiBold col-darkBlue">Tasks</h1>
+					<p class="fw-regular col-grey-2">Your tasks in your space.</p>
 				</div>
 				<BaseButton v-if="tasks.length > 0" class="btn" value="Create Task" background="#3754DB" color="#FFFFFF" width="169px" @click="showCreateTaskModal = true" />
 			</div>
 
 			<div v-if="tasks.length > 0" class="task-page__list">
-				<div class="tasks-bar">
-					<button v-for="(tab, index) in tasksTab" :key="index" :class="{ active: activeTab === tab }" @click="setActiveTab(tab)">
-						<span class="tab">{{ tab }}</span>
-						<span class="count">{{ taskCount(tab) }}</span>
+				<div class="tasks-bar d-flex ai-center pos-relative">
+					<button v-for="(tab, index) in tasksTab" :key="index" class="bg-transparent d-flex ai-center cursor-pointer" :class="{ active: activeTab === tab }" @click="setActiveTab(tab)">
+						<span class="tab fw-regular">{{ tab }}</span>
+						<span class="count d-block fw-medium">{{ taskCount(tab) }}</span>
 					</button>
 
-					<span class="indicator" :style="{ width: `${indicatorWidth}px`, transform: `translateX(${indicatorLeft}px)` }"></span>
+					<span class="indicator pos-absolute bg-blue" :style="{ width: `${indicatorWidth}px`, transform: `translateX(${indicatorLeft}px)` }"></span>
 				</div>
 
-				<div v-if="filteredTasks.length > 0" class="tasks">
+				<div v-if="filteredTasks.length > 0" class="tasks d-grid">
 					<TasksCard v-for="task in filteredTasks" :key="task.id" :task="task" />
 				</div>
 				<TasksEmpty v-else :description="`You have no task ${activeTab.toLowerCase()} yet.`" :extra-text="`Get productive. Have a Task ${activeTab}.`" />
@@ -81,71 +84,48 @@ onMounted(() => {
 		</div>
 
 		<!-- CREATE TASK MODAL -->
-		<TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
+		<TasksCreate v-if="showCreateTaskModal" usage="create" @close="(showCreateTaskModal = false), navigateTo(`/dashboard/${activeWorkspace}/tasks`)" />
 	</NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
 .task-page {
 	&__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-
 		.texts {
 			h1 {
-				font-weight: 600;
-				font-size: 32px;
-				line-height: 38px;
-				color: #101c56;
-				margin-bottom: 12px;
+				@include font(3.2rem, 3.8rem);
+				margin-bottom: 1.2rem;
 			}
 
 			p {
-				font-weight: 400;
-				font-size: 20px;
-				line-height: 24px;
-				color: #636363;
+				@include font(2rem, 2.4rem);
 			}
 		}
 	}
 
 	&__list {
-		margin-top: 42px;
+		margin-top: 4.2rem;
 
 		.tasks-bar {
 			width: fit-content;
-			display: flex;
-			align-items: center;
-			gap: 28px;
-			padding-bottom: 14px;
-			border-bottom: 0.34px solid #a9a9a9;
-			position: relative;
+			@include gap(2.8rem);
+			padding-bottom: 1.4rem;
+			border-bottom: 0.034rem solid #a9a9a9;
 
 			button {
-				border: 0;
-				background: transparent;
-				display: flex;
-				align-items: center;
-				gap: 12px;
-				cursor: pointer;
+				@include gap(1.2rem);
 
 				.tab {
-					font-weight: 400;
-					font-size: 16px;
-					line-height: 19px;
+					@include font(1.6rem, 1.9rem);
 					color: #808080;
 				}
 
 				.count {
-					display: block;
-					font-weight: 500;
-					font-size: 12px;
-					line-height: 14px;
+					@include font(1.2rem, 1.4rem);
 					color: #16171d;
-					padding: 5px 12px;
+					padding: 0.5rem 1.2rem;
 					background: #f0f0f0;
-					border-radius: 12px;
+					border-radius: 1.2rem;
 				}
 			}
 
@@ -162,20 +142,17 @@ onMounted(() => {
 			}
 
 			.indicator {
-				position: absolute;
 				bottom: -0.34px;
 				left: 0;
-				height: 2px;
-				background: #3754db;
+				height: 0.2rem;
 				transition: all 0.3s ease-in-out;
 			}
 		}
 
 		.tasks {
-			margin-top: 20px;
-			display: grid;
-			grid-template-columns: repeat(auto-fit, 248px);
-			gap: 20px;
+			margin-top: 2rem;
+			grid-template-columns: repeat(auto-fit, 24.8rem);
+			@include gap(2rem);
 		}
 	}
 }
