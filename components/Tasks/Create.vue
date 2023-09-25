@@ -17,7 +17,7 @@ const submitting = ref(false);
 const updatePriority = (value: string) => {
 	priority.value = value;
 };
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "task-created"]);
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 
@@ -55,7 +55,7 @@ const handleSubmission = async () => {
 			if (error) throw new Error(error.message);
 		}
 		submitting.value = false;
-		emit("close");
+		emit("task-created");
 	} catch (error) {
 		submitting.value = false;
 	}

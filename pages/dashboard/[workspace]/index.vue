@@ -5,13 +5,13 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { user, tasks, profilePhoto, activeWorkspace } = storeToRefs(useStore());
-const { fetchUserInfo, setActiveWorkspace } = useStore();
+const { user, tasks, profilePhoto } = storeToRefs(useStore());
+const { fetchUserInfo, fetchUserTasks } = useStore();
 
-const showGetStarted = computed(() => tasks.value.length === 0 || profilePhoto.value === "");
+const showGetStarted = computed(() => !tasks || tasks.value.length === 0 || profilePhoto.value === "");
 
-await setActiveWorkspace(activeWorkspace.value, "switch");
 await fetchUserInfo();
+await fetchUserTasks();
 </script>
 
 <template>
@@ -33,7 +33,9 @@ await fetchUserInfo();
 				</div>
 			</div>
 
-			<GetStarted v-if="showGetStarted" />
+			<ClientOnly>
+				<GetStarted v-if="showGetStarted" />
+			</ClientOnly>
 		</div>
 	</NuxtLayout>
 </template>

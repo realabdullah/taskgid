@@ -15,20 +15,24 @@ const notification = ref(false);
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
 const currentCalendarTab = ref("calendar");
+const showAccountPanel = ref(false);
 
 const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? ({} as Workspace));
 
-const calendarData = computed(() => [
-	...tasks.value.map((task) => ({
-		dates: [task.dueDate],
-		dot: {
-			color: task.status === "completed" ? "#00FF00" : "#FF0000",
-		},
-		popover: {
-			label: task.title + " is due.",
-		},
-	})),
-]);
+const calendarData = computed(() =>
+	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
+		? tasks.value
+				.filter((task) => task && task.dueDate)
+				.map((task) => ({ dates: [task.dueDate], dot: { color: task.status === "completed" ? "#00FF00" : "#FF0000" }, popover: { label: task.title + " is due." } }))
+		: [],
+);
+
+const switchWorkspace = (workspaceId: string) => {
+	activeWorkspace.value = workspaceId;
+	navigateTo({ name: "dashboard", params: { workspace: workspaceId } });
+};
+
+const accountToggleStyle = computed(() => (showAccountPanel.value ? "29rem" : "2rem"));
 
 onMounted(() => {
 	useListen("showToast", (errorObj) => {
@@ -56,7 +60,7 @@ onMounted(() => {
 					:key="workspace.id"
 					class="workspace-avatar bg-blue d-flex ai-center jc-center cursor-pointer"
 					:class="{ active: workspace.id === activeWorkspace }"
-					@click="(activeWorkspace = workspace.id), navigateTo({ name: 'dashboard', params: { workspace: workspace.id } })">
+					@click="switchWorkspace(workspace.id)">
 					<img :src="`https://ui-avatars.com/api/?name=${workspace.title}&background=fff&color=0000FF`" alt="workspace" />
 				</button>
 
@@ -81,7 +85,7 @@ onMounted(() => {
 				</div>
 			</div>
 		</aside>
-		<main class="dashboard-layout__center pos-relative w-100">
+		<main class="dashboard-layout__center pos-relative w-100 overflow-x-hidden">
 			<header class="pos-sticky bg-greyishBlue d-flex ai-center jc-space-between">
 				<label for="search" class="search pos-relative w-100">
 					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
@@ -104,7 +108,7 @@ onMounted(() => {
 				:message="errorObject.message"
 				:description="errorObject.description" />
 		</main>
-		<aside class="dashboard-layout__right" aria-label="Dashboard Options">
+		<aside v-show="showAccountPanel" class="dashboard-layout__right" aria-label="Dashboard Options">
 			<div class="user-sidebar w-100 bg-white pos-fixed overflow-y-auto overflow-x-hidden">
 				<div class="user d-flex ai-center jc-center fd-column">
 					<img :src="profilePhoto" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
@@ -136,6 +140,10 @@ onMounted(() => {
 				</div>
 			</div>
 		</aside>
+
+		<button class="pos-fixed menu-toggle bg-white z-9 cursor-pointer d-flex ai-center jc-center" :style="`right: ${accountToggleStyle}`" @click="showAccountPanel = !showAccountPanel">
+			<IconsAccount />
+		</button>
 	</div>
 
 	<!-- UPLOAD PROFILE PICTURE -->
@@ -154,10 +162,20 @@ onMounted(() => {
 		max-width: 28rem;
 		height: 100dvh;
 		@include gap(2rem);
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 
 		@media screen and (max-width: 787px) {
 			max-width: 20rem;
 			@include gap(0rem);
+		}
+
+		@media screen and (max-width: 600px) {
+			max-width: 10rem;
 		}
 
 		.workspace-icons {
@@ -222,8 +240,17 @@ onMounted(() => {
 				max-width: 18rem;
 			}
 
+			@media screen and (max-width: 600px) {
+				max-width: 8rem;
+				padding: 10rem 1.2rem 0;
+			}
+
 			.workspace-detail {
 				@include gap(0.4rem);
+
+				@media screen and (max-width: 600px) {
+					display: none !important;
+				}
 
 				h4 {
 					@include font(2rem, 2.4rem);
@@ -240,6 +267,12 @@ onMounted(() => {
 				&__item {
 					@include gap(1rem);
 					@include font(1.6rem, 1.9rem);
+
+					span {
+						@media screen and (max-width: 600px) {
+							display: none;
+						}
+					}
 				}
 			}
 		}
@@ -256,6 +289,11 @@ onMounted(() => {
 
 		@media screen and (max-width: 787px) {
 			margin-left: 20rem;
+			padding: 2rem;
+		}
+
+		@media screen and (max-width: 600px) {
+			margin-left: 10rem;
 		}
 
 		header {
@@ -287,9 +325,10 @@ onMounted(() => {
 	}
 
 	&__right {
-		@media screen and (max-width: 1110px) {
-			display: none !important;
+		@media screen and (min-width: 1111px) {
+			display: block !important;
 		}
+
 		.user-sidebar {
 			max-width: 25.8rem;
 			border-radius: 2.4rem;
@@ -297,6 +336,20 @@ onMounted(() => {
 			right: 2rem;
 			top: 2rem;
 			bottom: 2rem;
+			box-shadow: #959da533 0 0.8rem 2.4rem;
+			-ms-overflow-style: none;
+			scrollbar-width: none;
+
+			&::-webkit-scrollbar {
+				display: none;
+			}
+
+			@media screen and (max-width: 787px) {
+				right: 1rem;
+				top: 1rem;
+				bottom: 1rem;
+				animation: fade-in-right 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+			}
 
 			.user {
 				@include gap(2.4rem);
@@ -346,6 +399,28 @@ onMounted(() => {
 				}
 			}
 		}
+	}
+
+	.menu-toggle {
+		bottom: 2rem;
+		padding: 1rem;
+		border-radius: 1rem;
+		box-shadow: #959da533 0 0.8rem 2.4rem;
+
+		@media screen and (min-width: 1111px) {
+			display: none !important;
+		}
+	}
+}
+
+@keyframes fade-in-right {
+	0% {
+		transform: translateX(50px);
+		opacity: 0;
+	}
+	100% {
+		transform: translateX(0);
+		opacity: 1;
 	}
 }
 </style>

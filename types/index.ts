@@ -3,7 +3,6 @@ export {};
 declare global {
 	interface Task {
 		id: string;
-		user_id: string;
 		title: string;
 		description: string;
 		priority: string;
@@ -11,28 +10,34 @@ declare global {
 		dueDate: string;
 		status: string;
 		task_no: number;
+		workspace_id: string;
+		user_id: string;
+		assigned_to: string;
+	}
+
+	interface Workspace {
+		id: string;
+		created_at: string;
+		title: string;
+		description: string;
+		created_by: string;
+		members: string[];
+		tasks: Task[];
 	}
 
 	interface User {
 		id: string;
 		name: string;
 		email: string;
-		profile_picture: string;
 		username: string;
+		profile_picture: string;
+		workspaces: Workspace[];
 	}
 
 	interface Toast {
 		toastStyle: string;
 		type: string;
 		message: string;
-		description: string;
-	}
-
-	interface Workspace {
-		id: string;
-		user_id: string;
-		created_at: string;
-		title: string;
 		description: string;
 	}
 }

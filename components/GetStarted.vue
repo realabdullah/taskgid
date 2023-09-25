@@ -1,15 +1,12 @@
 <script lang="ts" setup>
-const { user, tasks } = storeToRefs(useStore());
+const { user, tasks, activeWorkspace } = storeToRefs(useStore());
 
 const selected = ref("");
 const showCreateTaskModal = ref(false);
 
-const selectTodo = (value: string) => {
-	selected.value = value;
-};
-
-const openProfilePictureModal = () => {
-	useEvent("uploadProfilePicture", true);
+const onTaskCreated = () => {
+	showCreateTaskModal.value = false;
+	navigateTo(`/dashboard/${activeWorkspace.value}/tasks`);
 };
 </script>
 
@@ -22,21 +19,21 @@ const openProfilePictureModal = () => {
 				v-if="user.profile_picture === ''"
 				class="todo bg-white d-flex ai-center jc-space-between cursor-pointer"
 				:class="{ active: selected === 'profilePicture' }"
-				@click="selectTodo('profilePicture')">
+				@click="selected = 'profilePicture'">
 				<div class="todo-title d-flex ai-center">
 					<IconsGetStarted variant="profile-picture" />
 					<p class="fw-regular col-grey-3 ta-left">Hey {{ user.name }}, Update your Profile Picture</p>
 				</div>
-				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="openProfilePictureModal">
+				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="useEvent('uploadProfilePicture', true)">
 					<span class="text-nowrap">Get Started</span>
 					<IconsArrow variant="right" />
 				</button>
 			</button>
 
-			<button v-if="tasks.length === 0" class="todo bg-white d-flex ai-center jc-space-between cursor-pointer" :class="{ active: selected === 'firstTask' }" @click="selectTodo('firstTask')">
+			<button v-if="tasks.length === 0" class="todo bg-white d-flex ai-center jc-space-between cursor-pointer" :class="{ active: selected === 'firstTask' }" @click="selected = 'firstTask'">
 				<div class="todo-title d-flex ai-center">
 					<IconsGetStarted variant="first-task" />
-					<p class="fw-regular col-grey-3">Create your First Task in your Workspace</p>
+					<p class="fw-regular col-grey-3 ta-left">Create your First Task in your Workspace</p>
 				</div>
 				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="showCreateTaskModal = true">
 					<span class="text-nowrap">Get Started</span>
@@ -47,7 +44,7 @@ const openProfilePictureModal = () => {
 	</div>
 
 	<!-- CREATE TASK MODAL -->
-	<TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" />
+	<TasksCreate v-if="showCreateTaskModal" usage="create" @task-created="onTaskCreated" @close="showCreateTaskModal = false" />
 </template>
 
 <style lang="scss" scoped>

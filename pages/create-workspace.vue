@@ -31,15 +31,16 @@ const createWorkspace = async () => {
 	try {
 		submitting.value = true;
 		const payload = {
-			user_id: user.value?.id,
 			title: name.value,
 			description: description.value,
+			created_by: user.value?.id,
+			members: [user.value?.id],
+			tasks: [],
 		};
 
 		const { error } = await client.from("workspaces").insert(payload as any);
 
 		if (error) throw new Error(error.message);
-
 		navigateTo({ path: "/dashboard", query: { workspace: name.value } });
 	} catch (error) {
 		submitting.value = false;
@@ -47,8 +48,10 @@ const createWorkspace = async () => {
 };
 
 const handleNext = async () => {
-	if (workSpaceState.value === "name" && name.value !== "") workSpaceState.value = "description";
-	else await createWorkspace();
+	if (workSpaceState.value === "name" && name.value.trim() !== "") workSpaceState.value = "description";
+	else if (workSpaceState.value === "description" && description.value.trim() !== "") {
+		await createWorkspace();
+	}
 };
 </script>
 
@@ -59,19 +62,13 @@ const handleNext = async () => {
 				<h1 class="workspace__create-header fw-bold col-black">{{ pageHeadings.header }}</h1>
 				<p class="workspace__create-description fw-regular col-grey">{{ pageHeadings.description }}</p>
 
-				<div class="workspace__create-form w-100">
+				<form class="workspace__create-form w-100" @submit.prevent="handleNext">
 					<BaseInput v-if="workSpaceState === 'name'" v-model="name" input-type="text" label-for="workspace-name" label="Workspace Name" border-color="#2746D8" :required="true" />
 
 					<BaseInput v-else v-model="description" input-type="text" label-for="workspace-desc" label="Workspace Description" border-color="#2746D8" :required="true" />
-				</div>
 
-				<BaseButton
-					width="204px"
-					type="button"
-					:value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'"
-					background="#3754DB"
-					color="#FFFFFF"
-					@click="handleNext" />
+					<BaseButton width="204px" type="submit" :value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'" background="#3754DB" color="#FFFFFF" />
+				</form>
 			</div>
 		</div>
 	</NuxtLayout>

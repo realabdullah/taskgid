@@ -6,6 +6,7 @@ interface EmptyProps {
 }
 
 defineProps<EmptyProps>();
+defineEmits(["create-task"]);
 </script>
 
 <template>
@@ -16,7 +17,7 @@ defineProps<EmptyProps>();
 		<p>{{ description }}</p>
 		<p>{{ extraText }}</p>
 
-		<BaseButton v-if="!!buttonText" class="btn" :value="buttonText" background="#3754DB" color="#FFFFFF" width="213px" />
+		<BaseButton v-if="!!buttonText" class="btn" :value="buttonText" background="#3754DB" color="#FFFFFF" width="213px" @click="$emit('create-task')" />
 	</div>
 </template>
 

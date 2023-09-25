@@ -38,7 +38,8 @@ const signUp = async () => {
 		if (userError) throw new Error(userError.message);
 
 		await sendWelcomeEmail(form.email, form.name);
-		navigateTo("/create-workspace");
+
+		navigateTo({ name: "home", replace: true });
 	} catch (error) {
 		submissionError.value = useFormatError(error as string);
 		submitting.value = false;

@@ -5,8 +5,8 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { tasks, activeWorkspace } = storeToRefs(useStore());
-const { setActiveWorkspace } = useStore();
+const { tasks } = storeToRefs(useStore());
+const { fetchUserInfo, fetchUserTasks } = useStore();
 
 const showCreateTaskModal = ref(false);
 const tasksTab = ["All Tasks", "Pending", "In Progress", "Completed"];
@@ -46,11 +46,17 @@ const filteredTasks = computed(() => {
 	});
 });
 
+const taskCreated = async () => {
+	await fetchUserTasks();
+	showCreateTaskModal.value = false;
+};
+
 onMounted(() => {
 	setActiveTab("All Tasks");
 });
 
-await setActiveWorkspace(activeWorkspace.value, "switch");
+await fetchUserInfo();
+await fetchUserTasks();
 </script>
 
 <template>
@@ -65,8 +71,13 @@ await setActiveWorkspace(activeWorkspace.value, "switch");
 			</div>
 
 			<div v-if="tasks.length > 0" class="task-page__list">
-				<div class="tasks-bar d-flex ai-center pos-relative">
-					<button v-for="(tab, index) in tasksTab" :key="index" class="bg-transparent d-flex ai-center cursor-pointer" :class="{ active: activeTab === tab }" @click="setActiveTab(tab)">
+				<div class="tasks-bar d-flex ai-center pos-relative overflow-x-auto">
+					<button
+						v-for="(tab, index) in tasksTab"
+						:key="index"
+						class="bg-transparent d-flex ai-center cursor-pointer text-nowrap"
+						:class="{ active: activeTab === tab }"
+						@click="setActiveTab(tab)">
 						<span class="tab fw-regular">{{ tab }}</span>
 						<span class="count d-block fw-medium">{{ taskCount(tab) }}</span>
 					</button>
@@ -80,17 +91,27 @@ await setActiveWorkspace(activeWorkspace.value, "switch");
 				<TasksEmpty v-else :description="`You have no task ${activeTab.toLowerCase()} yet.`" :extra-text="`Get productive. Have a Task ${activeTab}.`" />
 			</div>
 
-			<TasksEmpty v-else button-text="Create a Task" description="You have no task created in your workspace yet." extra-text="Get productive. Create a Task Now." />
+			<TasksEmpty
+				v-else
+				button-text="Create a Task"
+				description="You have no task created in your workspace yet."
+				extra-text="Get productive. Create a Task Now."
+				@create-task="showCreateTaskModal = true" />
 		</div>
 
 		<!-- CREATE TASK MODAL -->
-		<TasksCreate v-if="showCreateTaskModal" usage="create" @close="(showCreateTaskModal = false), navigateTo(`/dashboard/${activeWorkspace}/tasks`)" />
+		<TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" @task-created="taskCreated" />
 	</NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
 .task-page {
 	&__header {
+		@media screen and (max-width: 930px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
 		.texts {
 			h1 {
 				@include font(3.2rem, 3.8rem);
@@ -151,7 +172,8 @@ await setActiveWorkspace(activeWorkspace.value, "switch");
 
 		.tasks {
 			margin-top: 2rem;
-			grid-template-columns: repeat(auto-fit, 24.8rem);
+			grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+			// grid-template-columns: repeat(auto-fit, 24.8rem);
 			@include gap(2rem);
 		}
 	}

@@ -14,6 +14,9 @@ export const useStore = defineStore(
 		const setUser = (newUser: User) => {
 			user.value = newUser;
 			profilePhoto.value = newUser.profile_picture;
+			workspaces.value = newUser.workspaces;
+			if (activeWorkspace.value === "") activeWorkspace.value = workspaces.value[0].id;
+			// tasks.value = workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value)?.tasks || [];
 		};
 
 		const fetchUserTasks = async () => {
@@ -35,12 +38,14 @@ export const useStore = defineStore(
 			try {
 				const { data, error } = await client
 					.from("users")
-					.select("*")
-					.eq("id", useSupabaseUser().value?.id);
+					.select("*, workspaces:workspaces(id, title, description, created_by, members)")
+					.eq("id", useSupabaseUser().value?.id)
+					.contains("workspaces.members", [useSupabaseUser().value?.id]);
 
-				if (error) throw error;
+				if (error) throw new Error(error.message);
+
 				setUser(data[0]);
-			} catch {
+			} catch (error) {
 				throw createError({
 					message: "An error occurred while fetching your user information. Please try again!",
 					statusCode: 500,
@@ -48,31 +53,17 @@ export const useStore = defineStore(
 			}
 		};
 
-		const fetchUserWorkspaces = async () => {
-			try {
-				const { data, error } = await client
-					.from("workspaces")
-					.select("*")
-					.eq("user_id", useSupabaseUser().value?.id);
-
-				if (error) throw error;
-				workspaces.value = data as Workspace[];
-				if (activeWorkspace.value === "") activeWorkspace.value = workspaces.value[0].id;
-			} catch {
-				throw createError({
-					message: "An error occurred while fetching your workspaces. Please try again!",
-					statusCode: 500,
-				});
-			}
+		const setWorkspace = (name: string) => {
+			const workspace = workspaces.value.find((workspace: Workspace) => workspace.title === name);
+			if (workspace) activeWorkspace.value = workspace.id;
+			else activeWorkspace.value = workspaces.value[0].id;
 		};
 
-		const setActiveWorkspace = async (value = "", usage = "page-load") => {
-			if (value === "") activeWorkspace.value = workspaces.value[0].id;
-			if (value && usage === "page-load") {
-				const workspace = workspaces.value.find((workspace: Workspace) => workspace.title === value || workspace.id === value);
-				activeWorkspace.value = workspace ? workspace.id : workspaces.value[0].id;
-			} else if (value !== "") activeWorkspace.value = value;
-			await fetchUserTasks();
+		const logout = async () => {
+			await client.auth.signOut();
+			const cookie = useCookie("store");
+			cookie.value = null;
+			navigateTo("/login");
 		};
 
 		return {
@@ -82,13 +73,11 @@ export const useStore = defineStore(
 			setUser,
 			fetchUserTasks,
 			fetchUserInfo,
-			fetchUserWorkspaces,
 			workspaces,
 			activeWorkspace,
-			setActiveWorkspace,
+			setWorkspace,
+			logout,
 		};
 	},
-	{
-		persist: true,
-	},
+	{ persist: true },
 );
