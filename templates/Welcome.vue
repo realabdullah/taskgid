@@ -36,21 +36,21 @@ const footer = {
 <template>
 	<e-html lang="en">
 		<e-head />
-		<e-preview preview="- Streamline Your Work, Boost Productivity!" />
+		<e-preview preview="Enhance Efficiency and Elevate Productivity with ErgoSphere!" />
 		<e-section :style="main">
 			<e-container :style="container">
 				<e-text :style="paragraph">Thank you for signing up {{ name }}!</e-text>
 				<e-text :style="paragraph">
-					Welcome to XYZ! We are thrilled to have you on board and excited to help you streamline your work, boost productivity, and achieve your goals more efficiently than ever before.
-					This email serves as a warm introduction to our platform, guiding you through the key features and providing you with essential information to get started.
+					Welcome to ErgoSphere! We are thrilled to have you on board and excited to help you streamline your work, boost productivity, and achieve your goals more efficiently than ever
+					before.
 				</e-text>
 				<e-text :style="paragraph">
-					XYZ is designed to simplify the way you manage tasks, projects, and collaborations. With our intuitive interface and powerful functionalities, you'll be able to organize, track,
-					and prioritize your work effortlessly.
+					ErgoSphere is designed to simplify the way you manage tasks and collaborations. With our intuitive interface and powerful functionalities, you'll be able to organize, track, and
+					prioritize your work effortlessly.
 				</e-text>
 				<e-text :style="paragraph">We look forward to being a part of your journey towards success!</e-text>
 				<e-hr :style="hr" />
-				<e-text :style="footer">Best regards, ABD</e-text>
+				<e-text :style="footer">Best regards, The ErgoSphere Team!</e-text>
 			</e-container>
 		</e-section>
 	</e-html>

@@ -1,28 +1,23 @@
-import * as nodemailer from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
+"use strict";
+
+import formData from "form-data";
+import Mailgun from "mailgun.js";
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody(event);
 
-	const transporter = nodemailer.createTransport({
-		service: "gmail",
-		auth: {
-			type: "OAuth2",
-			user: process.env.EMAIL,
-			pass: process.env.PASSWORD,
-			clientId: process.env.CLIENT_ID,
-			clientSecret: process.env.CLIENT_SECRET,
-			refreshToken: process.env.REFRESH_TOKEN,
-		},
-	} as SMTPTransport.Options);
+	const mailgun = new Mailgun(formData);
+	const mg = mailgun.client({
+		username: "api",
+		key: process.env.MAILGUN_API_KEY!,
+	});
 
-	const options = {
+	const data = {
+		from: `ErgoSphere <${process.env.EMAIL}>`,
 		to: body.email,
 		subject: body.subject,
 		html: body.template,
 	};
 
-	const info = await transporter.sendMail(options);
-
-	return { messageId: info.messageId, previewUrl: nodemailer.getTestMessageUrl(info) as string };
+	await mg.messages.create(process.env.MAILGUN_DOMAIN!, data);
 });

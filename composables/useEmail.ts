@@ -9,7 +9,7 @@ export const useEmail = () => {
 			body: {
 				template,
 				email,
-				subject: "Welcome to XYZ Task Management ",
+				subject: "Welcome to ErgoSphere",
 			},
 		});
 	};
