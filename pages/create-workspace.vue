@@ -63,11 +63,10 @@ const handleNext = async () => {
 				<p class="workspace__create-description fw-regular col-grey">{{ pageHeadings.description }}</p>
 
 				<form class="workspace__create-form w-100" @submit.prevent="handleNext">
-					<BaseInput v-if="workSpaceState === 'name'" v-model="name" input-type="text" label-for="workspace-name" label="Workspace Name" border-color="#2746D8" :required="true" />
+					<BaseInput v-if="workSpaceState === 'name'" id="workspace-name" v-model="name" type="text" label="Workspace Name" />
+					<BaseInput v-else id="workspace-desc" v-model="description" type="text" label="Workspace Description" />
 
-					<BaseInput v-else v-model="description" input-type="text" label-for="workspace-desc" label="Workspace Description" border-color="#2746D8" :required="true" />
-
-					<BaseButton width="204px" type="submit" :value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'" background="#3754DB" color="#FFFFFF" />
+					<BaseButton :value="submitting ? 'loading' : workSpaceState === 'name' ? 'Next' : 'Create Workspace'" />
 				</form>
 			</div>
 		</div>
@@ -88,6 +87,10 @@ const handleNext = async () => {
 		&-description {
 			@include font(1.6rem, 1.9rem);
 			margin-bottom: 3.2rem;
+		}
+
+		&-form {
+			@include gap(2.4rem);
 		}
 	}
 }

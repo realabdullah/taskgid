@@ -9,8 +9,6 @@ const navs = [
 	{ name: "tasks", route: `/dashboard/${activeWorkspace.value}/tasks` },
 	{ name: "settings", route: "/dashboard/settings" },
 ];
-const showToast = ref(false);
-const errorObject = ref({} as Toast);
 const notification = ref(false);
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
@@ -22,7 +20,7 @@ const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
 		? tasks.value
-				.filter((task) => task && task.dueDate)
+				.filter((task) => task?.dueDate)
 				.map((task) => ({ dates: [task.dueDate], dot: { color: task.status === "completed" ? "#00FF00" : "#FF0000" }, popover: { label: task.title + " is due." } }))
 		: [],
 );
@@ -34,20 +32,7 @@ const switchWorkspace = (workspaceId: string) => {
 
 const accountToggleStyle = computed(() => (showAccountPanel.value ? "29rem" : "2rem"));
 
-onMounted(() => {
-	useListen("showToast", (errorObj) => {
-		errorObject.value = errorObj as Toast;
-		showToast.value = true;
-
-		setTimeout(() => {
-			showToast.value = false;
-		}, 3500);
-	});
-
-	useListen("uploadProfilePicture", (value) => {
-		showProfilePictureModal.value = value as boolean;
-	});
-});
+onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.value = value)));
 </script>
 
 <template>
@@ -100,13 +85,6 @@ onMounted(() => {
 			<div style="padding-bottom: 5rem">
 				<slot />
 			</div>
-			<BaseToast
-				v-if="showToast"
-				class="toast pos-absolute z-9"
-				:toast-style="errorObject.toastStyle"
-				:type="errorObject.type"
-				:message="errorObject.message"
-				:description="errorObject.description" />
 		</main>
 		<aside v-show="showAccountPanel" class="dashboard-layout__right" aria-label="Dashboard Options">
 			<div class="user-sidebar w-100 bg-white pos-fixed overflow-y-auto overflow-x-hidden">
@@ -118,7 +96,7 @@ onMounted(() => {
 						<span class="fw-regular col-grey-3">{{ user.email }}</span>
 					</div>
 
-					<BaseButton class="btn" value="My Profile" background="#3754DB" color="#FFFFFF" width="108px" />
+					<BaseButton class="btn" value="My Profile" />
 
 					<div class="calendar bg-whitishBlue w-100">
 						<div class="calendar__header bg-white d-flex ai-center">
@@ -371,10 +349,6 @@ onMounted(() => {
 					span {
 						@include font(1.4rem, 1.7rem);
 					}
-				}
-
-				.btn {
-					align-self: center;
 				}
 
 				.calendar {

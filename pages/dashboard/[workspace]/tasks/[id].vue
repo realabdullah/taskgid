@@ -28,12 +28,7 @@ const deleteTask = async () => {
 
 	const { error } = await client.from("tasks").delete().eq("id", task.id);
 	if (error) {
-		useEvent("showToast", {
-			style: "solid",
-			type: "error",
-			message: "Failed!",
-			description: "An error occured while trying to delete task.",
-		});
+		useEvent("toast", "An error occured while trying to delete task.");
 		return;
 	}
 
@@ -77,8 +72,8 @@ await fetchTask();
 					<span class="status d-block fw-medium col-green bg-white" :class="getTaskStatus(task.status)">{{ task.status }}</span>
 					<p class="desc fw-regular col-grey-3">{{ task.description }}</p>
 					<div class="ctas d-flex ai-center">
-						<BaseButton v-if="task.status === 'Pending'" class="btn text-nowrap" value="Work on it Now" background="#3754DB" color="#FFFFFF" width="180px" />
-						<BaseButton v-else-if="task.status === 'In Progress'" class="btn text-nowrap" value="Mark As Done" background="#00C271" color="#FFFFFF" width="180px" />
+						<BaseButton v-if="task.status === 'Pending'" class="btn text-nowrap" value="Work on it Now" />
+						<BaseButton v-else-if="task.status === 'In Progress'" class="btn text-nowrap" value="Mark As Done" />
 						<div v-else-if="task.status === 'Completed'" class="task-completed d-flex ai-center">
 							<IconsCompleted />
 							<span class="col-green fw-medium">This task has been completed</span>
@@ -118,9 +113,9 @@ await fetchTask();
 		<TasksCreate v-if="showUpdateTaskModal" usage="update" :task-to-be-updated="task" @close="showUpdateTaskModal = false" @task-created="updateTask" />
 
 		<!-- DELETE TASK -->
-		<BaseModal v-if="showDeleteModal" width="500px" @close-modal="showDeleteModal = false">
+		<BaseModal v-if="showDeleteModal" width="50rem" @close-modal="showDeleteModal = false">
 			<template #default>
-				<div class="delete-task">
+				<div class="delete-task d-flex fd-column">
 					<h1 class="fw-semiBold col-black">Delete Task</h1>
 					<p class="fw-regular col-grey-3">
 						Are you sure you want to delete the task
@@ -128,8 +123,8 @@ await fetchTask();
 						? This task is {{ task.status.toLowerCase() }}.
 					</p>
 					<div class="delete-task__ctas d-flex ai-center">
-						<BaseButton value="No" background="#3754DB" color="#FFFFFF" width="120px" @click="showDeleteModal = false" />
-						<BaseButton value="Yes" background="#FFF0F0" color="#B80020" width="120px" @click="deleteTask" />
+						<BaseButton value="No" usage="button" @click="showDeleteModal = false" />
+						<BaseButton value="Yes" usage="button" type="danger" @click="deleteTask" />
 					</div>
 				</div>
 			</template>
@@ -286,14 +281,14 @@ await fetchTask();
 }
 
 .delete-task {
-	padding: 5rem;
+	@include gap(1.5rem);
+	padding: 3rem;
 
 	h1 {
 		@include font(2.8rem, 3.4rem);
 	}
 
 	p {
-		margin-top: 1.5rem;
 		@include font(1.8rem, 2.4rem);
 	}
 

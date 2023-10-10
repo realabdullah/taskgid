@@ -10,12 +10,7 @@ const form = reactive({
 	password: "",
 });
 const submitting = ref(false);
-const loginError = ref("");
 const client = useSupabaseAuthClient();
-
-watchEffect(() => {
-	if (form.email !== "" && form.password !== "") loginError.value = "";
-});
 
 const submitForm = async () => {
 	try {
@@ -31,44 +26,22 @@ const submitForm = async () => {
 		submitting.value = false;
 		navigateTo({ name: "home", replace: true });
 	} catch (error) {
-		loginError.value = error as string;
 		submitting.value = false;
-		setTimeout(() => {
-			loginError.value = "";
-		}, 2000);
+		useEvent("toast", useFormatError(error as string));
 	}
 };
 </script>
 
 <template>
 	<NuxtLayout name="auth">
-		<BaseToast v-if="!!loginError" toast-style="solid" type="error" message="Login Error!" :description="loginError" />
 		<template #cta>Create Account</template>
 		<div class="login__form d-flex fd-column jc-center ai-flex-start w-100 h-100">
 			<h5 class="login__form-header fw-bold col-black">Welcome Back.</h5>
 
 			<form class="d-flex fd-column jc-center ai-center w-100" @submit.prevent="submitForm">
-				<BaseInput
-					v-model="form.email"
-					input-type="email"
-					label-for="email"
-					label="Email Address"
-					placeholder="anon@anon.anon"
-					hint="Example. mano@gmail.com"
-					border-color="#2746D8"
-					:required="true" />
-
-				<BaseInput
-					v-model="form.password"
-					input-type="password"
-					label-for="password"
-					label="Enter Your Password"
-					placeholder="Enter password"
-					hint="Upto 8 characters with an Uppercase, symbol and number"
-					border-color="#2746D8"
-					:required="true" />
-
-				<BaseButton width="20.4rem" :value="submitting ? 'loading' : 'Log In'" background="#3754DB" color="#FFFFFF" />
+				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" :required="true" />
+				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :required="true" />
+				<BaseButton :value="submitting ? 'loading' : 'Log In'" />
 			</form>
 
 			<NuxtLink to="/forget-password" class="login__form-footer col-blue td-none fw-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
@@ -78,17 +51,18 @@ const submitForm = async () => {
 
 <style lang="scss" scoped>
 .login__form {
-	max-width: 40rem;
-	margin: 0 auto;
-
 	&-header {
 		@include font(3.2rem, 3.8rem);
 		margin-bottom: 3.2rem;
 	}
 
+	form {
+		@include gap(2.4rem);
+	}
+
 	&-footer {
 		@include font(1.8rem, 2.2rem);
-		margin-top: 5.2rem;
+		margin-top: 2rem;
 	}
 }
 </style>

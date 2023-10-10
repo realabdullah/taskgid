@@ -1,87 +1,55 @@
 <script lang="ts" setup>
-interface InputTextProps {
-	labelFor?: string;
+const {
+	id,
+	label,
+	type,
+	required = true,
+} = defineProps<{
+	id: string;
 	label?: string;
-	inputType: string;
-	placeholder?: string;
-	hint?: string;
+	type: string;
 	required?: boolean;
-	borderColor?: string;
-}
+}>();
 
-const { labelFor } = defineProps<InputTextProps>();
 const modelValue = defineModel<string | number>();
 
 const togglePassword = () => {
-	const input = document.getElementById(labelFor!) as HTMLInputElement;
+	const input = document.getElementById(id) as HTMLInputElement;
 	if (input.type === "password") input.type = "text";
 	else input.type = "password";
 };
 </script>
 
 <template>
-	<label :for="labelFor">
-		<span v-if="!!label" class="form-label">{{ label }}</span>
-		<input :id="labelFor" v-model="modelValue" :type="inputType" :name="labelFor" :placeholder="placeholder" :required="required" :style="`border: 0.6px solid ${borderColor};`" />
-		<span v-if="!!hint" class="form-hint">{{ hint }}</span>
+	<label :for="id" class="w-100 d-flex fd-column ai-flex-start jc-center">
+		<span v-if="!!label" class="form-label col-grey fw-regular">{{ label }}</span>
+		<div class="pos-relative w-100">
+			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent fw-regular col-grey-2 bordered" />
 
-		<span v-if="inputType === 'password'" class="eye" @click="togglePassword">
-			<IconsEye />
-		</span>
+			<span v-if="type === 'password'" class="eye pos-absolute cursor-pointer" @click="togglePassword">
+				<IconsEye />
+			</span>
+		</div>
 	</label>
 </template>
 
 <style lang="scss" scoped>
 label {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: flex-start;
-	position: relative;
-
-	&:not(:last-child) {
-		margin-bottom: 24px;
-	}
-
 	.eye {
-		position: absolute;
-		right: 15px;
+		right: 1.5rem;
 		top: 50%;
-		transform: translateY(-25%);
-		cursor: pointer;
+		transform: translate(0, -50%);
 	}
 
 	.form-label {
-		font-weight: 400;
-		font-size: 16px;
-		line-height: 19px;
-		color: #2c2e3a;
-		margin-bottom: 14px;
+		@include font(1.6rem, 1.9rem);
+		margin-bottom: 1.4rem;
 	}
 
 	input {
-		width: -webkit-fill-available;
-		background: transparent;
-		border-radius: 12px;
-		padding: 15px;
-		font-weight: 400;
-		font-size: 16px;
-		line-height: 19px;
-		color: #13236c;
-		margin-bottom: 8px;
-
-		&::placeholder {
-			color: #13236c;
-		}
-	}
-
-	.form-hint {
-		font-weight: 400;
-		font-size: 12px;
-		line-height: 14px;
-		color: #6e7391;
-		display: block;
+		border-radius: 1.2rem;
+		padding: 1.5rem;
+		@include font(1.6rem, 1.9rem);
 	}
 }
 

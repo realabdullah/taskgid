@@ -1,22 +1,23 @@
 <script lang="ts" setup>
-import { useStore } from "@/store/index";
+const { profilePicture } = defineProps<{
+	profilePicture: string;
+}>();
 
-const store = useStore();
+const { profilePhoto } = storeToRefs(useStore());
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);
 const pictureFile = ref("");
 const uploading = ref(false);
-const pictureUrl = ref("");
-
-const props = defineProps<{
-	profilePicture: string;
-}>();
-pictureUrl.value = props.profilePicture;
+const pictureUrl = ref(profilePicture);
 
 const emit = defineEmits(["close"]);
 
 const uploadProfilePicture = async () => {
 	try {
+		if (pictureFile.value === "") {
+			useEvent("toast", "Please select a picture");
+			return;
+		}
 		const userId = useSupabaseUser().value?.id;
 		uploading.value = true;
 		const { error } = await useSupabaseClient().storage.from("images").upload(`profilePhotos/profile-${userId}.png`, pictureFile.value, {
@@ -30,7 +31,7 @@ const uploadProfilePicture = async () => {
 			.from("users")
 			.update({ profile_picture: pictureUrl.value } as never)
 			.eq("id", userId);
-		store.profilePhoto = pictureUrl.value;
+		profilePhoto.value = pictureUrl.value;
 		uploading.value = false;
 		photoUploaded.value = true;
 
@@ -46,8 +47,10 @@ const previewImage = (e: any) => {
 	const reader = new FileReader();
 
 	reader.onload = (e) => {
-		pictureUrl.value = e.target.result as string;
-		pictureSelected.value = true;
+		if (e.target) {
+			pictureUrl.value = e.target.result as string;
+			pictureSelected.value = true;
+		}
 	};
 
 	reader.readAsDataURL(file);
@@ -56,9 +59,9 @@ const previewImage = (e: any) => {
 </script>
 
 <template>
-	<BaseModal width="460px" @close-modal="$emit('close')">
+	<BaseModal width="46rem" @close-modal="$emit('close')">
 		<template #default>
-			<div class="profile-uploader">
+			<div class="profile-uploader d-flex fd-column">
 				<h3 class="fw-bold">{{ photoUploaded ? "Profile picture taken" : !!pictureUrl ? "Change your profile picture" : "Upload your profile picture" }}</h3>
 				<label class="profile-container d-block pos-relative w-100 cursor-pointer" for="profilePicture">
 					<img class="w-100 h-100" :src="pictureUrl || 'https://i.ibb.co/kBGCJnQ/Group-67.png'" alt="photo" />
@@ -67,14 +70,7 @@ const previewImage = (e: any) => {
 
 					<input id="profilePicture" class="d-none" type="file" accept="image/png, image/jpg, image/jpeg" @change="previewImage" />
 				</label>
-				<BaseButton
-					v-if="!photoUploaded"
-					width="100%"
-					:value="uploading ? 'loading' : 'Upload Picture'"
-					background="#3754DB"
-					color="#FFFFFF"
-					:disabled="!pictureSelected"
-					@click="uploadProfilePicture" />
+				<BaseButton v-if="!photoUploaded" usage="button" :value="uploading ? 'loading' : 'Upload Picture'" @click="uploadProfilePicture" />
 			</div>
 		</template>
 	</BaseModal>
@@ -83,13 +79,13 @@ const previewImage = (e: any) => {
 <style lang="scss" scoped>
 .profile-uploader {
 	padding: 5rem;
+	@include gap(2.4rem);
 
 	h3 {
 		@include font(2.4rem, 3.2rem);
 	}
 
 	.profile-container {
-		margin-top: 5rem;
 		height: 34rem;
 		border-radius: 2.4rem;
 		box-shadow: #110c2e26 0 4.8rem 10rem 0;

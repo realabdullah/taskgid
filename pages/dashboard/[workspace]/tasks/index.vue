@@ -67,7 +67,7 @@ await fetchUserTasks();
 					<h1 class="fw-semiBold col-darkBlue">Tasks</h1>
 					<p class="fw-regular col-grey-2">Your tasks in your space.</p>
 				</div>
-				<BaseButton v-if="tasks.length > 0" class="btn" value="Create Task" background="#3754DB" color="#FFFFFF" width="169px" @click="showCreateTaskModal = true" />
+				<BaseButton v-if="tasks.length > 0" value="Create Task" usage="button" style="width: 15%" @click="showCreateTaskModal = true" />
 			</div>
 
 			<div v-if="tasks.length > 0" class="task-page__list">
@@ -173,7 +173,6 @@ await fetchUserTasks();
 		.tasks {
 			margin-top: 2rem;
 			grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-			// grid-template-columns: repeat(auto-fit, 24.8rem);
 			@include gap(2rem);
 		}
 	}

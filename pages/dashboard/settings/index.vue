@@ -30,11 +30,12 @@ const handleEditProfile = async () => {
 		password: password.value,
 	});
 
-	const { error } = await client.from("users").update(payload).eq("id", user.value.id);
+	const { error } = await client
+		.from("users")
+		.update(payload as never)
+		.eq("id", user.value.id);
 
-	if (updateError || error) {
-		return;
-	}
+	if (updateError || error) return;
 
 	user.value.name = name.value;
 	user.value.email = email.value;
@@ -43,9 +44,7 @@ const handleEditProfile = async () => {
 
 const logOut = async () => {
 	const { error } = await client.auth.signOut();
-	if (error) {
-		return;
-	}
+	if (error) return;
 	navigateTo("/login");
 };
 </script>
@@ -53,60 +52,60 @@ const logOut = async () => {
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="settings-page">
-			<h3>Settings</h3>
-			<div class="log-out">
-				<BaseButton value="Log Out" background="#B80020" color="#FFFFFF" width="125px" @click="openOrCloseModal(true, 'log-out')" />
+			<h3 class="fw-semiBold col-darkBlue">Settings</h3>
+			<div class="log-out d-flex jc-flex-end" style="width: 10%; margin-left: auto">
+				<BaseButton value="Log Out" usage="button" type="danger" @click="openOrCloseModal(true, 'log-out')" />
 			</div>
 
 			<div class="settings-page__card">
-				<h5>Account Settings</h5>
-				<div class="card-content">
-					<div class="card-content__box">
+				<h5 class="fw-regular col-darkBlue">Account Settings</h5>
+				<div class="card-content bg-white d-flex fd-column ai-flex-start">
+					<div class="card-content__box w-100 d-flex ai-center bordered">
 						<IconsUser class="icon" />
-						<div class="details">
-							<span>Fullname</span>
-							<span>{{ user.name }}</span>
+						<div class="details d-flex fd-column">
+							<span class="fw-regular col-grey-3">Fullname</span>
+							<span class="fw-semiBold col-black">{{ user.name }}</span>
 						</div>
 					</div>
 
-					<div class="card-content__box">
+					<div class="card-content__box w-100 d-flex ai-center bordered">
 						<IconsEmail class="icon" />
-						<div class="details">
-							<span>Email Address</span>
-							<span>{{ user.email }}</span>
+						<div class="details d-flex fd-column">
+							<span class="fw-regular col-grey-3">Email Address</span>
+							<span class="fw-semiBold col-black">{{ user.email }}</span>
 						</div>
 					</div>
 
-					<div class="card-content__box">
-						<div class="details">
-							<span>Password</span>
-							<span>**********</span>
+					<div class="card-content__box w-100 d-flex ai-center bordered">
+						<div class="details d-flex fd-column">
+							<span class="fw-regular col-grey-3">Password</span>
+							<span class="fw-semiBold col-black">**********</span>
 						</div>
 					</div>
 
-					<BaseButton style="align-self: flex-end" value="Edit" background="#3754DB" color="#FFFFFF" width="125px" @click="openOrCloseModal(true, 'edit-profile')" />
+					<BaseButton style="align-self: flex-end" value="Edit" @click="openOrCloseModal(true, 'edit-profile')" />
 				</div>
 			</div>
 		</div>
 
-		<BaseModal v-if="showModal" width="500px" @close-modal="openOrCloseModal(false, '')">
+		<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
 			<template #default>
-				<div class="edit-profile">
-					<h1>{{ modalState === "edit-profile" ? "Edit Profile" : "You are about to log out" }}</h1>
-					<form v-if="modalState === 'edit-profile'" @submit.prevent="handleEditProfile">
-						<BaseInput v-model="name" label-for="name" label="Fullname" input-type="text" :required="true" border-color="#2746D8" />
-						<BaseInput v-model="email" label-for="email" label="Email Address" input-type="email" :required="true" border-color="#2746D8" />
-						<BaseInput v-model="password" label-for="password" label="Password" input-type="password" :required="true" border-color="#2746D8" />
+				<div class="edit-profile d-flex fd-column">
+					<h1 class="fw-semiBold col-darkBlue">{{ modalState === "edit-profile" ? "Edit Profile" : "You are about to log out" }}</h1>
+					<form v-if="modalState === 'edit-profile'" class="d-flex fd-column" @submit.prevent="handleEditProfile">
+						<BaseInput id="name" v-model="name" label="Fullname" type="text" />
+						<BaseInput id="email" v-model="email" label="Email Address" type="email" />
+						<BaseInput id="password" v-model="password" label="Password" type="password" />
 
-						<BaseButton value="Save" background="#3754DB" color="#FFFFFF" width="140px" type="submit" />
+						<BaseButton value="Save" />
 					</form>
-					<div v-else class="">
-						<p>You can always log on to your task manager and continue from where you left off..</p>
-						<div class="buttons">
-							<BaseButton value="Cancel" background="#3754DB" color="#FFFFFF" width="140px" @click="openOrCloseModal(false, '')" />
-							<BaseButton value="Log Out" background="#FFF0F0" color="#B80020" width="140px" @click="logOut" />
+					<template v-else>
+						<p class="fw-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
+						<div class="buttons d-flex">
+							<BaseButton value="Cancel" usage="button" @click="openOrCloseModal(false, '')" />
+							<BaseButton value="Log Out" usage="button" type="danger" @click="logOut" />
 						</div>
-					</div>
+					</template>
 				</div>
 			</template>
 		</BaseModal>
@@ -116,65 +115,37 @@ const logOut = async () => {
 <style lang="scss" scoped>
 .settings-page {
 	h3 {
-		font-weight: 600;
-		font-size: 32px;
-		line-height: 38px;
-		color: #101c56;
-	}
-
-	.log-out {
-		display: flex;
-		justify-content: flex-end;
+		@include font(3.2rem, 3.8rem);
 	}
 
 	&__card {
-		margin-top: 24px;
+		margin-top: 2.4rem;
 
 		h5 {
-			font-weight: 400;
-			font-size: 20px;
-			line-height: 24px;
-			color: #101c56;
-			margin-bottom: 20px;
+			@include font(2rem, 2.4rem);
+			margin-bottom: 2rem;
 		}
 
 		.card-content {
-			background: #ffffff;
-			border-radius: 16px;
-			padding: 32px 24px;
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 15px;
+			border-radius: 1.6rem;
+			padding: 3.2rem 2.4rem;
+			gap: 1.5rem;
 
 			&__box {
-				width: 100%;
-				box-sizing: border-box;
-				padding: 20px;
-				display: flex;
-				align-items: center;
-				gap: 25px;
-				border: 0.2px solid #b8b8b8;
-				border-radius: 16px;
+				padding: 2rem;
+				@include gap(2.5rem);
+				border-radius: 1.6rem;
 
 				.details {
-					display: flex;
-					flex-direction: column;
-					gap: 5px;
+					@include gap(0.5rem);
 
 					span {
 						&:first-child {
-							font-weight: 400;
-							font-size: 16px;
-							line-height: 19px;
-							color: #545454;
+							@include font(1.6rem, 1.9rem);
 						}
 
 						&:last-child {
-							font-weight: 600;
-							font-size: 20px;
-							line-height: 24px;
-							color: #000000;
+							@include font(2rem, 2.4rem);
 						}
 					}
 				}
@@ -184,26 +155,23 @@ const logOut = async () => {
 }
 
 .edit-profile {
-	padding: 40px;
+	padding: 4rem;
+	@include gap(2.4rem);
 
 	h1 {
-		font-weight: 600;
-		font-size: 28px;
-		line-height: 34px;
-		color: #101c56;
-		margin-bottom: 22px;
+		@include font(2.8rem, 3.4rem);
+	}
+
+	form {
+		@include gap(2.4rem);
 	}
 
 	p {
-		font-weight: 400;
-		font-size: 18px;
-		line-height: 24px;
-		color: #8c8c8c;
+		@include font(1.8rem, 2.4rem);
 	}
 
 	.buttons {
-		display: flex;
-		gap: 20px;
+		@include gap(2rem);
 	}
 }
 </style>

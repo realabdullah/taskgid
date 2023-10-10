@@ -7,10 +7,6 @@ const resetCodesent = ref<boolean>(false);
 const resetCode = ref<number>(0);
 const email = ref<string>("");
 
-const toastText = computed(() => {
-	return resetCodesent.value ? "Please enter the OTP received on your email." : "You would be sent a recovery Link to the email.";
-});
-
 const sendResetCode = () => {
 	if (email.value === "") return;
 	resetCodesent.value = true;
@@ -18,69 +14,44 @@ const sendResetCode = () => {
 </script>
 
 <template>
-	<div class="reset-page">
-		<div class="forget__pasword">
-			<h5 class="forget__pasword-header">Forgot Password?</h5>
-			<p class="forget__pasword-text">We are sorry to hear that happen. Don’t be sad, let's help you get back to productivity in no time.</p>
+	<div class="reset-page w-100 h-full">
+		<div class="forget__pasword w-100 m-auto h-100 d-flex fd-column jc-center ai-flex-start pos-fixed">
+			<h5 class="forget__pasword-header fw-semiBold col-black">Forgot Password?</h5>
+			<p class="forget__pasword-text fw-regular col-grey-3">We are sorry to hear that happen. Don’t be sad, let's help you get back to productivity in no time.</p>
 
-			<form @submit.prevent="sendResetCode">
-				<BaseInput v-if="resetCodesent" v-model="resetCode" input-type="number" placeholder="Enter OTP received" :required="true" border-color="#2746D8" />
-				<BaseInput v-else v-model="email" input-type="email" label-for="email" label="Email Address" placeholder="Enter your email address" :required="true" border-color="#2746D8" />
+			<form class="w-100 d-flex fd-column jc-center ai-center" @submit.prevent="sendResetCode">
+				<BaseInput v-if="resetCodesent" id="otp" v-model="resetCode" type="number" label="Enter OTP" />
+				<BaseInput v-else id="email" v-model="email" type="email" label="Email Address" />
 
-				<BaseButton width="204px" type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'" background="#3754DB" color="#FFFFFF" />
+				<BaseButton type="submit" :value="resetCodesent ? 'Recover Account.' : 'Next'" />
 			</form>
-
-			<BaseToast type="warning" message="Hi there!" :description="toastText" toast-style="outline" />
 		</div>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .reset-page {
-	width: 100%;
-	height: 100dvh;
-	background-image: url("~/assets/images/passwordresetbg.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
+	background: url("~/assets/images/passwordresetbg.png") center/cover no-repeat;
 
 	.forget__pasword {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 auto;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: flex-start;
-		position: fixed;
+		max-width: 40rem;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 
 		&-header {
-			font-weight: 600;
-			font-size: 24px;
-			line-height: 32px;
-			color: #000000;
-			margin-bottom: 12px;
+			@include font(2.4rem, 3.2rem);
+			margin-bottom: 1.2rem;
 		}
 
 		&-text {
-			font-weight: 400;
-			font-size: 14px;
-			line-height: 20px;
-			color: #676767;
-			margin-bottom: 32px;
+			@include font(1.4rem, 2rem);
+			margin-bottom: 3.2rem;
 		}
 
 		form {
-			width: 100%;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			margin-bottom: 60px;
+			@include gap(2.4rem);
+			margin-bottom: 6rem;
 		}
 	}
 }

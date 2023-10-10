@@ -18,13 +18,13 @@ const getTaskStatus = (status: string) => {
 </script>
 
 <template>
-	<div class="tasks-card">
-		<div class="status">
+	<div class="tasks-card bg-white d-flex fd-column jc-space-between">
+		<div class="status d-flex ai-center jc-space-between">
 			<span>T-{{ task.task_no }}</span>
 			<span :class="getTaskStatus(task.status)">{{ task.status }}</span>
 		</div>
-		<p>{{ task.title }}</p>
-		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url">
+		<p class="fw-medium col-darkBlue">{{ task.title }}</p>
+		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url td-none d-flex ai-center cursor-pointer fw-semiBold col-blue">
 			<span>View Task</span>
 			<IconsArrow variant="right" />
 		</nuxt-link>
@@ -33,35 +33,25 @@ const getTaskStatus = (status: string) => {
 
 <style scoped lang="scss">
 .tasks-card {
-	background: #ffffff;
-	border-radius: 12px;
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+	border-radius: 1.2rem;
+	padding: 2rem;
 
 	.status {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-
 		span {
 			&:first-child {
 				font-weight: 600;
-				font-size: 14px;
-				line-height: 17px;
+				@include font(1.4rem, 1.7rem);
 				color: #b9b9b9;
 			}
 
 			&:last-child {
 				display: block;
 				font-weight: 500;
-				font-size: 12px;
-				line-height: 14px;
+				@include font(1.2rem, 1.4rem);
 				color: #00c271;
 				background: #f0fff9;
-				border-radius: 12px;
-				padding: 5px 10px;
+				border-radius: 1.2rem;
+				padding: 0.5rem 1rem;
 			}
 		}
 
@@ -77,25 +67,15 @@ const getTaskStatus = (status: string) => {
 	}
 
 	p {
-		margin-top: 15px;
-		margin-bottom: 25px;
-		max-width: 200px;
-		font-weight: 500;
-		font-size: 16px;
-		line-height: 22px;
-		color: #16171d;
+		margin-top: 1.5rem;
+		margin-bottom: 2.5rem;
+		max-width: 20rem;
+		@include font(1.6rem, 2.2rem);
 	}
 
 	.task-url {
-		text-decoration: none;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		cursor: pointer;
-		font-weight: 600;
-		font-size: 14px;
-		line-height: 17px;
-		color: #3754db;
+		@include gap(1.2rem);
+		@include font(1.4rem, 1.7rem);
 		padding-left: 0;
 	}
 }

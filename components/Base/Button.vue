@@ -1,19 +1,21 @@
 <script lang="ts" setup>
-defineComponent({ name: "InputButton" });
-
-interface inputButtonProps {
+const {
+	value,
+	usage = "submit",
+	type,
+} = defineProps<{
 	value: string;
-	background: string;
-	color: string;
-	width: string;
-	disabled?: boolean;
-}
+	usage?: "button" | "submit";
+	type?: string;
+}>();
 
-const { disabled = false } = defineProps<inputButtonProps>();
+const background = computed(() => {
+	return type === "danger" ? "bg-danger" : "bg-blue";
+});
 </script>
 
 <template>
-	<button class="__btn w-100 fw-medium" :disabled="disabled">
+	<button class="__btn w-100 fw-medium col-white as-flex-start" :class="background" :type="usage" :disabled="value === 'loading'">
 		<Loader v-if="value === 'loading'" />
 		<span v-else>{{ value }}</span>
 	</button>
@@ -21,14 +23,10 @@ const { disabled = false } = defineProps<inputButtonProps>();
 
 <style lang="scss" scoped>
 .__btn {
-	align-self: flex-start;
-	max-width: v-bind(width);
 	padding: 1.5rem;
-	background: v-bind(background);
 	border-radius: 1.2rem;
 	@include font(1.6rem, 1.9rem);
-	color: v-bind(color);
-	margin-top: 2.4rem;
+	transition: all 0.2s ease-in-out;
 
 	&:hover {
 		cursor: pointer;

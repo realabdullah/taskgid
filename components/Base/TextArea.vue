@@ -1,50 +1,38 @@
 <script lang="ts" setup>
-defineProps<{
+const {
+	label,
+	id,
+	required = true,
+} = defineProps<{
 	label: string;
-	name: string;
-	placeholder: string;
-	modelValue: string;
-	borderColor: string;
-	required: boolean;
+	id: string;
+	required?: boolean;
 }>();
 
 defineEmits(["update:modelValue"]);
+const modelValue = defineModel<string>();
 </script>
 
 <template>
-	<label :for="name">
-		<span v-if="!!label" class="form-label">{{ label }}</span>
-		<textarea :id="name" :name="name" :placeholder="placeholder" :value="modelValue" :required="required" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"></textarea>
+	<label :for="id" class="w-100 d-flex fd-column ai-flex-start pos-relative">
+		<span v-if="!!label" class="form-label fw-regular col-darkBlue">{{ label }}</span>
+		<textarea :id="id" :name="id" :value="modelValue" :required="required" class="w-100 fw-regular col-grey-2 bordered"></textarea>
 	</label>
 </template>
 
 <style lang="scss" scoped>
 label {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	position: relative;
-
 	.form-label {
-		font-weight: 400;
-		font-size: 16px;
-		line-height: 19px;
-		color: #2c2e3a;
-		margin-bottom: 14px;
+		@include font(1.6rem, 1.9rem);
+		margin-bottom: 1.4rem;
 	}
 
 	textarea {
-		width: -webkit-fill-available;
-		height: 120px;
-		border: 0.7px solid #a8abbd;
-		border-radius: 12px;
-		padding: 16px;
+		height: 12rem;
+		border-radius: 1.2rem;
+		padding: 1.6rem;
 		font-family: "Gelion", sans-serif;
-		font-weight: 400;
-		font-size: 16px;
-		line-height: 19px;
-		color: #4d5163;
+		@include font(1.6rem, 1.9rem);
 		resize: none;
 	}
 }

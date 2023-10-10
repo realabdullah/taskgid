@@ -1,88 +1,82 @@
 <script lang="ts" setup>
-defineComponent({ name: "Toast" });
-
-interface Toast {
-	toastStyle: string;
-	type: string;
+const { id } = defineProps<{
+	id: string;
 	message: string;
-	description: string;
-}
+}>();
 
-const props = defineProps<Toast>();
+const emit = defineEmits<{
+	(event: "close", id: string): void;
+}>();
 
-const borderColor = ref("");
-const color = ref("");
+const remaining = ref(5000);
+const progress = ref(100);
+let timer: ReturnType<typeof setInterval>;
 
-type ColorMap = {
-	[key in string]: [string, string];
+const progressStyle = computed(() => {
+	const percent = (remaining.value / 5000) * 100;
+
+	return { width: `${percent}%` };
+});
+
+const closeToast = () => {
+	clearInterval(timer);
+	emit("close", id);
 };
 
-const background = computed(() => {
-	const colorMap: ColorMap = {
-		success: ["#00C271", "#FAFFFD"],
-		error: ["#F7002B", "#FFFAFB"],
-		warning: ["#FBBE37", "#FFFAFB"],
-		info: ["#6684FF", "#FBFCFF"],
-	};
-	if (props.toastStyle === "solid" || props.toastStyle === "outline") {
-		const [bgColor, border] = colorMap[props.type];
-		borderColor.value = border;
-		color.value = "#FFFFFF";
-		if (props.toastStyle === "outline") {
-			color.value = bgColor;
-			borderColor.value = bgColor;
+const onMouseover = () => clearInterval(timer);
+
+const startTimer = () => {
+	timer = setInterval(() => {
+		remaining.value -= 1000;
+		progress.value -= 20;
+
+		if (remaining.value <= 0) {
+			clearInterval(timer);
+			closeToast();
 		}
-		return bgColor;
-	}
+	}, 1000);
+};
+
+onMounted(() => {
+	startTimer();
+});
+
+onUnmounted(() => {
+	clearInterval(timer);
 });
 </script>
 
 <template>
-	<div class="toast d-flex ai-center pos-fixed w-100" :style="`border: ${toastStyle === 'outline' ? `1.6px solid ${borderColor}` : 'none'}; color: ${color}; background: ${background}`">
-		<div class="toast__icon">
-			<IconsAlert :type="type" />
-		</div>
-		<div class="toast__content d-flex fd-column ai-flex-start">
-			<p class="fw-medium">{{ message }}</p>
-			<span class="fw-light">{{ description }}</span>
-		</div>
-		<button class="close-btn bg-transparent pos-absolute cursor-pointer">
+	<div class="toast d-flex ai-center jc-space-between w-100 bg-whitishBlue z-9" @mouseover="onMouseover" @mouseleave="startTimer">
+		<p class="fw-medium">{{ message }}</p>
+		<button class="close-btn bg-transparent cursor-pointer border-none" @click="closeToast">
 			<IconsClose />
 		</button>
+
+		<div class="progress pos-absolute" :style="progressStyle"></div>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .toast {
-	max-width: 35rem;
-	padding: 2rem;
-	border-radius: 2rem;
-	top: 4rem;
-	left: 4rem;
+	padding: 2rem 1.5rem;
+	border-radius: 0.5rem;
+	border: 0.1rem solid #e5e5e5;
+	box-shadow: #959da533 0 0.8rem 2.4rem;
 
-	&__icon {
-		margin-right: 2rem;
-		background: #ffffff26;
-		padding: 1.3rem;
-		border-radius: 50%;
+	p {
+		@include font(1.5rem, 1.8rem);
+		margin-bottom: 0.5rem;
 	}
 
-	&__content {
-		p {
-			@include font(1.8rem, 2.2rem);
-			margin-bottom: 0.5rem;
-		}
-
-		span {
-			@include font(1.2rem, 1.4rem);
-		}
-	}
-
-	.close-btn {
-		border: none;
-		right: 2rem;
-		top: 2rem;
-		color: v-bind(color);
+	.progress {
+		height: 0.5rem;
+		background: blue;
+		border-radius: 0 0 0.5rem 0.5rem;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		transition: width 1s ease-in-out;
 	}
 }
 </style>

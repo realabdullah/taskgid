@@ -1,24 +1,21 @@
 <template>
-	<span class="loader"></span>
+	<span class="loader d-inline-block pos-relative"></span>
 </template>
 
 <style lang="scss" scoped>
 .loader {
 	margin: auto;
-	width: 16px;
-	height: 16px;
-	display: inline-block;
-	position: relative;
+	width: 1.6rem;
+	height: 1.6rem;
 }
 
 .loader::after,
 .loader::before {
 	content: "";
-	box-sizing: border-box;
-	width: 25px;
-	height: 22px;
+	width: 2.5rem;
+	height: 2.2rem;
 	border-radius: 50%;
-	border: 2px solid #fff;
+	border: 0.2rem solid $col-white;
 	position: absolute;
 	left: 0;
 	top: 0;
