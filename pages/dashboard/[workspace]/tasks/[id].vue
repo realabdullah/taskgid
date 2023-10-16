@@ -4,13 +4,11 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const route = useRoute();
 const { activeWorkspace } = storeToRefs(useStore());
+const { task, fetchTask, deleteTask } = useTask();
 
 const showUpdateTaskModal = ref(false);
 const showDeleteModal = ref(false);
-
-const task = reactive({} as Task);
 
 const getTaskStatus = (status: string) => {
 	switch (status) {
@@ -23,30 +21,8 @@ const getTaskStatus = (status: string) => {
 	}
 };
 
-const deleteTask = async () => {
-	const client = useSupabaseClient();
-
-	const { error } = await client.from("tasks").delete().eq("id", task.id);
-	if (error) {
-		useEvent("toast", "An error occured while trying to delete task.");
-		return;
-	}
-
-	navigateTo("/dashboard/tasks");
-};
-
-const fetchTask = async () => {
-	const client = useSupabaseClient();
-	const { data, error } = await client.from("tasks").select().eq("id", route.params.id);
-	if (error) {
-		return;
-	}
-
-	Object.assign(task, data[0]);
-};
-
-const updateTask = async () => {
-	await fetchTask();
+const updateTask = (newTask: Task) => {
+	Object.assign(task, newTask);
 	showUpdateTaskModal.value = false;
 };
 

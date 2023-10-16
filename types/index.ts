@@ -12,7 +12,7 @@ declare global {
 		task_no: number;
 		workspace_id: string;
 		user_id: string;
-		assigned_to: string;
+		assigned_to: string[];
 	}
 
 	interface Workspace {

@@ -4,56 +4,37 @@ const { usage, taskToBeUpdated } = defineProps<{
 	taskToBeUpdated?: Task;
 }>();
 
-const { tasks, activeWorkspace } = storeToRefs(useStore());
+const emit = defineEmits<{
+	(event: "close"): void;
+	(event: "task-created", value: Task): void;
+}>();
+const client = useSupabaseClient();
+
+const { tasks } = storeToRefs(useStore());
+const { task } = useTask();
 
 const priorities = ["Less Important", "Important", "High Priority"];
-const title = ref("");
-const description = ref("");
-const dueDate = ref(new Date().toISOString().substring(0, 10));
-const priority = ref("");
-const status = ref("Pending");
 const submitting = ref(false);
 
-const updatePriority = (value: string) => (priority.value = value);
-const emit = defineEmits(["close", "task-created"]);
-const client = useSupabaseClient();
-const user = useSupabaseUser();
-
-if (usage === "update") {
-	title.value = taskToBeUpdated?.title ?? "";
-	description.value = taskToBeUpdated?.description ?? "";
-	dueDate.value = taskToBeUpdated?.dueDate ?? "";
-	updatePriority(taskToBeUpdated?.priority ?? "");
-	status.value = taskToBeUpdated?.status ?? "";
-}
+if (usage === "update") Object.assign(task, taskToBeUpdated);
 
 const handleSubmission = async () => {
 	try {
 		submitting.value = true;
-		const payload = {
-			user_id: user.value?.id,
-			title: title.value,
-			description: description.value,
-			dateAdded: taskToBeUpdated?.dateAdded ?? new Date().toISOString().substr(0, 10),
-			dueDate: dueDate.value,
-			priority: priority.value,
-			status: status.value,
-			task_no: taskToBeUpdated?.task_no ?? tasks.value ? tasks.value.length + 1 : 1,
-			workspace_id: activeWorkspace.value,
-		};
-
 		if (usage === "create") {
-			const { error } = await client.from("tasks").insert(payload as any);
+			task.dateAdded = new Date().toISOString().substring(0, 10);
+			task.task_no = tasks.value ? tasks.value.length + 1 : 1;
+			const { error } = await client.from("tasks").insert(task as never);
 			if (error) throw new Error(error.message);
 		} else {
 			const { error } = await client
 				.from("tasks")
-				.update(payload as never)
+				.update(task as never)
 				.eq("id", taskToBeUpdated?.id);
 			if (error) throw new Error(error.message);
 		}
+		emit("task-created", task);
 		submitting.value = false;
-		emit("task-created");
 	} catch (error) {
 		submitting.value = false;
 		useEvent("toast", useFormatError(error as string));
@@ -67,14 +48,14 @@ const handleSubmission = async () => {
 			<div class="create-task">
 				<h1 class="fw-semiBold col-black">{{ usage === "create" ? "Create Task" : "Edit This Task." }}</h1>
 				<form class="d-flex fd-column" @submit.prevent="handleSubmission">
-					<BaseInput id="title" v-model="title" label="Task Name" type="text" />
+					<BaseInput id="title" v-model="task.title" label="Task Name" type="text" />
 					<div class="form-group d-flex">
-						<BaseSelect id="priority" v-model="priority" label="Task Priority" :lists="priorities" />
-						<BaseInput id="date" v-model="dueDate" label="Due Date" type="date" />
+						<BaseSelect id="priority" v-model="task.priority" label="Task Priority" :lists="priorities" />
+						<BaseInput id="date" v-model="task.dueDate" label="Due Date" type="date" />
 					</div>
-					<BaseTextArea id="description" v-model="description" label="Task Description" />
+					<BaseTextArea id="description" v-model="task.description" label="Task Description" />
 
-					<BaseButton :value="usage === 'create' ? 'Create Task' : 'Save Task'" />
+					<BaseButton :value="submitting ? 'loading' : usage === 'create' ? 'Create Task' : 'Update Task'" />
 				</form>
 			</div>
 		</template>

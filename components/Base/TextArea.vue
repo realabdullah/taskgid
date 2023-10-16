@@ -16,7 +16,7 @@ const modelValue = defineModel<string>();
 <template>
 	<label :for="id" class="w-100 d-flex fd-column ai-flex-start pos-relative">
 		<span v-if="!!label" class="form-label fw-regular col-darkBlue">{{ label }}</span>
-		<textarea :id="id" :name="id" :value="modelValue" :required="required" class="w-100 fw-regular col-grey-2 bordered"></textarea>
+		<textarea :id="id" v-model="modelValue" :name="id" :required="required" class="w-100 fw-regular col-grey-2 bordered"></textarea>
 	</label>
 </template>
 
