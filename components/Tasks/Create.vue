@@ -8,10 +8,8 @@ const emit = defineEmits<{
 	(event: "close"): void;
 	(event: "task-created", value: Task): void;
 }>();
-const client = useSupabaseClient();
 
-const { tasks } = storeToRefs(useStore());
-const { task } = useTask();
+const { task, createNewTask, updateTask } = useTask();
 
 const priorities = ["Less Important", "Important", "High Priority"];
 const submitting = ref(false);
@@ -21,18 +19,8 @@ if (usage === "update") Object.assign(task, taskToBeUpdated);
 const handleSubmission = async () => {
 	try {
 		submitting.value = true;
-		if (usage === "create") {
-			task.dateAdded = new Date().toISOString().substring(0, 10);
-			task.task_no = tasks.value ? tasks.value.length + 1 : 1;
-			const { error } = await client.from("tasks").insert(task as never);
-			if (error) throw new Error(error.message);
-		} else {
-			const { error } = await client
-				.from("tasks")
-				.update(task as never)
-				.eq("id", taskToBeUpdated?.id);
-			if (error) throw new Error(error.message);
-		}
+		if (usage === "create") await createNewTask();
+		else updateTask(taskToBeUpdated?.id as string);
 		emit("task-created", task);
 		submitting.value = false;
 	} catch (error) {
