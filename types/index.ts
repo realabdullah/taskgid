@@ -15,6 +15,11 @@ declare global {
 		assigned_to: string[];
 	}
 
+	interface member {
+		id: string;
+		name: string;
+	}
+
 	interface Workspace {
 		id: string;
 		created_at: string;

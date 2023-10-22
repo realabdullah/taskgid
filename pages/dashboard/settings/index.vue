@@ -5,7 +5,8 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { user } = storeToRefs(useStore());
+const { user, members } = storeToRefs(useStore());
+const { inviteMember } = useStore();
 const client = useSupabaseClient();
 
 const name = ref(user.value.name);
@@ -13,6 +14,8 @@ const email = ref(user.value.email);
 const password = ref("");
 const showModal = ref(false);
 const modalState = ref("edit-profile");
+const inviteeEmail = ref("");
+const loading = ref(false);
 
 const openOrCloseModal = (status: boolean, state: string) => {
 	modalState.value = state;
@@ -42,6 +45,26 @@ const handleEditProfile = async () => {
 	openOrCloseModal(false, "");
 };
 
+const sendInvite = async () => {
+	try {
+		loading.value = true;
+		await inviteMember(inviteeEmail.value);
+		loading.value = false;
+		inviteeEmail.value = "";
+		openOrCloseModal(false, "");
+		useEvent("toast", "Invite sent successfully.");
+	} catch (error) {
+		loading.value = false;
+		useEvent("toast", "Failed to send invite, please try again.");
+	}
+};
+
+const modalHeader = computed(() => {
+	if (modalState.value === "edit-profile") return "Edit Profile";
+	if (modalState.value === "logout") return "You are about to log out";
+	return "Invite Member";
+});
+
 const logOut = async () => {
 	const { error } = await client.auth.signOut();
 	if (error) return;
@@ -54,7 +77,7 @@ const logOut = async () => {
 		<div class="settings-page">
 			<h3 class="fw-semiBold col-darkBlue">Settings</h3>
 			<div class="log-out d-flex jc-flex-end" style="width: 10%; margin-left: auto">
-				<BaseButton value="Log Out" usage="button" type="danger" @click="openOrCloseModal(true, 'log-out')" />
+				<BaseButton value="Log Out" usage="button" type="danger" @click="openOrCloseModal(true, 'logout')" />
 			</div>
 
 			<div class="settings-page__card">
@@ -86,12 +109,29 @@ const logOut = async () => {
 					<BaseButton style="align-self: flex-end" value="Edit" @click="openOrCloseModal(true, 'edit-profile')" />
 				</div>
 			</div>
+
+			<div class="settings-page__card">
+				<div class="d-flex ai-center jc-space-between">
+					<h5 class="fw-regular col-darkBlue">Workspace Members</h5>
+					<button class="invite border-none bg-transparent fw-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
+				</div>
+
+				<div v-for="member in members" :key="member.id" class="card-content bg-white d-flex fd-column ai-flex-start">
+					<div class="card-content__box w-100 d-flex ai-center bordered">
+						<img :src="member.profile_picture" :alt="member.username" />
+						<div class="details d-flex fd-column">
+							<span class="fw-regular col-grey-3">{{ member.name }}</span>
+							<span class="fw-semiBold col-black">{{ member.email }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
 			<template #default>
 				<div class="edit-profile d-flex fd-column">
-					<h1 class="fw-semiBold col-darkBlue">{{ modalState === "edit-profile" ? "Edit Profile" : "You are about to log out" }}</h1>
+					<h1 class="fw-semiBold col-darkBlue">{{ modalHeader }}</h1>
 					<form v-if="modalState === 'edit-profile'" class="d-flex fd-column" @submit.prevent="handleEditProfile">
 						<BaseInput id="name" v-model="name" label="Fullname" type="text" />
 						<BaseInput id="email" v-model="email" label="Email Address" type="email" />
@@ -99,12 +139,18 @@ const logOut = async () => {
 
 						<BaseButton value="Save" />
 					</form>
-					<template v-else>
+					<template v-else-if="modalState === 'logout'">
 						<p class="fw-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
 						<div class="buttons d-flex">
 							<BaseButton value="Cancel" usage="button" @click="openOrCloseModal(false, '')" />
 							<BaseButton value="Log Out" usage="button" type="danger" @click="logOut" />
 						</div>
+					</template>
+					<template v-else-if="modalState === 'invite'">
+						<form class="d-flex fd-column" @submit.prevent="sendInvite">
+							<BaseInput id="email" v-model="inviteeEmail" label="Email Address" type="email" />
+							<BaseButton :value="loading ? 'loading' : 'Send Invite'" />
+						</form>
 					</template>
 				</div>
 			</template>
@@ -123,10 +169,14 @@ const logOut = async () => {
 
 		h5 {
 			@include font(2rem, 2.4rem);
-			margin-bottom: 2rem;
+		}
+
+		.invite {
+			@include font(1.5rem, 1.5rem);
 		}
 
 		.card-content {
+			margin-top: 2.4rem;
 			border-radius: 1.6rem;
 			padding: 3.2rem 2.4rem;
 			gap: 1.5rem;
@@ -135,6 +185,12 @@ const logOut = async () => {
 				padding: 2rem;
 				@include gap(2.5rem);
 				border-radius: 1.6rem;
+
+				img {
+					width: 6rem;
+					height: 6rem;
+					border-radius: 50%;
+				}
 
 				.details {
 					@include gap(0.5rem);

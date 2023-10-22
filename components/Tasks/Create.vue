@@ -9,6 +9,7 @@ const emit = defineEmits<{
 	(event: "task-created", value: Task): void;
 }>();
 
+const { members } = storeToRefs(useStore());
 const { task, createNewTask, updateTask } = useTask();
 
 const priorities = ["Less Important", "Important", "High Priority"];
@@ -22,12 +23,15 @@ const handleSubmission = async () => {
 		if (usage === "create") await createNewTask();
 		else updateTask(taskToBeUpdated?.id as string);
 		emit("task-created", task);
+		useEvent("toast", `Task ${usage === "create" ? "created" : "updated"} successfully!`);
 		submitting.value = false;
 	} catch (error) {
 		submitting.value = false;
 		useEvent("toast", useFormatError(error as string));
 	}
 };
+
+const options = members.value.map((member) => ({ id: member.id, label: member.name }));
 </script>
 
 <template>
@@ -41,6 +45,7 @@ const handleSubmission = async () => {
 						<BaseSelect id="priority" v-model="task.priority" label="Task Priority" :lists="priorities" />
 						<BaseInput id="date" v-model="task.dueDate" label="Due Date" type="date" />
 					</div>
+					<BaseMultiSelect id="members" v-model="task.assigned_to" label="Assign to" :options="options" />
 					<BaseTextArea id="description" v-model="task.description" label="Task Description" />
 
 					<BaseButton :value="submitting ? 'loading' : usage === 'create' ? 'Create Task' : 'Update Task'" />
