@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-interface EmptyProps {
+defineProps<{
 	description: string;
 	extraText: string;
 	buttonText?: string;
-}
-
-defineProps<EmptyProps>();
+}>();
 defineEmits(["create-task"]);
 </script>
 

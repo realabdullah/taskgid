@@ -6,12 +6,12 @@ definePageMeta({
 });
 
 const { user, tasks, profilePhoto } = storeToRefs(useStore());
-const { fetchUserInfo, fetchUserTasks } = useStore();
+const { fetchUserInfo, fetchWorkspaceTasks } = useStore();
 
 const showGetStarted = computed(() => !tasks || tasks.value.length === 0 || profilePhoto.value === "");
 
 await fetchUserInfo();
-await fetchUserTasks();
+await fetchWorkspaceTasks();
 </script>
 
 <template>

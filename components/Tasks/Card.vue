@@ -4,17 +4,7 @@ defineProps<{
 }>();
 
 const { activeWorkspace } = storeToRefs(useStore());
-
-const getTaskStatus = (status: string) => {
-	switch (status) {
-		case "Pending":
-			return "pending";
-		case "In Progress":
-			return "in-progress";
-		default:
-			return "completed";
-	}
-};
+const { getTaskStatus } = useTask();
 </script>
 
 <template>

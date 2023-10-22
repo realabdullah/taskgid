@@ -3,12 +3,9 @@ const route = useRoute();
 </script>
 
 <template>
-	<div class="auth__layout bg-white d-grid ai-center pos-relative h-full overflow-hidden">
-		<div class="auth__layout-left w-100 h-full" :style="`order: ${route.path === '/signup' ? 1 : 2}`"></div>
-		<div class="auth__layout-right w-100" :style="`order: ${route.path === '/login' ? 1 : 2}`">
-			<div class="content">
-				<slot />
-			</div>
+	<div class="auth__layout bg-white d-flex ai-center jc-center pos-relative h-full overflow-hidden">
+		<div class="content w-100">
+			<slot />
 		</div>
 	</div>
 
@@ -21,31 +18,12 @@ const route = useRoute();
 
 <style lang="scss" scoped>
 .auth__layout {
-	grid-template-columns: 1fr 1fr;
-
-	@media screen and (max-width: 883px) {
-		grid-template-columns: 1fr;
-	}
-
-	&-left {
-		background: url("~/assets/images/authleft.png") center/cover no-repeat;
+	.content {
+		max-width: 60rem;
 		padding: 2rem;
 
-		@media screen and (max-width: 883px) {
-			display: none;
-		}
-	}
-
-	&-right {
-		.content {
-			max-width: 60rem;
-			padding: 2rem;
-			margin-left: 4rem;
-
-			@media screen and (max-width: 600px) {
-				margin-left: 0;
-				max-width: 100%;
-			}
+		@media screen and (max-width: 600px) {
+			max-width: 100%;
 		}
 	}
 }

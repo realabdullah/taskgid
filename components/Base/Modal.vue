@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-defineProps<{
+const { width, closable = true } = defineProps<{
 	width: string;
+	closable?: boolean;
 }>();
 
 defineEmits(["close-modal"]);
@@ -9,7 +10,7 @@ defineEmits(["close-modal"]);
 <template>
 	<Transition name="fade" mode="out-in" appear>
 		<div class="modal bg-white pos-fixed z-9 overflow-auto" :style="`width: ${width};`">
-			<button class="close-modal bg-greyishBlue cursor-pointer pos-absolute" @click="$emit('close-modal')">
+			<button v-if="closable" class="close-modal bg-greyishBlue cursor-pointer pos-absolute" @click="$emit('close-modal')">
 				<IconsClose />
 			</button>
 

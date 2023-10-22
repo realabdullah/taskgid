@@ -31,6 +31,8 @@
 	"dependencies": {
 		"@pinia/nuxt": "^0.4.7",
 		"@popperjs/core": "^2.11.8",
+		"@types/jsonwebtoken": "^9.0.4",
+		"jsonwebtoken": "^9.0.2",
 		"mailgun.js": "^9.3.0",
 		"mitt": "^3.0.0",
 		"pinia": "^2.0.33",

@@ -31,4 +31,10 @@ export default defineNuxtConfig({
 	devServer: {
 		port: 1234,
 	},
+
+	runtimeConfig: {
+		public: {
+			baseUrl: process.env.BASE_URL,
+		},
+	},
 });

@@ -6,7 +6,7 @@ definePageMeta({
 });
 
 const { tasks } = storeToRefs(useStore());
-const { fetchUserInfo, fetchUserTasks } = useStore();
+const { fetchUserInfo, fetchWorkspaceTasks } = useStore();
 
 const showCreateTaskModal = ref(false);
 const tasksTab = ["All Tasks", "Pending", "In Progress", "Completed"];
@@ -47,7 +47,7 @@ const filteredTasks = computed(() => {
 });
 
 const taskCreated = async () => {
-	await fetchUserTasks();
+	await fetchWorkspaceTasks();
 	showCreateTaskModal.value = false;
 };
 
@@ -56,7 +56,7 @@ onMounted(() => {
 });
 
 await fetchUserInfo();
-await fetchUserTasks();
+await fetchWorkspaceTasks();
 </script>
 
 <template>

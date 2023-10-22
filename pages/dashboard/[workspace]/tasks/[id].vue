@@ -5,21 +5,10 @@ definePageMeta({
 });
 
 const { activeWorkspace } = storeToRefs(useStore());
-const { task, fetchTask, deleteTask } = useTask();
+const { task, fetchTask, deleteTask, getTaskStatus } = useTask();
 
 const showUpdateTaskModal = ref(false);
 const showDeleteModal = ref(false);
-
-const getTaskStatus = (status: string) => {
-	switch (status) {
-		case "Pending":
-			return "pending";
-		case "In Progress":
-			return "in-progress";
-		default:
-			return "completed";
-	}
-};
 
 const updateTask = (newTask: Task) => {
 	Object.assign(task, newTask);

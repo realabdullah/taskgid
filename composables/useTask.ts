@@ -49,5 +49,16 @@ export const useTask = () => {
 		if (error) throw new Error(error.message);
 	};
 
-	return { task, fetchTask, deleteTask, createNewTask, updateTask };
+	const getTaskStatus = (status: string) => {
+		switch (status) {
+			case "Pending":
+				return "pending";
+			case "In Progress":
+				return "in-progress";
+			default:
+				return "completed";
+		}
+	};
+
+	return { task, fetchTask, deleteTask, createNewTask, updateTask, getTaskStatus };
 };
