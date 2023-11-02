@@ -38,10 +38,10 @@ const options = members.value.map((member) => ({ id: member.id, label: member.na
 	<BaseModal width="50rem" @close-modal="$emit('close')">
 		<template #default>
 			<div class="create-task">
-				<h1 class="fw-semiBold col-black">{{ usage === "create" ? "Create Task" : "Edit This Task." }}</h1>
-				<form class="d-flex fd-column" @submit.prevent="handleSubmission">
+				<h1 class="weight-semiBold col-black">{{ usage === "create" ? "Create Task" : "Edit This Task." }}</h1>
+				<form class="flex flex-column" @submit.prevent="handleSubmission">
 					<BaseInput id="title" v-model="task.title" label="Task Name" type="text" />
-					<div class="form-group d-flex">
+					<div class="form-group flex">
 						<BaseSelect id="priority" v-model="task.priority" label="Task Priority" :lists="priorities" />
 						<BaseInput id="date" v-model="task.dueDate" label="Due Date" type="date" />
 					</div>

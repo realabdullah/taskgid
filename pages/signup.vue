@@ -49,11 +49,11 @@ const signUp = async () => {
 <template>
 	<NuxtLayout name="auth">
 		<template #cta>Log In</template>
-		<div class="signup__form d-flex fd-column jc-center ai-flex-start w-100 h-100">
-			<h5 class="signup__form-header col-black fw-bold">Create an Account</h5>
+		<div class="signup__form flex flex-column content-center items-start w-100 h-100">
+			<h5 class="signup__form-header col-black weight-bold">Create an Account</h5>
 			<p class="signup__form-description col-grey">It’s Simpe and Easy!!</p>
 
-			<form class="w-100 d-flex fd-column jc-center ai-center" @submit.prevent="signUp">
+			<form class="w-100 flex flex-column content-center items-center" @submit.prevent="signUp">
 				<BaseInput id="name" v-model="form.name" type="text" label="Fullname" :required="true" />
 				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" />
 				<BaseInput id="password" v-model="form.password" type="password" label="Enter A Password" />

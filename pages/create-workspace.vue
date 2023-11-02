@@ -57,10 +57,10 @@ const handleNext = async () => {
 
 <template>
 	<NuxtLayout name="setup">
-		<div class="workspace d-flex fd-column jc-center ai-flex-start w-100 h-100">
-			<div class="workspace__create d-flex fd-column jc-center ai-flex-start">
-				<h1 class="workspace__create-header fw-bold col-black">{{ pageHeadings.header }}</h1>
-				<p class="workspace__create-description fw-regular col-grey">{{ pageHeadings.description }}</p>
+		<div class="workspace flex flex-column content-center items-start w-100 h-100">
+			<div class="workspace__create flex flex-column content-center items-start">
+				<h1 class="workspace__create-header weight-bold col-black">{{ pageHeadings.header }}</h1>
+				<p class="workspace__create-description weight-regular col-grey">{{ pageHeadings.description }}</p>
 
 				<form class="workspace__create-form w-100" @submit.prevent="handleNext">
 					<BaseInput v-if="workSpaceState === 'name'" id="workspace-name" v-model="name" type="text" label="Workspace Name" />

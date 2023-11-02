@@ -37,13 +37,13 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 
 <template>
 	<NuxtLoadingIndicator :height="2" color="#3754db" />
-	<div class="dashboard-layout bg-greyishBlue w-100 d-flex pos-fixed overflow-y-auto">
-		<aside class="dashboard-layout__left w-100 pos-fixed overflow-y-auto overflow-x-hidden d-flex bg-white" aria-label="Dashboard Navigation">
-			<div class="workspace-icons w-100 bg-blue d-flex fd-column ai-center">
+	<div class="dashboard-layout bg-greyishBlue w-100 flex position-fixed overflow-y-auto">
+		<aside class="dashboard-layout__left w-100 position-fixed overflow-y-auto overflow-x-hidden flex bg-white" aria-label="Dashboard Navigation">
+			<div class="workspace-icons w-100 bg-blue flex flex-column items-center">
 				<button
 					v-for="workspace in workspaces"
 					:key="workspace.id"
-					class="workspace-avatar bg-blue d-flex ai-center jc-center cursor-pointer"
+					class="workspace-avatar bg-blue flex items-center content-center cursor-pointer"
 					:class="{ active: workspace.id === activeWorkspace }"
 					@click="switchWorkspace(workspace.id)">
 					<img :src="`https://ui-avatars.com/api/?name=${workspace.title}&background=fff&color=0000FF`" alt="workspace" />
@@ -51,30 +51,30 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 
 				<button class="add-workspace col-blue cursor-pointer" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
 			</div>
-			<div class="workspace-details w-100 d-flex fd-column ai-flex-start">
-				<div class="workspace-detail d-flex fd-column ai-flex-start">
-					<h4 class="fw-bold col-darkBlue">{{ workspaceInfo.title }}</h4>
-					<p class="fw-regular col-grey-3">{{ workspaceInfo.title || user.name }}'s Space</p>
+			<div class="workspace-details w-100 flex flex-column items-start">
+				<div class="workspace-detail flex flex-column items-start">
+					<h4 class="weight-bold col-darkBlue">{{ workspaceInfo.title }}</h4>
+					<p class="weight-regular col-grey-3">{{ workspaceInfo.title || user.name }}'s Space</p>
 				</div>
 
-				<div class="workspace-nav d-flex ai-flex-start fd-column">
+				<div class="workspace-nav flex items-start flex-column">
 					<NuxtLink
 						v-for="(nav, index) in navs"
 						:key="index"
 						:to="nav.route"
-						class="workspace-nav__item d-flex ai-center td-none fw-regular tt-capitalize"
-						:class="$route.path === nav.route ? 'fw-bold col-blue' : 'col-grey-3'">
+						class="workspace-nav__item flex items-center text-none weight-regular text-capitalize"
+						:class="$route.path === nav.route ? 'weight-bold col-blue' : 'col-grey-3'">
 						<IconsSideNav :variant="nav.name" />
 						<span>{{ nav.name }}</span>
 					</NuxtLink>
 				</div>
 			</div>
 		</aside>
-		<main class="dashboard-layout__center pos-relative w-100 overflow-x-hidden">
-			<header class="pos-sticky bg-greyishBlue d-flex ai-center jc-space-between">
-				<label for="search" class="search pos-relative w-100">
+		<main class="dashboard-layout__center position-relative w-100 overflow-x-hidden">
+			<header class="position-sticky bg-greyishBlue flex items-center content-between">
+				<label for="search" class="search position-relative w-100">
 					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
-					<IconsSearch class="search-icon pos-absolute cursor-pointer" />
+					<IconsSearch class="search-icon position-absolute cursor-pointer" />
 				</label>
 
 				<button class="notification-bell bg-transparent cursor-pointer">
@@ -87,28 +87,28 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 			</div>
 		</main>
 		<aside v-show="showAccountPanel" class="dashboard-layout__right" aria-label="Dashboard Options">
-			<div class="user-sidebar w-100 bg-white pos-fixed overflow-y-auto overflow-x-hidden">
-				<div class="user d-flex ai-center jc-center fd-column">
+			<div class="user-sidebar w-100 bg-white position-fixed overflow-y-auto overflow-x-hidden">
+				<div class="user flex items-center content-center flex-column">
 					<img :src="profilePhoto" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
 
-					<div class="user-detail ta-center">
-						<h5 class="fw-bold col-darkBlue">{{ user.name }}</h5>
-						<span class="fw-regular col-grey-3">{{ user.email }}</span>
+					<div class="user-detail text-center">
+						<h5 class="weight-bold col-darkBlue">{{ user.name }}</h5>
+						<span class="weight-regular col-grey-3">{{ user.email }}</span>
 					</div>
 
 					<BaseButton class="btn" value="My Profile" />
 
 					<div class="calendar bg-whitishBlue w-100">
-						<div class="calendar__header bg-white d-flex ai-center">
+						<div class="calendar__header bg-white flex items-center">
 							<button
 								class="w-100 cursor-pointer"
-								:class="currentCalendarTab === 'calendar' ? 'active bg-blue col-white fw-medium' : 'bg-transparent col-grey fw-regular'"
+								:class="currentCalendarTab === 'calendar' ? 'active bg-blue col-white weight-medium' : 'bg-transparent col-grey weight-regular'"
 								@click="currentCalendarTab = 'calendar'">
 								Calendar
 							</button>
 							<button
 								class="w-100 cursor-pointer"
-								:class="currentCalendarTab === 'reminder' ? 'active bg-blue col-white fw-medium' : 'bg-transparent col-grey fw-regular'"
+								:class="currentCalendarTab === 'reminder' ? 'active bg-blue col-white weight-medium' : 'bg-transparent col-grey weight-regular'"
 								@click="currentCalendarTab = 'reminder'">
 								Reminder
 							</button>
@@ -119,7 +119,7 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 			</div>
 		</aside>
 
-		<button class="pos-fixed menu-toggle bg-white z-9 cursor-pointer d-flex ai-center jc-center" :style="`right: ${accountToggleStyle}`" @click="showAccountPanel = !showAccountPanel">
+		<button class="position-fixed menu-toggle bg-white z-9 cursor-pointer flex items-center content-center" :style="`right: ${accountToggleStyle}`" @click="showAccountPanel = !showAccountPanel">
 			<IconsAccount />
 		</button>
 	</div>

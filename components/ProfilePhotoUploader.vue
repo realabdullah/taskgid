@@ -61,12 +61,12 @@ const previewImage = (e: any) => {
 <template>
 	<BaseModal width="46rem" @close-modal="$emit('close')">
 		<template #default>
-			<div class="profile-uploader d-flex fd-column">
-				<h3 class="fw-bold">{{ photoUploaded ? "Profile picture taken" : !!pictureUrl ? "Change your profile picture" : "Upload your profile picture" }}</h3>
-				<label class="profile-container d-block pos-relative w-100 cursor-pointer" for="profilePicture">
+			<div class="profile-uploader flex flex-column">
+				<h3 class="weight-bold">{{ photoUploaded ? "Profile picture taken" : !!pictureUrl ? "Change your profile picture" : "Upload your profile picture" }}</h3>
+				<label class="profile-container block position-relative w-100 cursor-pointer" for="profilePicture">
 					<img class="w-100 h-100" :src="pictureUrl || 'https://i.ibb.co/kBGCJnQ/Group-67.png'" alt="photo" />
-					<span v-if="!photoUploaded" class="pos-absolute d-block fw-regular col-white text-nowrap">Tap to {{ !!pictureUrl ? "change" : "select" }} picture</span>
-					<IconsCheck v-if="photoUploaded" class="uploaded pos-absolute" variant="large" />
+					<span v-if="!photoUploaded" class="position-absolute block weight-regular col-white text-nowrap">Tap to {{ !!pictureUrl ? "change" : "select" }} picture</span>
+					<IconsCheck v-if="photoUploaded" class="uploaded position-absolute" variant="large" />
 
 					<input id="profilePicture" class="d-none" type="file" accept="image/png, image/jpg, image/jpeg" @change="previewImage" />
 				</label>

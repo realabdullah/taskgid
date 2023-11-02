@@ -21,52 +21,52 @@ await fetchTask();
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="task-page">
-			<div class="breadcumb d-flex ai-flex-end">
-				<p class="fw-semiBold col-darkBlue">Tasks</p>
+			<div class="breadcumb flex items-end">
+				<p class="weight-semiBold col-darkBlue">Tasks</p>
 				<IconsArrow variant="chevron-right" />
-				<span class="fw-medium col-darkBlue">{{ task.title }}</span>
+				<span class="weight-medium col-darkBlue">{{ task.title }}</span>
 			</div>
 
-			<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks`" class="back d-flex ai-center jc-center td-none bg-white col-blue">
+			<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks`" class="back flex items-center content-center text-none bg-white col-blue">
 				<IconsArrow variant="left" />
 			</nuxt-link>
 
-			<div class="task-card bg-white d-flex ai-stretch jc-space-between">
-				<div class="task-card__detail d-flex fd-column ai-flex-start">
-					<p class="title fw-medium col-black">{{ task.title }}</p>
-					<span class="status d-block fw-medium col-green bg-white" :class="getTaskStatus(task.status)">{{ task.status }}</span>
-					<p class="desc fw-regular col-grey-3">{{ task.description }}</p>
-					<div class="ctas d-flex ai-center">
+			<div class="task-card bg-white flex items-stretch content-between">
+				<div class="task-card__detail flex flex-column items-start">
+					<p class="title weight-medium col-black">{{ task.title }}</p>
+					<span class="status block weight-medium col-green bg-white" :class="getTaskStatus(task.status)">{{ task.status }}</span>
+					<p class="desc weight-regular col-grey-3">{{ task.description }}</p>
+					<div class="ctas flex items-center">
 						<BaseButton v-if="task.status === 'Pending'" class="btn text-nowrap" value="Work on it Now" />
 						<BaseButton v-else-if="task.status === 'In Progress'" class="btn text-nowrap" value="Mark As Done" />
-						<div v-else-if="task.status === 'Completed'" class="task-completed d-flex ai-center">
+						<div v-else-if="task.status === 'Completed'" class="task-completed flex items-center">
 							<IconsCompleted />
-							<span class="col-green fw-medium">This task has been completed</span>
+							<span class="col-green weight-medium">This task has been completed</span>
 						</div>
-						<div class="d-flex" style="gap: 1.2rem">
-							<button class="delete bg-transparent d-flex ai-center jc-center cursor-pointer" @click="showDeleteModal = true">
+						<div class="flex" style="gap: 1.2rem">
+							<button class="delete bg-transparent flex items-center content-center cursor-pointer" @click="showDeleteModal = true">
 								<IconsDelete />
 							</button>
-							<button class="edit bg-transparent d-flex ai-center jc-center cursor-pointer" @click="showUpdateTaskModal = true">
+							<button class="edit bg-transparent flex items-center content-center cursor-pointer" @click="showUpdateTaskModal = true">
 								<IconsEdit />
 							</button>
 						</div>
 					</div>
 				</div>
 
-				<div class="task-card__dates d-flex fd-column ai-flex-end jc-space-between">
-					<div class="task-date d-flex ai-center">
-						<div class="task-date__created d-flex fd-column ai-flex-start">
-							<span class="title fw-regular col-grey-3 text-nowrap">Date Created</span>
-							<span class="date fw-bold col-grey-3 text-nowrap">{{ task.dateAdded }}</span>
+				<div class="task-card__dates flex flex-column items-end content-between">
+					<div class="task-date flex items-center">
+						<div class="task-date__created flex flex-column items-start">
+							<span class="title weight-regular col-grey-3 text-nowrap">Date Created</span>
+							<span class="date weight-bold col-grey-3 text-nowrap">{{ task.dateAdded }}</span>
 						</div>
 						<IconsEllipse variant="outline" />
 					</div>
 					<hr />
-					<div class="task-date d-flex ai-center">
-						<div class="task-date__created d-flex fd-column ai-flex-start">
-							<span class="title fw-regular col-grey-3 text-nowrap text-nowrap">Due Date</span>
-							<span class="date fw-bold col-grey-3 text-nowrap">{{ task.dueDate }}</span>
+					<div class="task-date flex items-center">
+						<div class="task-date__created flex flex-column items-start">
+							<span class="title weight-regular col-grey-3 text-nowrap text-nowrap">Due Date</span>
+							<span class="date weight-bold col-grey-3 text-nowrap">{{ task.dueDate }}</span>
 						</div>
 						<IconsEllipse variant="solid" />
 					</div>
@@ -80,14 +80,14 @@ await fetchTask();
 		<!-- DELETE TASK -->
 		<BaseModal v-if="showDeleteModal" width="50rem" @close-modal="showDeleteModal = false">
 			<template #default>
-				<div class="delete-task d-flex fd-column">
-					<h1 class="fw-semiBold col-black">Delete Task</h1>
-					<p class="fw-regular col-grey-3">
+				<div class="delete-task flex flex-column">
+					<h1 class="weight-semiBold col-black">Delete Task</h1>
+					<p class="weight-regular col-grey-3">
 						Are you sure you want to delete the task
 						<b>‘{{ task.title }}’</b>
 						? This task is {{ task.status.toLowerCase() }}.
 					</p>
-					<div class="delete-task__ctas d-flex ai-center">
+					<div class="delete-task__ctas flex items-center">
 						<BaseButton value="No" usage="button" @click="showDeleteModal = false" />
 						<BaseButton value="Yes" usage="button" type="danger" @click="deleteTask" />
 					</div>

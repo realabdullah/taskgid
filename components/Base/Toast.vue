@@ -47,13 +47,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="toast d-flex ai-center jc-space-between w-100 bg-whitishBlue z-9" @mouseover="onMouseover" @mouseleave="startTimer">
-		<p class="fw-medium">{{ message }}</p>
+	<div class="toast flex items-center content-between w-100 bg-whitishBlue z-9" @mouseover="onMouseover" @mouseleave="startTimer">
+		<p class="weight-medium">{{ message }}</p>
 		<button class="close-btn bg-transparent cursor-pointer border-none" @click="closeToast">
 			<IconsClose />
 		</button>
 
-		<div class="progress pos-absolute" :style="progressStyle"></div>
+		<div class="progress position-absolute" :style="progressStyle"></div>
 	</div>
 </template>
 

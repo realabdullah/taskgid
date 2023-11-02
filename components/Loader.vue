@@ -1,5 +1,5 @@
 <template>
-	<span class="loader d-inline-block pos-relative"></span>
+	<span class="loader inline-block position-relative"></span>
 </template>
 
 <style lang="scss" scoped>

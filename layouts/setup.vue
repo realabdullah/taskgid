@@ -1,7 +1,7 @@
 <template>
-	<div class="setup__layout bg-white d-flex ai-center w-100">
-		<div class="setup__layout-left h-100 d-flex fd-column jc-space-between">
-			<h2 class="setup__text as-center fw-semiBold col-white">Your Enviroment your Will.</h2>
+	<div class="setup__layout bg-white flex items-center w-100">
+		<div class="setup__layout-left h-100 flex flex-column content-between">
+			<h2 class="setup__text self-center weight-semiBold col-white">Your Enviroment your Will.</h2>
 		</div>
 		<div class="setup__layout-right w-100">
 			<slot />

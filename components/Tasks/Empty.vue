@@ -8,12 +8,12 @@ defineEmits(["create-task"]);
 </script>
 
 <template>
-	<div class="task__empty d-flex fd-column ai-center jc-center">
+	<div class="task__empty flex flex-column items-center content-center">
 		<IconsTask variant="large" />
 
-		<h2 class="fw-semiBold col-black">No Tasks Yet</h2>
-		<p class="fw-regular col-grey">{{ description }}</p>
-		<p class="fw-regular col-grey">{{ extraText }}</p>
+		<h2 class="weight-semiBold col-black">No Tasks Yet</h2>
+		<p class="weight-regular col-grey">{{ description }}</p>
+		<p class="weight-regular col-grey">{{ extraText }}</p>
 
 		<BaseButton v-if="!!buttonText" class="btn" :value="buttonText" @click="$emit('create-task')" />
 	</div>

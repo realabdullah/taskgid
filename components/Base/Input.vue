@@ -21,12 +21,12 @@ const togglePassword = () => {
 </script>
 
 <template>
-	<label :for="id" class="w-100 d-flex fd-column ai-flex-start jc-center">
-		<span v-if="!!label" class="form-label col-grey fw-regular">{{ label }}</span>
-		<div class="pos-relative w-100">
-			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent fw-regular col-grey-2 bordered" />
+	<label :for="id" class="w-100 flex flex-column items-start content-center">
+		<span v-if="!!label" class="form-label col-grey weight-regular">{{ label }}</span>
+		<div class="position-relative w-100">
+			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular col-grey-2 bordered" />
 
-			<span v-if="type === 'password'" class="eye pos-absolute cursor-pointer" @click="togglePassword">
+			<span v-if="type === 'password'" class="eye position-absolute cursor-pointer" @click="togglePassword">
 				<IconsEye />
 			</span>
 		</div>

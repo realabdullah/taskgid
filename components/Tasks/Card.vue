@@ -8,13 +8,13 @@ const { getTaskStatus } = useTask();
 </script>
 
 <template>
-	<div class="tasks-card bg-white d-flex fd-column jc-space-between">
-		<div class="status d-flex ai-center jc-space-between">
+	<div class="tasks-card bg-white flex flex-column content-between">
+		<div class="status flex items-center content-between">
 			<span>T-{{ task.task_no }}</span>
 			<span :class="getTaskStatus(task.status)">{{ task.status }}</span>
 		</div>
-		<p class="fw-medium col-darkBlue">{{ task.title }}</p>
-		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url td-none d-flex ai-center cursor-pointer fw-semiBold col-blue">
+		<p class="weight-medium col-darkBlue">{{ task.title }}</p>
+		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url text-none flex items-center cursor-pointer weight-semiBold col-blue">
 			<span>View Task</span>
 			<IconsArrow variant="right" />
 		</nuxt-link>

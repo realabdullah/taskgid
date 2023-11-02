@@ -62,30 +62,30 @@ await fetchWorkspaceTasks();
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="task-page">
-			<div class="task-page__header d-flex ai-center jc-space-between">
+			<div class="task-page__header flex items-center content-between">
 				<div class="texts">
-					<h1 class="fw-semiBold col-darkBlue">Tasks</h1>
-					<p class="fw-regular col-grey-2">Your tasks in your space.</p>
+					<h1 class="weight-semiBold col-darkBlue">Tasks</h1>
+					<p class="weight-regular col-grey-2">Your tasks in your space.</p>
 				</div>
 				<BaseButton v-if="tasks.length > 0" value="Create Task" usage="button" style="width: 15%" @click="showCreateTaskModal = true" />
 			</div>
 
 			<div v-if="tasks.length > 0" class="task-page__list">
-				<div class="tasks-bar d-flex ai-center pos-relative overflow-x-auto">
+				<div class="tasks-bar flex items-center position-relative overflow-x-auto">
 					<button
 						v-for="(tab, index) in tasksTab"
 						:key="index"
-						class="bg-transparent d-flex ai-center cursor-pointer text-nowrap"
+						class="bg-transparent flex items-center cursor-pointer text-nowrap"
 						:class="{ active: activeTab === tab }"
 						@click="setActiveTab(tab)">
-						<span class="tab fw-regular">{{ tab }}</span>
-						<span class="count d-block fw-medium">{{ taskCount(tab) }}</span>
+						<span class="tab weight-regular">{{ tab }}</span>
+						<span class="count block weight-medium">{{ taskCount(tab) }}</span>
 					</button>
 
-					<span class="indicator pos-absolute bg-blue" :style="{ width: `${indicatorWidth}px`, transform: `translateX(${indicatorLeft}px)` }"></span>
+					<span class="indicator position-absolute bg-blue" :style="{ width: `${indicatorWidth}px`, transform: `translateX(${indicatorLeft}px)` }"></span>
 				</div>
 
-				<div v-if="filteredTasks.length > 0" class="tasks d-grid">
+				<div v-if="filteredTasks.length > 0" class="tasks grid">
 					<TasksCard v-for="task in filteredTasks" :key="task.id" :task="task" />
 				</div>
 				<TasksEmpty v-else :description="`You have no task ${activeTab.toLowerCase()} yet.`" :extra-text="`Get productive. Have a Task ${activeTab}.`" />

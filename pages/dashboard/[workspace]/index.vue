@@ -17,19 +17,19 @@ await fetchWorkspaceTasks();
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="homepage">
-			<div class="homepage-welcome d-flex ai-strech">
+			<div class="homepage-welcome flex items-strech">
 				<h1>👋</h1>
-				<div class="homepage-welcome__texts d-flex fd-column ai-flex-start">
-					<h2 class="fw-semiBold col-black">Hi {{ user.name }},</h2>
-					<p class="fw-regular col-grey-2">Wecome to your task management!</p>
+				<div class="homepage-welcome__texts flex flex-column items-start">
+					<h2 class="weight-semiBold col-black">Hi {{ user.name }},</h2>
+					<p class="weight-regular col-grey-2">Wecome to your task management!</p>
 				</div>
 			</div>
 
-			<div class="motivation-banner d-flex jc-space-between">
-				<h4 class="col-white fw-semiBold w-100">Motivation to help you work.</h4>
-				<div class="motivation-banner__ctas d-flex fd-column jc-space-between ai-flex-end">
+			<div class="motivation-banner flex content-between">
+				<h4 class="col-white weight-semiBold w-100">Motivation to help you work.</h4>
+				<div class="motivation-banner__ctas flex flex-column content-between items-end">
 					<IconsClose class="close col-white cursor-pointer" />
-					<button class="bg-blue col-white fw-medium cursor-pointer">Get Started</button>
+					<button class="bg-blue col-white weight-medium cursor-pointer">Get Started</button>
 				</div>
 			</div>
 

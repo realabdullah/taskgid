@@ -12,30 +12,30 @@ const onTaskCreated = () => {
 
 <template>
 	<div class="get-started">
-		<h3 class="fw-bold col-black">Let’s get you started</h3>
+		<h3 class="weight-bold col-black">Let’s get you started</h3>
 
-		<div class="get-started__todos d-flex fd-column w-100">
+		<div class="get-started__todos flex flex-column w-100">
 			<button
 				v-if="user.profile_picture === ''"
-				class="todo bg-white d-flex ai-center jc-space-between cursor-pointer"
+				class="todo bg-white flex items-center content-between cursor-pointer"
 				:class="{ active: selected === 'profilePicture' }"
 				@click="selected = 'profilePicture'">
-				<div class="todo-title d-flex ai-center">
+				<div class="todo-title flex items-center">
 					<IconsGetStarted variant="profile-picture" />
-					<p class="fw-regular col-grey-3 ta-left">Hey {{ user.name }}, Update your Profile Picture</p>
+					<p class="weight-regular col-grey-3 text-left">Hey {{ user.name }}, Update your Profile Picture</p>
 				</div>
-				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="useEvent('uploadProfilePicture', true)">
+				<button class="bg-transparent flex items-center col-grey-3 weight-regular cursor-pointer" @click="useEvent('uploadProfilePicture', true)">
 					<span class="text-nowrap">Get Started</span>
 					<IconsArrow variant="right" />
 				</button>
 			</button>
 
-			<button v-if="tasks.length === 0" class="todo bg-white d-flex ai-center jc-space-between cursor-pointer" :class="{ active: selected === 'firstTask' }" @click="selected = 'firstTask'">
-				<div class="todo-title d-flex ai-center">
+			<button v-if="tasks.length === 0" class="todo bg-white flex items-center content-between cursor-pointer" :class="{ active: selected === 'firstTask' }" @click="selected = 'firstTask'">
+				<div class="todo-title flex items-center">
 					<IconsGetStarted variant="first-task" />
-					<p class="fw-regular col-grey-3 ta-left">Create your First Task in your Workspace</p>
+					<p class="weight-regular col-grey-3 text-left">Create your First Task in your Workspace</p>
 				</div>
-				<button class="bg-transparent d-flex ai-center col-grey-3 fw-regular cursor-pointer" @click="showCreateTaskModal = true">
+				<button class="bg-transparent flex items-center col-grey-3 weight-regular cursor-pointer" @click="showCreateTaskModal = true">
 					<span class="text-nowrap">Get Started</span>
 					<IconsArrow variant="right" />
 				</button>

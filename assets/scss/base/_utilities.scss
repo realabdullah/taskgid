@@ -41,7 +41,7 @@ $weights: (
 ) !default;
 
 @each $weight, $value in $weights {
-	.fw-#{$weight} {
+	.weight-#{$weight} {
 		font-weight: $value;
 	}
 }
@@ -58,7 +58,7 @@ $displays: (
 ) !default;
 
 @each $display, $value in $displays {
-	.d-#{$display} {
+	.#{$display} {
 		display: $value;
 	}
 }
@@ -85,38 +85,38 @@ $flex-directions: (
 ) !default;
 
 @each $flex-direction, $value in $flex-directions {
-	.fd-#{$flex-direction} {
+	.flex-#{$flex-direction} {
 		flex-direction: $value;
 	}
 }
 
 // justify-content
 $justify-contents: (
-	"flex-start": flex-start,
-	"flex-end": flex-end,
+	"start": flex-start,
+	"end": flex-end,
 	"center": center,
-	"space-between": space-between,
-	"space-around": space-around,
-	"space-evenly": space-evenly,
+	"between": space-between,
+	"around": space-around,
+	"evenly": space-evenly,
 ) !default;
 
 @each $justify-content, $value in $justify-contents {
-	.jc-#{$justify-content} {
+	.content-#{$justify-content} {
 		justify-content: $value;
 	}
 }
 
 // align-items
 $align-items: (
-	"flex-start": flex-start,
-	"flex-end": flex-end,
+	"start": flex-start,
+	"end": flex-end,
 	"center": center,
 	"baseline": baseline,
 	"stretch": stretch,
 ) !default;
 
 @each $align-item, $value in $align-items {
-	.ai-#{$align-item} {
+	.items-#{$align-item} {
 		align-items: $value;
 	}
 }
@@ -124,15 +124,15 @@ $align-items: (
 // align-self
 $align-selfs: (
 	"auto": auto,
-	"flex-start": flex-start,
-	"flex-end": flex-end,
+	"start": flex-start,
+	"end": flex-end,
 	"center": center,
 	"baseline": baseline,
 	"stretch": stretch,
 ) !default;
 
 @each $align-self, $value in $align-selfs {
-	.as-#{$align-self} {
+	.self-#{$align-self} {
 		align-self: $value;
 	}
 }
@@ -147,7 +147,7 @@ $positions: (
 ) !default;
 
 @each $position, $value in $positions {
-	.pos-#{$position} {
+	.position-#{$position} {
 		position: $value;
 	}
 }
@@ -161,7 +161,7 @@ $text-decorations: (
 ) !default;
 
 @each $text-decoration, $value in $text-decorations {
-	.td-#{$text-decoration} {
+	.text-#{$text-decoration} {
 		text-decoration: $value;
 	}
 }
@@ -175,7 +175,7 @@ $text-aligns: (
 ) !default;
 
 @each $text-align, $value in $text-aligns {
-	.ta-#{$text-align} {
+	.text-#{$text-align} {
 		text-align: $value;
 	}
 }
@@ -189,7 +189,7 @@ $text-transforms: (
 ) !default;
 
 @each $text-transform, $value in $text-transforms {
-	.tt-#{$text-transform} {
+	.text-#{$text-transform} {
 		text-transform: $value;
 	}
 }

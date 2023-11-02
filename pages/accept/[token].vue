@@ -37,8 +37,8 @@ await verifyToken();
 <template>
 	<BaseModal v-if="isTokenInvalid" width="50rem" :closable="false">
 		<template #default>
-			<div class="modal d-flex fd-column ai-center jc-center">
-				<p class="fw-regular col-grey ta-center">
+			<div class="modal flex flex-column items-center content-center">
+				<p class="weight-regular col-grey text-center">
 					Oops, something went wrong! It seems there's an issue with the invitation. Please double-check the link or contact our support team for assistance. We're here to help you get
 					started.
 				</p>

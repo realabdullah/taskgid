@@ -9,10 +9,10 @@ const modelValue = defineModel<string | number>();
 </script>
 
 <template>
-	<label class="w-100 d-flex fd-column ai-flex-start" :for="id">
-		<span class="label d-block fw-regular col-darkBlue">{{ label }}</span>
+	<label class="w-100 flex flex-column items-start" :for="id">
+		<span class="label block weight-regular col-darkBlue">{{ label }}</span>
 
-		<select :id="id" v-model="modelValue" :name="id" class="w-100 bg-transparent fw-regular col-grey-2 bordered" required>
+		<select :id="id" v-model="modelValue" :name="id" class="w-100 bg-transparent weight-regular col-grey-2 bordered" required>
 			<option v-for="option in lists" :key="option" :value="option">{{ option }}</option>
 		</select>
 	</label>

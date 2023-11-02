@@ -42,17 +42,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="multiselect pos-relative">
-		<div class="w-100 d-flex fd-column ai-flex-start jc-center">
-			<span class="form-label col-grey fw-regular">{{ label }}</span>
-			<span class="container d-block w-100 bg-transparent fw-regular col-grey-2 bordered cursor-pointer" @click="showOptions = !showOptions">
-				<span v-if="selected.length === 0" class="d-block w-100 p-1">Select</span>
-				<span v-else class="d-block w-100 p-1">{{ selected.join(", ") }}</span>
+	<div class="multiselect position-relative">
+		<div class="w-100 flex flex-column items-start content-center">
+			<span class="form-label col-grey weight-regular">{{ label }}</span>
+			<span class="container block w-100 bg-transparent weight-regular col-grey-2 bordered cursor-pointer" @click="showOptions = !showOptions">
+				<span v-if="selected.length === 0" class="block w-100 p-1">Select</span>
+				<span v-else class="block w-100 p-1">{{ selected.join(", ") }}</span>
 			</span>
 		</div>
 
-		<div v-show="showOptions" class="multiselect__options pos-absolute bg-white w-100 overflow-y-auto z-2">
-			<div v-for="(option, index) in options" :key="index" class="multiselect__options-item d-flex ai-center">
+		<div v-show="showOptions" class="multiselect__options position-absolute bg-white w-100 overflow-y-auto z-2">
+			<div v-for="(option, index) in options" :key="index" class="multiselect__options-item flex items-center">
 				<span class="d-inline-block w-100 cursor-pointer" @click="selectValue(option.id)">{{ option.label }}</span>
 			</div>
 		</div>

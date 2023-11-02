@@ -9,8 +9,8 @@ defineEmits(["close-modal"]);
 
 <template>
 	<Transition name="fade" mode="out-in" appear>
-		<div class="modal bg-white pos-fixed z-9 overflow-auto" :style="`width: ${width};`">
-			<button v-if="closable" class="close-modal bg-greyishBlue cursor-pointer pos-absolute" @click="$emit('close-modal')">
+		<div class="modal bg-white position-fixed z-9 overflow-auto" :style="`width: ${width};`">
+			<button v-if="closable" class="close-modal bg-greyishBlue cursor-pointer position-absolute" @click="$emit('close-modal')">
 				<IconsClose />
 			</button>
 
@@ -18,7 +18,7 @@ defineEmits(["close-modal"]);
 		</div>
 	</Transition>
 	<Transition name="fade" mode="out-in" appear>
-		<div class="modal-overlay pos-fixed z-1"></div>
+		<div class="modal-overlay position-fixed z-1"></div>
 	</Transition>
 </template>
 

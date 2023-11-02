@@ -15,7 +15,7 @@ const background = computed(() => {
 </script>
 
 <template>
-	<button class="__btn w-100 fw-medium col-white as-flex-start" :class="background" :type="usage" :disabled="value === 'loading'">
+	<button class="__btn w-100 weight-medium col-white self-start" :class="background" :type="usage" :disabled="value === 'loading'">
 		<Loader v-if="value === 'loading'" />
 		<span v-else>{{ value }}</span>
 	</button>

@@ -35,16 +35,16 @@ const submitForm = async () => {
 <template>
 	<NuxtLayout name="auth">
 		<template #cta>Create Account</template>
-		<div class="login__form d-flex fd-column jc-center ai-flex-start w-100 h-100">
-			<h5 class="login__form-header fw-bold col-black">Welcome Back.</h5>
+		<div class="login__form flex flex-column content-center items-start w-100 h-100">
+			<h5 class="login__form-header weight-bold col-black">Welcome Back.</h5>
 
-			<form class="d-flex fd-column jc-center ai-center w-100" @submit.prevent="submitForm">
+			<form class="flex flex-column content-center items-center w-100" @submit.prevent="submitForm">
 				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" :required="true" />
 				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :required="true" />
 				<BaseButton :value="submitting ? 'loading' : 'Log In'" />
 			</form>
 
-			<NuxtLink to="/forget-password" class="login__form-footer col-blue td-none fw-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
+			<NuxtLink to="/forget-password" class="login__form-footer col-blue text-none weight-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
 		</div>
 	</NuxtLayout>
 </template>

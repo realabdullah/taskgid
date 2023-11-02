@@ -75,34 +75,34 @@ const logOut = async () => {
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="settings-page">
-			<h3 class="fw-semiBold col-darkBlue">Settings</h3>
-			<div class="log-out d-flex jc-flex-end" style="width: 10%; margin-left: auto">
+			<h3 class="weight-semiBold col-darkBlue">Settings</h3>
+			<div class="log-out flex content-end" style="width: 10%; margin-left: auto">
 				<BaseButton value="Log Out" usage="button" type="danger" @click="openOrCloseModal(true, 'logout')" />
 			</div>
 
 			<div class="settings-page__card">
-				<h5 class="fw-regular col-darkBlue">Account Settings</h5>
-				<div class="card-content bg-white d-flex fd-column ai-flex-start">
-					<div class="card-content__box w-100 d-flex ai-center bordered">
+				<h5 class="weight-regular col-darkBlue">Account Settings</h5>
+				<div class="card-content bg-white flex flex-column items-start">
+					<div class="card-content__box w-100 flex items-center bordered">
 						<IconsUser class="icon" />
-						<div class="details d-flex fd-column">
-							<span class="fw-regular col-grey-3">Fullname</span>
-							<span class="fw-semiBold col-black">{{ user.name }}</span>
+						<div class="details flex flex-column">
+							<span class="weight-regular col-grey-3">Fullname</span>
+							<span class="weight-semiBold col-black">{{ user.name }}</span>
 						</div>
 					</div>
 
-					<div class="card-content__box w-100 d-flex ai-center bordered">
+					<div class="card-content__box w-100 flex items-center bordered">
 						<IconsEmail class="icon" />
-						<div class="details d-flex fd-column">
-							<span class="fw-regular col-grey-3">Email Address</span>
-							<span class="fw-semiBold col-black">{{ user.email }}</span>
+						<div class="details flex flex-column">
+							<span class="weight-regular col-grey-3">Email Address</span>
+							<span class="weight-semiBold col-black">{{ user.email }}</span>
 						</div>
 					</div>
 
-					<div class="card-content__box w-100 d-flex ai-center bordered">
-						<div class="details d-flex fd-column">
-							<span class="fw-regular col-grey-3">Password</span>
-							<span class="fw-semiBold col-black">**********</span>
+					<div class="card-content__box w-100 flex items-center bordered">
+						<div class="details flex flex-column">
+							<span class="weight-regular col-grey-3">Password</span>
+							<span class="weight-semiBold col-black">**********</span>
 						</div>
 					</div>
 
@@ -111,17 +111,17 @@ const logOut = async () => {
 			</div>
 
 			<div class="settings-page__card">
-				<div class="d-flex ai-center jc-space-between">
-					<h5 class="fw-regular col-darkBlue">Workspace Members</h5>
-					<button class="invite border-none bg-transparent fw-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
+				<div class="flex items-center content-between">
+					<h5 class="weight-regular col-darkBlue">Workspace Members</h5>
+					<button class="invite border-none bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
 				</div>
 
-				<div v-for="member in members" :key="member.id" class="card-content bg-white d-flex fd-column ai-flex-start">
-					<div class="card-content__box w-100 d-flex ai-center bordered">
+				<div v-for="member in members" :key="member.id" class="card-content bg-white flex flex-column items-start">
+					<div class="card-content__box w-100 flex items-center bordered">
 						<img :src="member.profile_picture" :alt="member.username" />
-						<div class="details d-flex fd-column">
-							<span class="fw-regular col-grey-3">{{ member.name }}</span>
-							<span class="fw-semiBold col-black">{{ member.email }}</span>
+						<div class="details flex flex-column">
+							<span class="weight-regular col-grey-3">{{ member.name }}</span>
+							<span class="weight-semiBold col-black">{{ member.email }}</span>
 						</div>
 					</div>
 				</div>
@@ -130,9 +130,9 @@ const logOut = async () => {
 
 		<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
 			<template #default>
-				<div class="edit-profile d-flex fd-column">
-					<h1 class="fw-semiBold col-darkBlue">{{ modalHeader }}</h1>
-					<form v-if="modalState === 'edit-profile'" class="d-flex fd-column" @submit.prevent="handleEditProfile">
+				<div class="edit-profile flex flex-column">
+					<h1 class="weight-semiBold col-darkBlue">{{ modalHeader }}</h1>
+					<form v-if="modalState === 'edit-profile'" class="flex flex-column" @submit.prevent="handleEditProfile">
 						<BaseInput id="name" v-model="name" label="Fullname" type="text" />
 						<BaseInput id="email" v-model="email" label="Email Address" type="email" />
 						<BaseInput id="password" v-model="password" label="Password" type="password" />
@@ -140,14 +140,14 @@ const logOut = async () => {
 						<BaseButton value="Save" />
 					</form>
 					<template v-else-if="modalState === 'logout'">
-						<p class="fw-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
-						<div class="buttons d-flex">
+						<p class="weight-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
+						<div class="buttons flex">
 							<BaseButton value="Cancel" usage="button" @click="openOrCloseModal(false, '')" />
 							<BaseButton value="Log Out" usage="button" type="danger" @click="logOut" />
 						</div>
 					</template>
 					<template v-else-if="modalState === 'invite'">
-						<form class="d-flex fd-column" @submit.prevent="sendInvite">
+						<form class="flex flex-column" @submit.prevent="sendInvite">
 							<BaseInput id="email" v-model="inviteeEmail" label="Email Address" type="email" />
 							<BaseButton :value="loading ? 'loading' : 'Send Invite'" />
 						</form>

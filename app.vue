@@ -19,7 +19,7 @@ const removeToast = (id: string) => {
 </script>
 
 <template>
-	<div v-if="messages.length > 0" class="toast-container w-100 d-flex fd-column pos-fixed">
+	<div v-if="messages.length > 0" class="toast-container w-100 flex flex-column position-fixed">
 		<BaseToast v-for="message in messages" :id="message.id" :key="message.id" :message="message.text" @close="removeToast" />
 	</div>
 	<NuxtLayout>

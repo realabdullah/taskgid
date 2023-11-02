@@ -3,14 +3,14 @@ const route = useRoute();
 </script>
 
 <template>
-	<div class="auth__layout bg-white d-flex ai-center jc-center pos-relative h-full overflow-hidden">
+	<div class="auth__layout bg-white flex items-center content-center position-relative h-full overflow-hidden">
 		<div class="content w-100">
 			<slot />
 		</div>
 	</div>
 
-	<div class="auth-cta pos-fixed">
-		<button class="bg-white col-blue fw-medium cursor-pointer" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
+	<div class="auth-cta position-fixed">
+		<button class="bg-white col-blue weight-medium cursor-pointer" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
 			<slot name="cta" />
 		</button>
 	</div>
