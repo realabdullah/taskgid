@@ -157,7 +157,7 @@ $text-decorations: (
 	"underline": underline,
 	"overline": overline,
 	"line-through": line-through,
-	"none": none,
+	"unset": none,
 ) !default;
 
 @each $text-decoration, $value in $text-decorations {

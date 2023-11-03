@@ -62,7 +62,7 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 						v-for="(nav, index) in navs"
 						:key="index"
 						:to="nav.route"
-						class="workspace-nav__item flex items-center text-none weight-regular text-capitalize"
+						class="workspace-nav__item flex items-center text-unset weight-regular text-capitalize"
 						:class="$route.path === nav.route ? 'weight-bold col-blue' : 'col-grey-3'">
 						<IconsSideNav :variant="nav.name" />
 						<span>{{ nav.name }}</span>

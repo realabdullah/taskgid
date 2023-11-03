@@ -68,7 +68,7 @@ const previewImage = (e: any) => {
 					<span v-if="!photoUploaded" class="position-absolute block weight-regular col-white text-nowrap">Tap to {{ !!pictureUrl ? "change" : "select" }} picture</span>
 					<IconsCheck v-if="photoUploaded" class="uploaded position-absolute" variant="large" />
 
-					<input id="profilePicture" class="d-none" type="file" accept="image/png, image/jpg, image/jpeg" @change="previewImage" />
+					<input id="profilePicture" class="none" type="file" accept="image/png, image/jpg, image/jpeg" @change="previewImage" />
 				</label>
 				<BaseButton v-if="!photoUploaded" usage="button" :value="uploading ? 'loading' : 'Upload Picture'" @click="uploadProfilePicture" />
 			</div>

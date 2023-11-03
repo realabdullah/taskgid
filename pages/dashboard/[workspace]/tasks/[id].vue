@@ -27,7 +27,7 @@ await fetchTask();
 				<span class="weight-medium col-darkBlue">{{ task.title }}</span>
 			</div>
 
-			<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks`" class="back flex items-center content-center text-none bg-white col-blue">
+			<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks`" class="back flex items-center content-center text-unset bg-white col-blue">
 				<IconsArrow variant="left" />
 			</nuxt-link>
 

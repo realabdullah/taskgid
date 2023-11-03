@@ -44,7 +44,7 @@ const submitForm = async () => {
 				<BaseButton :value="submitting ? 'loading' : 'Log In'" />
 			</form>
 
-			<NuxtLink to="/forget-password" class="login__form-footer col-blue text-none weight-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
+			<NuxtLink to="/forget-password" class="login__form-footer col-blue text-unset weight-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
 		</div>
 	</NuxtLayout>
 </template>
