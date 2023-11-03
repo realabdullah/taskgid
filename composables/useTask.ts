@@ -1,5 +1,6 @@
 export const useTask = () => {
 	const { tasks, activeWorkspace } = storeToRefs(useStore());
+	const push = usePush();
 
 	const route = useRoute();
 	const client = useSupabaseClient();
@@ -27,7 +28,7 @@ export const useTask = () => {
 	const deleteTask = async () => {
 		const { error } = await client.from("tasks").delete().eq("id", task.id);
 		if (error) {
-			useEvent("toast", "An error occured while trying to delete task.");
+			push.error("An error occured while trying to delete task.");
 			return;
 		}
 

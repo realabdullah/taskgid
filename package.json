@@ -35,6 +35,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"mailgun.js": "^9.3.0",
 		"mitt": "^3.0.0",
+		"notivue": "^1.4.4",
 		"pinia": "^2.0.33",
 		"v-calendar": "^3.0.3",
 		"vue-email": "^0.2.3"

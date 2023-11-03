@@ -8,6 +8,7 @@ definePageMeta({
 const { user, members } = storeToRefs(useStore());
 const { inviteMember } = useStore();
 const client = useSupabaseClient();
+const push = usePush();
 
 const name = ref(user.value.name);
 const email = ref(user.value.email);
@@ -52,10 +53,10 @@ const sendInvite = async () => {
 		loading.value = false;
 		inviteeEmail.value = "";
 		openOrCloseModal(false, "");
-		useEvent("toast", "Invite sent successfully.");
+		push.success("Invite sent successfully.");
 	} catch (error) {
 		loading.value = false;
-		useEvent("toast", "Failed to send invite, please try again.");
+		push.error("Failed to send invite, please try again.");
 	}
 };
 

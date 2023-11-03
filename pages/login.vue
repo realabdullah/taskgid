@@ -12,6 +12,8 @@ const form = reactive({
 const submitting = ref(false);
 const client = useSupabaseAuthClient();
 
+const push = usePush();
+
 const submitForm = async () => {
 	try {
 		if (form.email === "" || form.password === "") return;
@@ -24,10 +26,11 @@ const submitForm = async () => {
 		if (error) throw new Error(error.message);
 
 		submitting.value = false;
+		push.success("Logged in successfully.");
 		navigateTo({ name: "home", replace: true });
 	} catch (error) {
 		submitting.value = false;
-		useEvent("toast", useFormatError(error as string));
+		push.error(useFormatError(error as string));
 	}
 };
 </script>

@@ -4,6 +4,7 @@ const { profilePicture } = defineProps<{
 }>();
 
 const { profilePhoto } = storeToRefs(useStore());
+const push = usePush();
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);
 const pictureFile = ref("");
@@ -15,7 +16,7 @@ const emit = defineEmits(["close"]);
 const uploadProfilePicture = async () => {
 	try {
 		if (pictureFile.value === "") {
-			useEvent("toast", "Please select a picture");
+			push.error("Please select a picture");
 			return;
 		}
 		const userId = useSupabaseUser().value?.id;

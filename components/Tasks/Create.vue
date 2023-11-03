@@ -11,6 +11,7 @@ const emit = defineEmits<{
 
 const { members } = storeToRefs(useStore());
 const { task, createNewTask, updateTask } = useTask();
+const push = usePush();
 
 const priorities = ["Less Important", "Important", "High Priority"];
 const submitting = ref(false);
@@ -23,11 +24,11 @@ const handleSubmission = async () => {
 		if (usage === "create") await createNewTask();
 		else updateTask(taskToBeUpdated?.id as string);
 		emit("task-created", task);
-		useEvent("toast", `Task ${usage === "create" ? "created" : "updated"} successfully!`);
+		push.success(`Task ${usage === "create" ? "created" : "updated"} successfully!`);
 		submitting.value = false;
 	} catch (error) {
 		submitting.value = false;
-		useEvent("toast", useFormatError(error as string));
+		push.error(useFormatError(error as string));
 	}
 };
 

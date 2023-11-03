@@ -36,7 +36,6 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 </script>
 
 <template>
-	<NuxtLoadingIndicator :height="2" color="#3754db" />
 	<div class="dashboard-layout bg-greyishBlue w-100 flex position-fixed overflow-y-auto">
 		<aside class="dashboard-layout__left w-100 position-fixed overflow-y-auto overflow-x-hidden flex bg-white" aria-label="Dashboard Navigation">
 			<div class="workspace-icons w-100 bg-blue flex flex-column items-center">

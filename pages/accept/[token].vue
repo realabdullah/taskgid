@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const route = useRoute();
 const { verifyInviteToken, addUserToWorkspace } = useStore();
+const push = usePush();
 
 const token = route.params.token as string;
 const isTokenInvalid = ref(false);
@@ -18,7 +19,7 @@ const verifyToken = async () => {
 		} else navigateTo(`/signup?email=${email}&workspace=${workspace}`);
 	} catch {
 		isTokenInvalid.value = true;
-		useEvent("toast", "Invalid token.");
+		push.error("Invalid token.");
 	}
 };
 

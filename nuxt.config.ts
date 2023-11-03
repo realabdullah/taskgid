@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	css: ["~/assets/scss/main.scss"],
-	modules: ["@nuxtjs/supabase", "@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
+	css: ["~/assets/scss/main.scss", "notivue/notifications.css", "notivue/animations.css"],
+	modules: ["@nuxtjs/supabase", "@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt", "notivue/nuxt"],
 	vite: {
 		css: {
 			preprocessorOptions: {
@@ -36,5 +36,9 @@ export default defineNuxtConfig({
 		public: {
 			baseUrl: process.env.BASE_URL,
 		},
+	},
+
+	notivue: {
+		position: "top-right",
 	},
 });

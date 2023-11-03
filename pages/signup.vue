@@ -14,6 +14,7 @@ const submitting = ref(false);
 
 const client = useSupabaseAuthClient();
 const { sendWelcomeEmail } = useEmail();
+const push = usePush();
 
 const signUp = async () => {
 	try {
@@ -37,11 +38,11 @@ const signUp = async () => {
 		if (userError) throw new Error(userError.message);
 
 		await sendWelcomeEmail(form.email, form.name);
-
+		push.success("Account created successfully.");
 		navigateTo({ name: "home", replace: true });
 	} catch (error) {
 		submitting.value = false;
-		useEvent("toast", useFormatError(error as string));
+		push.error(useFormatError(error as string));
 	}
 };
 </script>
