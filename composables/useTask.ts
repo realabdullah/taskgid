@@ -1,5 +1,5 @@
 export const useTask = () => {
-	const { tasks, activeWorkspace } = storeToRefs(useStore());
+	const { tasks } = storeToRefs(useStore());
 	const push = usePush();
 
 	const route = useRoute();
@@ -15,7 +15,7 @@ export const useTask = () => {
 		priority: "",
 		status: "",
 		task_no: 0,
-		workspace_id: activeWorkspace.value,
+		workspace_id: "",
 		assigned_to: [],
 	});
 

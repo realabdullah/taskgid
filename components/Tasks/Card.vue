@@ -3,7 +3,6 @@ defineProps<{
 	task: Task;
 }>();
 
-const { activeWorkspace } = storeToRefs(useStore());
 const { getTaskStatus } = useTask();
 </script>
 
@@ -14,7 +13,7 @@ const { getTaskStatus } = useTask();
 			<span :class="getTaskStatus(task.status)">{{ task.status }}</span>
 		</div>
 		<p class="weight-medium col-darkBlue">{{ task.title }}</p>
-		<nuxt-link :to="`/dashboard/${activeWorkspace}/tasks/${task.id}`" class="task-url text-unset flex items-center cursor-pointer weight-semiBold col-blue">
+		<nuxt-link to="/" class="task-url text-unset flex items-center cursor-pointer weight-semiBold col-blue">
 			<span>View Task</span>
 			<IconsArrow variant="right" />
 		</nuxt-link>

@@ -31,7 +31,7 @@ declare global {
 	}
 
 	interface User {
-		id: string;
+		_id: string;
 		name: string;
 		email: string;
 		username: string;
@@ -44,5 +44,17 @@ declare global {
 		type: string;
 		message: string;
 		description: string;
+	}
+
+	interface Token {
+		token: string;
+		expires: string;
+	}
+
+	interface UserAPiResponse {
+		success: boolean;
+		user: User;
+		accessToken: Token;
+		refreshToken: Token;
 	}
 }

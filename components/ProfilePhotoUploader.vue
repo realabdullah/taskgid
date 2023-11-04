@@ -3,8 +3,6 @@ const { profilePicture } = defineProps<{
 	profilePicture: string;
 }>();
 
-const { profilePhoto } = storeToRefs(useStore());
-const push = usePush();
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);
 const pictureFile = ref("");
@@ -13,30 +11,11 @@ const pictureUrl = ref(profilePicture);
 
 const emit = defineEmits(["close"]);
 
-const uploadProfilePicture = async () => {
+const uploadProfilePicture = () => {
 	try {
-		if (pictureFile.value === "") {
-			push.error("Please select a picture");
-			return;
-		}
-		const userId = useSupabaseUser().value?.id;
 		uploading.value = true;
-		const { error } = await useSupabaseClient().storage.from("images").upload(`profilePhotos/profile-${userId}.png`, pictureFile.value, {
-			upsert: true,
-		});
-
-		if (error) throw new Error(error.message);
-
-		pictureUrl.value = useGetPhotoUrl().photoUrl(`profilePhotos/profile-${userId}.png`, "images");
-		await useSupabaseClient()
-			.from("users")
-			.update({ profile_picture: pictureUrl.value } as never)
-			.eq("id", userId);
-		profilePhoto.value = pictureUrl.value;
-		uploading.value = false;
-		photoUploaded.value = true;
-
 		setTimeout(() => {
+			uploading.value = false;
 			emit("close");
 		}, 3000);
 	} catch (error) {

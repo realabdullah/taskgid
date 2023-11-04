@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(() => {
-	const user = useSupabaseUser();
+	const { isTokenValid } = useToken();
 
-	if (!user.value) return navigateTo("/login");
+	if (!isTokenValid.value) return navigateTo("/login");
 });

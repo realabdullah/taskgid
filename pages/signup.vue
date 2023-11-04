@@ -5,41 +5,33 @@ definePageMeta({
 	middleware: ["guest"],
 });
 
+const {
+	public: { apiUrl },
+} = useRuntimeConfig();
+const { user } = storeToRefs(useStore());
+const { setToken } = useToken();
+
 const form = reactive({
 	name: "",
 	email: "",
 	password: "",
 });
 const submitting = ref(false);
-
-const client = useSupabaseAuthClient();
-const { sendWelcomeEmail } = useEmail();
 const push = usePush();
 
 const signUp = async () => {
 	try {
 		submitting.value = true;
-		const { data, error } = await client.auth.signUp({
-			email: form.email,
-			password: form.password,
+		const response = await $fetch<UserAPiResponse>(`${apiUrl}/users/create`, {
+			method: "POST",
+			body: { ...form },
 		});
-
-		if (error) throw new Error(error.message);
-
-		const username = form.email.split("@")[0] + Math.floor(Math.random() * 1000) + 1;
-		const dp = `https://ui-avatars.com/api/?name=${form.name}&background=random&color=fff`;
-
-		const payload = { id: data.user?.id, name: form.name, email: form.email, username, profile_picture: dp };
-
-		const { error: userError } = await useSupabaseClient()
-			.from("users")
-			.insert(payload as any);
-
-		if (userError) throw new Error(userError.message);
-
-		await sendWelcomeEmail(form.email, form.name);
+		const { success, user: data, accessToken, refreshToken } = response;
+		if (!success) throw new Error("We couldn't create your account. Please try again.");
+		user.value = data;
+		setToken(accessToken, refreshToken);
 		push.success("Account created successfully.");
-		navigateTo({ name: "home", replace: true });
+		navigateTo("/dashboard");
 	} catch (error) {
 		submitting.value = false;
 		push.error(useFormatError(error as string));

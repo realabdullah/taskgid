@@ -5,10 +5,8 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { user, members } = storeToRefs(useStore());
-const { inviteMember } = useStore();
+const { user } = storeToRefs(useStore());
 const client = useSupabaseClient();
-const push = usePush();
 
 const name = ref(user.value.name);
 const email = ref(user.value.email);
@@ -46,19 +44,7 @@ const handleEditProfile = async () => {
 	openOrCloseModal(false, "");
 };
 
-const sendInvite = async () => {
-	try {
-		loading.value = true;
-		await inviteMember(inviteeEmail.value);
-		loading.value = false;
-		inviteeEmail.value = "";
-		openOrCloseModal(false, "");
-		push.success("Invite sent successfully.");
-	} catch (error) {
-		loading.value = false;
-		push.error("Failed to send invite, please try again.");
-	}
-};
+const sendInvite = async () => {};
 
 const modalHeader = computed(() => {
 	if (modalState.value === "edit-profile") return "Edit Profile";
@@ -117,12 +103,12 @@ const logOut = async () => {
 					<button class="invite border-none bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
 				</div>
 
-				<div v-for="member in members" :key="member.id" class="card-content bg-white flex flex-column items-start">
+				<div v-for="member in []" :key="member" class="card-content bg-white flex flex-column items-start">
 					<div class="card-content__box w-100 flex items-center bordered">
-						<img :src="member.profile_picture" :alt="member.username" />
+						<img :src="member" :alt="member" />
 						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">{{ member.name }}</span>
-							<span class="weight-semiBold col-black">{{ member.email }}</span>
+							<span class="weight-regular col-grey-3">{{ member }}</span>
+							<span class="weight-semiBold col-black">{{ member }}</span>
 						</div>
 					</div>
 				</div>

@@ -4,35 +4,19 @@ const { usage, taskToBeUpdated } = defineProps<{
 	taskToBeUpdated?: Task;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
 	(event: "close"): void;
 	(event: "task-created", value: Task): void;
 }>();
 
-const { members } = storeToRefs(useStore());
-const { task, createNewTask, updateTask } = useTask();
-const push = usePush();
+const { task } = useTask();
 
 const priorities = ["Less Important", "Important", "High Priority"];
 const submitting = ref(false);
 
 if (usage === "update") Object.assign(task, taskToBeUpdated);
 
-const handleSubmission = async () => {
-	try {
-		submitting.value = true;
-		if (usage === "create") await createNewTask();
-		else updateTask(taskToBeUpdated?.id as string);
-		emit("task-created", task);
-		push.success(`Task ${usage === "create" ? "created" : "updated"} successfully!`);
-		submitting.value = false;
-	} catch (error) {
-		submitting.value = false;
-		push.error(useFormatError(error as string));
-	}
-};
-
-const options = members.value.map((member) => ({ id: member.id, label: member.name }));
+const handleSubmission = () => {};
 </script>
 
 <template>
@@ -46,7 +30,7 @@ const options = members.value.map((member) => ({ id: member.id, label: member.na
 						<BaseSelect id="priority" v-model="task.priority" label="Task Priority" :lists="priorities" />
 						<BaseInput id="date" v-model="task.dueDate" label="Due Date" type="date" />
 					</div>
-					<BaseMultiSelect id="members" v-model="task.assigned_to" label="Assign to" :options="options" />
+					<BaseMultiSelect id="members" v-model="task.assigned_to" label="Assign to" :options="[]" />
 					<BaseTextArea id="description" v-model="task.description" label="Task Description" />
 
 					<BaseButton :value="submitting ? 'loading' : usage === 'create' ? 'Create Task' : 'Update Task'" />

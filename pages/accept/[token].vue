@@ -1,36 +1,7 @@
 <script lang="ts" setup>
-const route = useRoute();
-const { verifyInviteToken, addUserToWorkspace } = useStore();
-const push = usePush();
-
-const token = route.params.token as string;
 const isTokenInvalid = ref(false);
 
-const verifyToken = async () => {
-	try {
-		if (!token) throw new Error("Invalid token.");
-		const { ok, email, workspace } = await verifyInviteToken(token);
-		if (!ok) throw new Error("Invalid token.");
-
-		const userExists = await checkUserExists(email);
-		if (userExists) {
-			await addUserToWorkspace(email, token, workspace);
-			navigateTo("/login");
-		} else navigateTo(`/signup?email=${email}&workspace=${workspace}`);
-	} catch {
-		isTokenInvalid.value = true;
-		push.error("Invalid token.");
-	}
-};
-
-const checkUserExists = async (email: string) => {
-	const { userExists } = await $fetch("/api/check_user", {
-		method: "POST",
-		body: JSON.stringify({ email }),
-	});
-
-	return userExists;
-};
+const verifyToken = async () => {};
 
 await verifyToken();
 </script>

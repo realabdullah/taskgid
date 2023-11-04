@@ -10,7 +10,11 @@ const form = reactive({
 	password: "",
 });
 const submitting = ref(false);
-const client = useSupabaseAuthClient();
+const {
+	public: { apiUrl },
+} = useRuntimeConfig();
+const { user } = storeToRefs(useStore());
+const { setToken } = useToken();
 
 const push = usePush();
 
@@ -18,19 +22,20 @@ const submitForm = async () => {
 	try {
 		if (form.email === "" || form.password === "") return;
 		submitting.value = true;
-		const { error } = await client.auth.signInWithPassword({
-			email: form.email,
-			password: form.password,
+		const response = await $fetch<UserAPiResponse>(`${apiUrl}/users/login`, {
+			method: "POST",
+			body: { ...form },
 		});
-
-		if (error) throw new Error(error.message);
-
+		const { success, user: data, accessToken, refreshToken } = response;
+		if (!success) throw new Error("We couldn't log you in. Please try again.");
+		user.value = data;
+		setToken(accessToken, refreshToken);
 		submitting.value = false;
 		push.success("Logged in successfully.");
 		navigateTo({ name: "home", replace: true });
 	} catch (error) {
 		submitting.value = false;
-		push.error(useFormatError(error as string));
+		push.error("Invalid email or password.");
 	}
 };
 </script>

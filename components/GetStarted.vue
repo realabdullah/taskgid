@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-const { user, tasks, activeWorkspace } = storeToRefs(useStore());
+const { user, tasks } = storeToRefs(useStore());
 
 const selected = ref("");
 const showCreateTaskModal = ref(false);
 
 const onTaskCreated = () => {
 	showCreateTaskModal.value = false;
-	navigateTo(`/dashboard/${activeWorkspace.value}/tasks`);
 };
 </script>
 

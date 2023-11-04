@@ -2,11 +2,11 @@
 import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
-const { user, profilePhoto, workspaces, activeWorkspace, tasks } = storeToRefs(useStore());
+const { user, profilePhoto, tasks } = storeToRefs(useStore());
 
 const navs = [
-	{ name: "overview", route: `/dashboard/${activeWorkspace.value}` },
-	{ name: "tasks", route: `/dashboard/${activeWorkspace.value}/tasks` },
+	{ name: "overview", route: "/dashboard/overview" },
+	{ name: "tasks", route: "/dashboard/tasks" },
 	{ name: "settings", route: "/dashboard/settings" },
 ];
 const notification = ref(false);
@@ -15,7 +15,9 @@ const date = ref(new Date());
 const currentCalendarTab = ref("calendar");
 const showAccountPanel = ref(false);
 
-const workspaceInfo = computed(() => workspaces.value.find((workspace: Workspace) => workspace.id === activeWorkspace.value) ?? ({} as Workspace));
+const workspaceInfo = {
+	title: "My Workspace",
+};
 
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
@@ -26,7 +28,6 @@ const calendarData = computed(() =>
 );
 
 const switchWorkspace = (workspaceId: string) => {
-	activeWorkspace.value = workspaceId;
 	navigateTo({ name: "dashboard", params: { workspace: workspaceId } });
 };
 
@@ -40,12 +41,12 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 		<aside class="dashboard-layout__left w-100 position-fixed overflow-y-auto overflow-x-hidden flex bg-white" aria-label="Dashboard Navigation">
 			<div class="workspace-icons w-100 bg-blue flex flex-column items-center">
 				<button
-					v-for="workspace in workspaces"
-					:key="workspace.id"
+					v-for="workspace in []"
+					:key="workspace"
 					class="workspace-avatar bg-blue flex items-center content-center cursor-pointer"
-					:class="{ active: workspace.id === activeWorkspace }"
-					@click="switchWorkspace(workspace.id)">
-					<img :src="`https://ui-avatars.com/api/?name=${workspace.title}&background=fff&color=0000FF`" alt="workspace" />
+					:class="{ active: workspace === '' }"
+					@click="switchWorkspace(workspace)">
+					<img :src="`https://ui-avatars.com/api/?name=${workspace}&background=fff&color=0000FF`" alt="workspace" />
 				</button>
 
 				<button class="add-workspace col-blue cursor-pointer" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
