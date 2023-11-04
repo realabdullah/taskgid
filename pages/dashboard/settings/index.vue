@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { user } = storeToRefs(useStore());
+const { logout } = useToken();
 const client = useSupabaseClient();
 
 const name = ref(user.value.name);
@@ -51,12 +52,6 @@ const modalHeader = computed(() => {
 	if (modalState.value === "logout") return "You are about to log out";
 	return "Invite Member";
 });
-
-const logOut = async () => {
-	const { error } = await client.auth.signOut();
-	if (error) return;
-	navigateTo("/login");
-};
 </script>
 
 <template>
@@ -130,7 +125,7 @@ const logOut = async () => {
 						<p class="weight-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
 						<div class="buttons flex">
 							<BaseButton value="Cancel" usage="button" @click="openOrCloseModal(false, '')" />
-							<BaseButton value="Log Out" usage="button" type="danger" @click="logOut" />
+							<BaseButton value="Log Out" usage="button" type="danger" @click="logout" />
 						</div>
 					</template>
 					<template v-else-if="modalState === 'invite'">
