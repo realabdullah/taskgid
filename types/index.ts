@@ -51,10 +51,13 @@ declare global {
 		expires: string;
 	}
 
-	interface UserAPiResponse {
+	interface TokenAPIResponse {
 		success: boolean;
-		user: User;
 		accessToken: Token;
 		refreshToken: Token;
+	}
+
+	interface UserAPiResponse extends TokenAPIResponse {
+		user: User;
 	}
 }

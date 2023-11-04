@@ -1,4 +1,8 @@
 export const useToken = () => {
+	const {
+		public: { apiUrl },
+	} = useRuntimeConfig();
+
 	const esAccessToken = useCookie("esAccessToken");
 	const esRefreshToken = useCookie("esRefreshToken");
 	const esAccessTokenExpires = useCookie("esAccessTokenExpires");
@@ -20,10 +24,24 @@ export const useToken = () => {
 		esRefreshTokenExpires.value = "";
 	};
 
+	const refreshAccessToken = async () => {
+		try {
+			const response = await $fetch<TokenAPIResponse>(`${apiUrl}/auth/refresh`, {
+				method: "POST",
+				body: JSON.stringify({ refreshToken: esRefreshToken.value }),
+			});
+			const { success, accessToken, refreshToken } = response;
+			if (!success) throw new Error("Failed to refresh token");
+			else setToken(accessToken, refreshToken);
+		} catch (error) {
+			navigateTo("/login");
+		}
+	};
+
 	const isTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(esAccessTokenExpires.value!));
 	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(esRefreshTokenExpires.value!));
 	const isTokenValid = computed(() => esAccessToken.value && !isTokenExpired.value);
 	const isRefreshTokenValid = computed(() => esRefreshToken.value && !isRefreshTokenExpired.value);
 
-	return { setToken, clearToken, isTokenValid, isRefreshTokenValid };
+	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken };
 };

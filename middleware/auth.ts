@@ -1,5 +1,6 @@
 export default defineNuxtRouteMiddleware(() => {
-	const { isTokenValid } = useToken();
+	const { isTokenValid, refreshAccessToken, isRefreshTokenValid } = useToken();
 
-	if (!isTokenValid.value) return navigateTo("/login");
+	if (!isTokenValid.value && isRefreshTokenValid.value) refreshAccessToken();
+	else if (!isTokenValid.value && !isRefreshTokenValid.value) navigateTo("/login");
 });
