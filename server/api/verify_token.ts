@@ -16,11 +16,9 @@ export default defineEventHandler(async (event) => {
 
 		if (!decoded) throw new Error("Invalid token!");
 
-		const { data, error } = await client.from("invite_tokens").select("used").eq("token", body.token);
+		const { data, error } = await client.from("invite_tokens").select("token").eq("token", body.token);
 
 		if (data?.length === 0 || error) throw new Error(error?.message);
-
-		if (data[0].used) throw new Error("Token already used!");
 
 		return {
 			ok: true,

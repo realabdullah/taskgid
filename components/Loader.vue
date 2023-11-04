@@ -4,37 +4,35 @@
 
 <style lang="scss" scoped>
 .loader {
-	margin: auto;
-	width: 1.6rem;
-	height: 1.6rem;
-}
-
-.loader::after,
-.loader::before {
-	content: "";
-	width: 2.5rem;
-	height: 2.2rem;
+	width: 1.2rem;
+	height: 1.2rem;
 	border-radius: 50%;
-	border: 0.2rem solid $col-white;
-	position: absolute;
-	left: 0;
-	top: 0;
-	animation: animloader 2s linear infinite;
+	background-color: #fff;
+	box-shadow:
+		24px 0 #fff,
+		-24px 0 #fff;
+	position: relative;
+	animation: flash 0.5s ease-out infinite alternate;
 }
 
-.loader::after {
-	animation-delay: 1s;
-}
-
-@keyframes animloader {
+@keyframes flash {
 	0% {
-		transform: scale(0);
-		opacity: 1;
+		background-color: #fff2;
+		box-shadow:
+			24px 0 #fff2,
+			-24px 0 #fff;
 	}
-
+	50% {
+		background-color: #fff;
+		box-shadow:
+			24px 0 #fff2,
+			-24px 0 #fff2;
+	}
 	100% {
-		transform: scale(1);
-		opacity: 0;
+		background-color: #fff2;
+		box-shadow:
+			24px 0 #fff,
+			-24px 0 #fff2;
 	}
 }
 </style>

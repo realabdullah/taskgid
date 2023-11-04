@@ -26,6 +26,7 @@ export const useStore = defineStore(
 			if (currentWorkspace) {
 				const { data, error } = await client.from("users").select("*").in("id", currentWorkspace.members);
 				if (error) throw new Error(error.message);
+
 				members.value = data as User[];
 			}
 		};
