@@ -40,11 +40,11 @@ defineEmits(["close-modal"]);
 	}
 
 	.close-modal {
-		width: 4.8rem;
-		height: 4.8rem;
+		width: 3rem;
+		height: 3rem;
 		border-radius: 50%;
-		right: 1rem;
-		top: 1rem;
+		right: 0.5rem;
+		top: 0.5rem;
 	}
 }
 

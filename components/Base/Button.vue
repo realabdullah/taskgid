@@ -10,7 +10,9 @@ const {
 }>();
 
 const background = computed(() => {
-	return type === "danger" ? "bg-danger" : "bg-blue";
+	if (type === "danger") return "bg-danger";
+	else if (type === "outline") return "bg-transparent outline";
+	else return "bg-blue";
 });
 </script>
 
@@ -36,6 +38,11 @@ const background = computed(() => {
 	&:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
+	}
+
+	&.outline {
+		border: 1px solid $col-blue;
+		color: $col-blue;
 	}
 }
 </style>

@@ -2,7 +2,9 @@
 import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
-const { user, profilePhoto, tasks } = storeToRefs(useStore());
+const route = useRoute();
+const { user, profilePhoto, tasks, workspaces } = storeToRefs(useStore());
+const { getWorkspaces } = useWorkspace();
 
 const navs = [
 	{ name: "overview", route: "/dashboard/overview" },
@@ -15,9 +17,7 @@ const date = ref(new Date());
 const currentCalendarTab = ref("calendar");
 const showAccountPanel = ref(false);
 
-const workspaceInfo = {
-	title: "My Workspace",
-};
+const currentWorkspace = computed(() => workspaces.value.find((workspace) => workspace.slug === route.params.workspace));
 
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
@@ -34,6 +34,8 @@ const switchWorkspace = (workspaceId: string) => {
 const accountToggleStyle = computed(() => (showAccountPanel.value ? "29rem" : "2rem"));
 
 onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.value = value)));
+
+await getWorkspaces();
 </script>
 
 <template>
@@ -41,20 +43,19 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 		<aside class="dashboard-layout__left w-100 position-fixed overflow-y-auto overflow-x-hidden flex bg-white" aria-label="Dashboard Navigation">
 			<div class="workspace-icons w-100 bg-blue flex flex-column items-center">
 				<button
-					v-for="workspace in []"
-					:key="workspace"
+					v-for="workspace in workspaces"
+					:key="workspace.slug"
 					class="workspace-avatar bg-blue flex items-center content-center cursor-pointer"
-					:class="{ active: workspace === '' }"
-					@click="switchWorkspace(workspace)">
-					<img :src="`https://ui-avatars.com/api/?name=${workspace}&background=fff&color=0000FF`" alt="workspace" />
+					:class="{ active: workspace.slug === $route.params.workspace }"
+					@click="switchWorkspace(workspace.slug)">
+					<img :src="workspace.avatar" :alt="workspace.title" />
 				</button>
 
 				<button class="add-workspace col-blue cursor-pointer" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
 			</div>
 			<div class="workspace-details w-100 flex flex-column items-start">
 				<div class="workspace-detail flex flex-column items-start">
-					<h4 class="weight-bold col-darkBlue">{{ workspaceInfo.title }}</h4>
-					<p class="weight-regular col-grey-3">{{ workspaceInfo.title || user.name }}'s Space</p>
+					<h4 class="weight-bold col-darkBlue">{{ currentWorkspace?.title }}'s space</h4>
 				</div>
 
 				<div class="workspace-nav flex items-start flex-column">
@@ -92,7 +93,7 @@ onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.valu
 					<img :src="profilePhoto" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
 
 					<div class="user-detail text-center">
-						<h5 class="weight-bold col-darkBlue">{{ user.name }}</h5>
+						<h5 class="weight-bold col-darkBlue">{{ user.firstName }} {{ user.lastName }}</h5>
 						<span class="weight-regular col-grey-3">{{ user.email }}</span>
 					</div>
 

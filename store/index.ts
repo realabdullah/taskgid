@@ -6,11 +6,15 @@ export const useStore = defineStore(
 		const user = ref({} as User);
 		const profilePhoto = ref("");
 		const tasks = ref([] as Task[]);
+		const workspaces = ref([] as Workspace[]);
+		const currentWorkspace = ref({} as Workspace);
 
 		return {
 			user,
 			profilePhoto,
 			tasks,
+			workspaces,
+			currentWorkspace,
 		};
 	},
 	{ persist: true },

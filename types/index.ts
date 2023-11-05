@@ -21,18 +21,17 @@ declare global {
 	}
 
 	interface Workspace {
-		id: string;
-		created_at: string;
 		title: string;
 		description: string;
-		created_by: string;
-		members: string[];
-		tasks: Task[];
+		slug: string;
+		avatar: string;
+		owner: string;
 	}
 
 	interface User {
 		_id: string;
-		name: string;
+		firstName: string;
+		lastName: string;
 		email: string;
 		username: string;
 		profile_picture: string;

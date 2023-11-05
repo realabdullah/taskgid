@@ -1,20 +1,28 @@
 <script setup lang="ts">
+defineProps({
+	error: Object,
+});
+
 const handleError = () => clearError({ redirect: "/" });
 </script>
 
 <template>
-	<div class="error position-relative h-full w-100 overflow-hidden">
+	<div class="error position-relative h-full w-100 overflow-hidden" :class="{ 'not-found': error?.statusCode === 404 }">
 		<button class="position-absolute bg-transparent border-none cursor-pointer col-darkBlue" @click="handleError">Home 🏡</button>
+		<h3>{{ error?.statusMessage }}</h3>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .error {
-	background-image: url("https://res.cloudinary.com/dxvhsze0l/image/upload/v1697998295/kggpznnbbmn5g7mwxaj9.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
 	background-color: beige;
+
+	&.not-found {
+		background-image: url("https://res.cloudinary.com/dxvhsze0l/image/upload/v1697998295/kggpznnbbmn5g7mwxaj9.png");
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+	}
 
 	// src: https://codepen.io/emanuelgsouza
 	button {
@@ -62,6 +70,16 @@ const handleError = () => clearError({ redirect: "/" });
 			width: 100%;
 			height: 100%;
 		}
+	}
+
+	h3 {
+		font-size: 3rem;
+		font-weight: 700;
+		text-align: center;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 }
 </style>
