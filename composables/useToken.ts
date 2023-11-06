@@ -1,4 +1,5 @@
 export const useToken = () => {
+	const { $axios } = useNuxtApp();
 	const {
 		public: { apiUrl },
 	} = useRuntimeConfig();
@@ -23,15 +24,16 @@ export const useToken = () => {
 		esRefreshToken.value = "";
 		esAccessTokenExpires.value = "";
 		esRefreshTokenExpires.value = "";
+		useCookie("store").value = "";
 	};
 
 	const refreshAccessToken = async () => {
 		try {
-			const response = await $fetch<TokenAPIResponse>(`${apiUrl}/auth/refresh`, {
+			const { data } = await $axios.post(`${apiUrl}/users/refresh`, {
 				method: "POST",
 				body: JSON.stringify({ refreshToken: esRefreshToken.value }),
 			});
-			const { success, accessToken, refreshToken } = response;
+			const { success, accessToken, refreshToken } = data as TokenAPIResponse;
 			if (!success) throw new Error("Failed to refresh token");
 			else setToken(accessToken, refreshToken);
 		} catch (error) {
@@ -41,10 +43,10 @@ export const useToken = () => {
 
 	const logout = async () => {
 		try {
-			const response = await $fetch<{ success: boolean }>(`${apiUrl}/auth/logout`, {
+			const { data } = await $axios.post(`${apiUrl}/users/logout`, {
 				method: "POST",
 			});
-			const { success } = response;
+			const { success } = data as { success: boolean };
 			if (!success) throw new Error("Failed to logout");
 			else clearToken();
 			navigateTo("/login");
@@ -58,5 +60,5 @@ export const useToken = () => {
 	const isTokenValid = computed(() => esAccessToken.value && !isTokenExpired.value);
 	const isRefreshTokenValid = computed(() => esRefreshToken.value && !isRefreshTokenExpired.value);
 
-	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
+	return { setToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
 };

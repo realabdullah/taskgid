@@ -7,6 +7,7 @@ definePageMeta({
 
 const { workspaces, user } = storeToRefs(useStore());
 const { getWorkspaces, createWorkspace, deleteWorkspace, selectedWorkspaceSlug } = useWorkspace();
+const { logout } = useToken();
 const push = usePush();
 
 const name = computed(() => `${user.value?.firstName} ${user.value?.lastName}`);
@@ -85,7 +86,13 @@ await getWorkspaces();
 
 <template>
 	<div class="container w-100 h-full">
-		<h1 class="welcome">Welcome to your dashboard!</h1>
+		<div class="flex items-center content-between">
+			<h1 class="welcome">Welcome to your dashboard!</h1>
+			<button class="flex items-center bg-transparent cursor-pointer col-danger" style="gap: 0.5rem" @click="logout">
+				<IconsLogout />
+				Logout
+			</button>
+		</div>
 
 		<!-- workspaces card -->
 		<div class="workspaces">
@@ -94,7 +101,7 @@ await getWorkspaces();
 				<button class="bg-transparent cursor-pointer col-grey-2" @click="(modalState = 'create'), (isModalOpen = true)">Create a workspace</button>
 			</div>
 
-			<ul class="workspace flex flex-wrap">
+			<ul class="workspace grid">
 				<li v-for="workspace in workspaces" :key="workspace.slug" class="workspace__card w-100 position-relative flex flex-column items-start" @contextmenu.prevent="openMenu(workspace.slug)">
 					<img :src="workspace.avatar" :alt="workspace.title" />
 					<h3 class="weight-medium">{{ workspace.title }}</h3>
@@ -149,10 +156,10 @@ await getWorkspaces();
 
 		.workspace {
 			margin-top: 1.5rem;
+			grid-template-columns: repeat(auto-fit, minmax(20rem, 40rem));
 			@include gap(1.5rem);
 
 			&__card {
-				max-width: 40rem;
 				padding: 2rem;
 				border-radius: 0.5rem;
 				border: 1px solid #d5d1d1c8;
