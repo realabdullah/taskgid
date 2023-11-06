@@ -86,15 +86,16 @@ await getWorkspaces();
 
 <template>
 	<div class="container w-100 h-full">
-		<div class="flex items-center content-between">
-			<h1 class="welcome">Welcome to your dashboard!</h1>
+		<header class="flex items-center content-between">
+			<h1>ErgoSphere</h1>
 			<button class="flex items-center bg-transparent cursor-pointer col-danger" style="gap: 0.5rem" @click="logout">
 				<IconsLogout />
 				Logout
 			</button>
-		</div>
+		</header>
 
-		<!-- workspaces card -->
+		<h1 class="welcome">Welcome to your Task Oasis! 🚀 Ready to conquer your to-do list?</h1>
+
 		<div class="workspaces">
 			<div class="flex items-center content-between">
 				<h2 class="weight-medium">{{ workspaceHeader }}</h2>
@@ -145,19 +146,42 @@ await getWorkspaces();
 <style lang="scss" scoped>
 .container {
 	padding: 3rem;
-	margin-top: 3rem;
+
+	@media screen and (max-width: 600px) {
+		padding: 1.5rem;
+	}
+
+	header {
+		h1 {
+			@include font(4rem, 100%);
+
+			@media screen and (max-width: 600px) {
+				@include font(3rem, 100%);
+			}
+		}
+	}
 
 	.welcome {
-		@include font(4rem, 100%);
+		margin-top: 10rem;
+		@include font(3rem, 100%);
+
+		@media screen and (max-width: 600px) {
+			margin-top: 5rem;
+			@include font(2rem, 100%);
+		}
 	}
 
 	.workspaces {
 		margin-top: 3rem;
 
 		.workspace {
-			margin-top: 1.5rem;
+			margin-top: 5rem;
 			grid-template-columns: repeat(auto-fit, minmax(20rem, 40rem));
 			@include gap(1.5rem);
+
+			@media screen and (max-width: 600px) {
+				grid-template-columns: 1fr;
+			}
 
 			&__card {
 				padding: 2rem;
