@@ -12,6 +12,7 @@ const push = usePush();
 const name = computed(() => `${user.value?.firstName} ${user.value?.lastName}`);
 const isModalOpen = ref(false);
 const modalState = ref<"create" | "update" | "delete">("create");
+const activeWorkspaceSlug = ref("");
 const workspaceHeader = computed(() => `You have ${workspaces.value.length} workspace${workspaces.value.length > 1 ? "s" : ""}.`);
 const form = reactive({
 	title: "",
@@ -25,6 +26,11 @@ const editWorkspace = (slug: string) => {
 	Object.assign(form, workspace);
 	modalState.value = "update";
 	isModalOpen.value = true;
+};
+
+const openMenu = (slug: string) => {
+	activeWorkspaceSlug.value = activeWorkspaceSlug.value === slug ? "" : slug;
+	selectedWorkspaceSlug.value = slug;
 };
 
 const submitForm = async () => {
@@ -59,6 +65,21 @@ const closeModal = () => {
 	isModalOpen.value = false;
 };
 
+const onClickOutside = (event: MouseEvent) => {
+	const target = event.target as HTMLElement;
+	if (!target.closest(".contextmenu")) {
+		activeWorkspaceSlug.value = "";
+	}
+};
+
+onMounted(() => {
+	document.addEventListener("click", onClickOutside);
+});
+
+onUnmounted(() => {
+	document.removeEventListener("click", onClickOutside);
+});
+
 await getWorkspaces();
 </script>
 
@@ -74,21 +95,21 @@ await getWorkspaces();
 			</div>
 
 			<ul class="workspace flex flex-wrap">
-				<li v-for="workspace in workspaces" :key="workspace.slug" class="workspace__card w-100 position-relative flex flex-column items-start">
+				<li v-for="workspace in workspaces" :key="workspace.slug" class="workspace__card w-100 position-relative flex flex-column items-start" @contextmenu.prevent="openMenu(workspace.slug)">
 					<img :src="workspace.avatar" :alt="workspace.title" />
 					<h3 class="weight-medium">{{ workspace.title }}</h3>
 					<p>{{ workspace.description }}</p>
 					<div class="w-100 flex items-center content-between">
 						<nuxt-link :to="`/dashboard/${workspace.slug}`" class="col-grey-2">View</nuxt-link>
-						<button v-if="name.toLowerCase() === workspace.owner.toLowerCase()" class="bg-transparent col-grey-2 cursor-pointer options" @click="selectedWorkspaceSlug = workspace.slug">
+						<button v-if="name.toLowerCase() === workspace.owner.toLowerCase()" class="contextmenu bg-transparent col-grey-2 cursor-pointer options" @click="openMenu(workspace.slug)">
 							<IconsMore />
 						</button>
 					</div>
 					<span class="created-by">Created by {{ name.toLowerCase() === workspace.owner.toLowerCase() ? "you" : workspace.owner }}</span>
 
-					<div class="options-popup bg-white position-absolute z-1" :class="{ open: selectedWorkspaceSlug === workspace.slug }">
+					<div class="contextmenu options-popup bg-white position-absolute z-1" :class="{ open: activeWorkspaceSlug === workspace.slug }">
 						<button class="w-100 text-left bg-transparent cursor-pointer" @click="editWorkspace(workspace.slug)">Edit</button>
-						<button class="w-100 text-left bg-transparent cursor-pointer" @click="(modalState = 'delete'), (selectedWorkspaceSlug = workspace.slug), (isModalOpen = true)">Delete</button>
+						<button class="w-100 text-left bg-transparent cursor-pointer" @click="(modalState = 'delete'), openMenu(workspace.slug), (isModalOpen = true)">Delete</button>
 					</div>
 				</li>
 			</ul>
