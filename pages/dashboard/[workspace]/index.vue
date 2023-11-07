@@ -6,8 +6,11 @@ definePageMeta({
 });
 
 const { user, tasks, profilePhoto } = storeToRefs(useStore());
+const { fetchTeams } = useTeam();
 
 const showGetStarted = computed(() => !tasks || tasks.value.length === 0 || profilePhoto.value === "");
+
+await fetchTeams();
 </script>
 
 <template>
@@ -16,7 +19,7 @@ const showGetStarted = computed(() => !tasks || tasks.value.length === 0 || prof
 			<div class="homepage-welcome flex items-strech">
 				<h1>👋</h1>
 				<div class="homepage-welcome__texts flex flex-column items-start">
-					<h2 class="weight-semiBold col-black">Hi {{ user.name }},</h2>
+					<h2 class="weight-semiBold col-black">Hi {{ user.firstName }},</h2>
 					<p class="weight-regular col-grey-2">Wecome to your task management!</p>
 				</div>
 			</div>

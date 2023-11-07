@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 defineProps<{
 	task: Task;
+	no: number;
 }>();
 
 const { getTaskStatus } = useTask();
@@ -9,11 +10,11 @@ const { getTaskStatus } = useTask();
 <template>
 	<div class="tasks-card bg-white flex flex-column content-between">
 		<div class="status flex items-center content-between">
-			<span>T-{{ task.task_no }}</span>
-			<span :class="getTaskStatus(task.status)">{{ task.status }}</span>
+			<span>T-{{ no }}</span>
+			<span class="text-capitalize" :class="getTaskStatus(task.status)">{{ task.status }}</span>
 		</div>
 		<p class="weight-medium col-darkBlue">{{ task.title }}</p>
-		<nuxt-link to="/" class="task-url text-unset flex items-center cursor-pointer weight-semiBold col-blue">
+		<nuxt-link :to="`/dashboard/${$route.params.workspace}/tasks/${task._id}`" class="task-url text-unset flex items-center cursor-pointer weight-semiBold col-blue">
 			<span>View Task</span>
 			<IconsArrow variant="right" />
 		</nuxt-link>

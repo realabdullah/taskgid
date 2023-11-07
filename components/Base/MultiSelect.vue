@@ -1,24 +1,24 @@
 <script lang="ts" setup>
-const { options } = defineProps<{
+const { options, assignees } = defineProps<{
 	id: string;
 	label: string;
-	options: { id: string; label: string }[];
+	assignees: string[];
+	options: Team[];
+}>();
+const emit = defineEmits<{
+	(event: "update-assignees", value: string[]): void;
 }>();
 
-const selected = ref([]);
+const selected = ref(assignees);
 const showOptions = ref(false);
-const modelValue = defineModel<string[]>();
 
 const selectValue = (value: string) => {
-	const index = modelValue.value?.indexOf(value) as number;
-	const optionIndex = options.findIndex((option) => option.id === value);
-	if (index !== -1) {
-		modelValue.value?.splice(index, 1);
-		selected.value.splice(optionIndex, 1);
+	if (selected.value.includes(value)) {
+		selected.value = selected.value.filter((item) => item !== value);
 	} else {
-		modelValue.value?.push(value);
-		selected.value.push(options[optionIndex].label);
+		selected.value.push(value);
 	}
+	emit("update-assignees", selected.value);
 };
 
 const handleOutsideClick = (event: MouseEvent) => {
@@ -27,12 +27,6 @@ const handleOutsideClick = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-	if (modelValue.value?.length !== 0) {
-		modelValue.value?.forEach((value) => {
-			const optionIndex = options.findIndex((option) => option.id === value);
-			selected.value.push(options[optionIndex].label);
-		});
-	}
 	document.addEventListener("click", handleOutsideClick);
 });
 
@@ -46,14 +40,14 @@ onUnmounted(() => {
 		<div class="w-100 flex flex-column items-start content-center">
 			<span class="form-label col-grey weight-regular">{{ label }}</span>
 			<span class="container block w-100 bg-transparent weight-regular col-grey-2 bordered cursor-pointer" @click="showOptions = !showOptions">
-				<span v-if="selected.length === 0" class="block w-100 p-1">Select</span>
-				<span v-else class="block w-100 p-1">{{ selected.join(", ") }}</span>
+				<span v-if="selected.length > 0" class="block w-100 text-capitalize p-1">{{ selected.join(", ") }}</span>
+				<span v-else class="block w-100 p-1">Select</span>
 			</span>
 		</div>
 
 		<div v-show="showOptions" class="multiselect__options position-absolute bg-white w-100 overflow-y-auto z-2">
-			<div v-for="(option, index) in options" :key="index" class="multiselect__options-item flex items-center">
-				<span class="d-inline-block w-100 cursor-pointer" @click="selectValue(option.id)">{{ option.label }}</span>
+			<div v-for="option in options" :key="option.username" class="multiselect__options-item flex items-center">
+				<span class="d-inline-block w-100 cursor-pointer" @click="selectValue(option.username)">{{ option.name }}</span>
 			</div>
 		</div>
 	</div>

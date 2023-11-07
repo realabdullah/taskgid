@@ -7,9 +7,9 @@ const { user, profilePhoto, tasks, workspaces } = storeToRefs(useStore());
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
-	{ name: "overview", route: "/dashboard/overview" },
-	{ name: "tasks", route: "/dashboard/tasks" },
-	{ name: "settings", route: "/dashboard/settings" },
+	{ name: "overview", route: `/dashboard/${route.params.workspace}/` },
+	{ name: "tasks", route: `/dashboard/${route.params.workspace}/tasks` },
+	{ name: "settings", route: `/dashboard/${route.params.workspace}/settings` },
 ];
 const notification = ref(false);
 const showProfilePictureModal = ref(false);

@@ -60,5 +60,5 @@ export const useToken = () => {
 	const isTokenValid = computed(() => esAccessToken.value && !isTokenExpired.value);
 	const isRefreshTokenValid = computed(() => esRefreshToken.value && !isRefreshTokenExpired.value);
 
-	return { setToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
+	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
 };

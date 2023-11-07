@@ -5,11 +5,10 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-const { user } = storeToRefs(useStore());
+const { user, teams } = storeToRefs(useStore());
 const { logout } = useToken();
-const client = useSupabaseClient();
 
-const name = ref(user.value.name);
+const name = ref(user.value.firstName + " " + user.value.lastName);
 const email = ref(user.value.email);
 const password = ref("");
 const showModal = ref(false);
@@ -22,30 +21,17 @@ const openOrCloseModal = (status: boolean, state: string) => {
 	showModal.value = status;
 };
 
-const handleEditProfile = async () => {
-	const payload = {
-		name: name.value,
-		email: email.value,
-	};
-
-	const { error: updateError } = await client.auth.updateUser({
-		email: email.value,
-		password: password.value,
-	});
-
-	const { error } = await client
-		.from("users")
-		.update(payload as never)
-		.eq("id", user.value.id);
-
-	if (updateError || error) return;
-
-	user.value.name = name.value;
-	user.value.email = email.value;
+const handleEditProfile = () => {
 	openOrCloseModal(false, "");
 };
 
-const sendInvite = async () => {};
+const sendInvite = () => {
+	loading.value = true;
+	setTimeout(() => {
+		loading.value = false;
+		openOrCloseModal(false, "");
+	}, 2000);
+};
 
 const modalHeader = computed(() => {
 	if (modalState.value === "edit-profile") return "Edit Profile";
@@ -69,7 +55,7 @@ const modalHeader = computed(() => {
 						<IconsUser class="icon" />
 						<div class="details flex flex-column">
 							<span class="weight-regular col-grey-3">Fullname</span>
-							<span class="weight-semiBold col-black">{{ user.name }}</span>
+							<span class="weight-semiBold col-black">{{ `${user.firstName} ${user.lastName}` }}</span>
 						</div>
 					</div>
 
@@ -98,12 +84,12 @@ const modalHeader = computed(() => {
 					<button class="invite border-none bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
 				</div>
 
-				<div v-for="member in []" :key="member" class="card-content bg-white flex flex-column items-start">
+				<div v-for="member in teams" :key="member.username" class="card-content bg-white flex flex-column items-start">
 					<div class="card-content__box w-100 flex items-center bordered">
-						<img :src="member" :alt="member" />
+						<img :src="member.profile_picture" :alt="member.name" />
 						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">{{ member }}</span>
-							<span class="weight-semiBold col-black">{{ member }}</span>
+							<span class="weight-regular col-grey-3">{{ member.email }}</span>
+							<span class="weight-semiBold col-black">{{ member.name }}</span>
 						</div>
 					</div>
 				</div>

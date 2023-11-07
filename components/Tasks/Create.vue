@@ -1,22 +1,35 @@
 <script lang="ts" setup>
-const { usage, taskToBeUpdated } = defineProps<{
+const { usage, task } = defineProps<{
 	usage: string;
-	taskToBeUpdated?: Task;
+	task: Task;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
 	(event: "close"): void;
-	(event: "task-created", value: Task): void;
+	(event: "success", value: Task): void;
 }>();
 
-const { task } = useTask();
+const { teams } = storeToRefs(useStore());
+const { createNewTask, updateTask } = useTask();
+const push = usePush();
+const form = reactive(task);
 
-const priorities = ["Less Important", "Important", "High Priority"];
+const priorities = ["Low", "Medium", "High"];
 const submitting = ref(false);
 
-if (usage === "update") Object.assign(task, taskToBeUpdated);
-
-const handleSubmission = () => {};
+const handleSubmission = async () => {
+	try {
+		submitting.value = true;
+		let newTask: Task;
+		if (usage === "create") newTask = await createNewTask(form);
+		else newTask = await updateTask(form);
+		emit("success", newTask);
+		push.success(`${usage === "create" ? "Created" : "Updated"} task successfully.`);
+	} catch (error) {
+		submitting.value = false;
+		push.error(`Failed to ${usage} task.`);
+	}
+};
 </script>
 
 <template>
@@ -25,13 +38,13 @@ const handleSubmission = () => {};
 			<div class="create-task">
 				<h1 class="weight-semiBold col-black">{{ usage === "create" ? "Create Task" : "Edit This Task." }}</h1>
 				<form class="flex flex-column" @submit.prevent="handleSubmission">
-					<BaseInput id="title" v-model="task.title" label="Task Name" type="text" />
+					<BaseInput id="title" v-model="form.title" label="Task Tile" type="text" />
 					<div class="form-group flex">
-						<BaseSelect id="priority" v-model="task.priority" label="Task Priority" :lists="priorities" />
-						<BaseInput id="date" v-model="task.dueDate" label="Due Date" type="date" />
+						<BaseSelect id="priority" v-model="form.priority" label="Task Priority" :lists="priorities" />
+						<BaseInput id="date" v-model="form.dueDate" label="Due Date" type="date" />
 					</div>
-					<BaseMultiSelect id="members" v-model="task.assigned_to" label="Assign to" :options="[]" />
-					<BaseTextArea id="description" v-model="task.description" label="Task Description" />
+					<BaseMultiSelect id="members" :assignees="form.assignees" label="Assign to" :options="teams" @update-assignees="form.assignees = [...$event]" />
+					<BaseTextArea id="description" v-model="form.description" label="Task Description" />
 
 					<BaseButton :value="submitting ? 'loading' : usage === 'create' ? 'Create Task' : 'Update Task'" />
 				</form>

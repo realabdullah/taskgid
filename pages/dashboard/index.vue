@@ -107,14 +107,19 @@ await getWorkspaces();
 					<img :src="workspace.avatar" :alt="workspace.title" />
 					<h3 class="weight-medium">{{ workspace.title }}</h3>
 					<p>{{ workspace.description }}</p>
+					<div class="team flex items-center">
+						<span class="weight-medium">Team:</span>
+						<div class="team__avatars flex items-center position-relative">
+							<img v-for="member in workspace.team" :key="member.username" :src="member.profile_picture" :alt="member.name" />
+						</div>
+					</div>
+					<span class="created-by">Created by {{ name.toLowerCase() === workspace.owner.toLowerCase() ? "you" : workspace.owner }}</span>
 					<div class="w-100 flex items-center content-between">
 						<nuxt-link :to="`/dashboard/${workspace.slug}`" class="col-grey-2">View</nuxt-link>
 						<button v-if="name.toLowerCase() === workspace.owner.toLowerCase()" class="contextmenu bg-transparent col-grey-2 cursor-pointer options" @click="openMenu(workspace.slug)">
 							<IconsMore />
 						</button>
 					</div>
-					<span class="created-by">Created by {{ name.toLowerCase() === workspace.owner.toLowerCase() ? "you" : workspace.owner }}</span>
-
 					<div class="contextmenu options-popup bg-white position-absolute z-1" :class="{ open: activeWorkspaceSlug === workspace.slug }">
 						<button class="w-100 text-left bg-transparent cursor-pointer" @click="editWorkspace(workspace.slug)">Edit</button>
 						<button class="w-100 text-left bg-transparent cursor-pointer" @click="(modalState = 'delete'), openMenu(workspace.slug), (isModalOpen = true)">Delete</button>
@@ -206,6 +211,28 @@ await getWorkspaces();
 					@include font(1.5rem, 100%);
 				}
 
+				.team {
+					@include gap(1rem);
+
+					span {
+						@include font(1.5rem, 100%);
+					}
+
+					&__avatars {
+						img {
+							width: 2rem;
+							height: 2rem;
+							margin-bottom: 0;
+							position: absolute;
+							left: 0;
+
+							&:not(:first-child) {
+								left: 0.5rem;
+							}
+						}
+					}
+				}
+
 				.created-by {
 					@include font(1rem, 100%);
 				}
@@ -215,7 +242,7 @@ await getWorkspaces();
 					height: 3rem;
 
 					&-popup {
-						bottom: -5rem;
+						bottom: -7rem;
 						right: 2rem;
 						width: 10rem;
 						border-radius: 0.5rem;

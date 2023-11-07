@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { tasks } = storeToRefs(useStore());
+const { task, fetchTasks } = useTask();
 
 const showCreateTaskModal = ref(false);
 const tasksTab = ["All Tasks", "Pending", "In Progress", "Completed"];
@@ -45,13 +46,16 @@ const filteredTasks = computed(() => {
 	});
 });
 
-const taskCreated = () => {
+const taskCreated = async () => {
+	await fetchTasks();
 	showCreateTaskModal.value = false;
 };
 
 onMounted(() => {
 	setActiveTab("All Tasks");
 });
+
+await fetchTasks();
 </script>
 
 <template>
@@ -81,7 +85,7 @@ onMounted(() => {
 				</div>
 
 				<div v-if="filteredTasks.length > 0" class="tasks grid">
-					<TasksCard v-for="task in filteredTasks" :key="task.id" :task="task" />
+					<TasksCard v-for="(_, index) in filteredTasks" :key="_._id" :task="_" :no="index + 1" />
 				</div>
 				<TasksEmpty v-else :description="`You have no task ${activeTab.toLowerCase()} yet.`" :extra-text="`Get productive. Have a Task ${activeTab}.`" />
 			</div>
@@ -95,7 +99,7 @@ onMounted(() => {
 		</div>
 
 		<!-- CREATE TASK MODAL -->
-		<TasksCreate v-if="showCreateTaskModal" usage="create" @close="showCreateTaskModal = false" @task-created="taskCreated" />
+		<TasksCreate v-if="showCreateTaskModal" usage="create" :task="task" @close="showCreateTaskModal = false" @success="taskCreated" />
 	</NuxtLayout>
 </template>
 
@@ -167,7 +171,7 @@ onMounted(() => {
 
 		.tasks {
 			margin-top: 2rem;
-			grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(20rem, 50rem));
 			@include gap(2rem);
 		}
 	}

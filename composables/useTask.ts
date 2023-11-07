@@ -1,53 +1,74 @@
 export const useTask = () => {
+	const { $axios } = useNuxtApp();
 	const { tasks } = storeToRefs(useStore());
 	const push = usePush();
 
 	const route = useRoute();
-	const client = useSupabaseClient();
-	const user = useSupabaseUser();
 	const task = reactive<Task>({
-		user_id: user.value?.id ?? "",
-		id: "",
+		_id: "",
 		title: "",
 		description: "",
-		dateAdded: "",
-		dueDate: "",
 		priority: "",
-		status: "",
-		task_no: 0,
-		workspace_id: "",
-		assigned_to: [],
+		dueDate: "",
+		status: "not started",
+		workspace: "",
+		user: {
+			username: "",
+			name: "",
+		},
+		assignees: [],
+		createdAt: "",
 	});
 
 	const fetchTask = async () => {
-		const { data, error } = await client.from("tasks").select().eq("id", route.params.id);
-		if (error) throw createError({ statusCode: 404, statusMessage: "Tasks not found!" });
-		Object.assign(task, data[0]);
+		try {
+			const { data } = await $axios.get<TaskAPIResponse>(`/tasks/${route.params.workspace}/${route.params.id}`);
+			if (!data.success) throw new Error("Something went wrong");
+			Object.assign(task, data.task);
+		} catch (error) {
+			const { code, message } = formatError(error);
+			throw createError({
+				statusCode: code,
+				statusMessage: message,
+			});
+		}
+	};
+
+	const fetchTasks = async () => {
+		try {
+			const { data } = await $axios.get<TasksAPIResponse>(`/tasks/${route.params.workspace}`);
+			if (!data.success) throw new Error("Something went wrong");
+			tasks.value = [...data.tasks];
+		} catch (error) {
+			const { code, message } = formatError(error);
+			throw createError({
+				statusCode: code,
+				statusMessage: message,
+			});
+		}
 	};
 
 	const deleteTask = async () => {
-		const { error } = await client.from("tasks").delete().eq("id", task.id);
-		if (error) {
-			push.error("An error occured while trying to delete task.");
-			return;
-		}
-
-		navigateTo("/dashboard/tasks");
+		const { data } = await $axios.delete<{ success: boolean }>(`/tasks/${route.params.workspace}/${route.params.id}`);
+		if (!data.success) throw new Error("Something went wrong");
+		push.success("Task deleted successfully.");
+		navigateTo(`/${route.params.workspace}/tasks`);
 	};
 
-	const createNewTask = async () => {
-		task.dateAdded = new Date().toISOString().substring(0, 10);
-		task.task_no = tasks.value ? tasks.value.length + 1 : 1;
-		const { error } = await client.from("tasks").insert(task as never);
-		if (error) throw new Error(error.message);
+	const createNewTask = async (task: Task) => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { _id, createdAt, workspace, user, ...payload } = task;
+		const { data } = await $axios.post<TaskAPIResponse>(`/tasks/${route.params.workspace}/create`, payload);
+		if (!data.success) throw new Error("Something went wrong");
+		return data.task;
 	};
 
-	const updateTask = async (id: string) => {
-		const { error } = await client
-			.from("tasks")
-			.update(task as never)
-			.eq("id", id);
-		if (error) throw new Error(error.message);
+	const updateTask = async (task: Task) => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { _id, createdAt, workspace, user, ...payload } = task;
+		const { data } = await $axios.put<TaskAPIResponse>(`/tasks/${route.params.workspace}/${task._id}`, payload);
+		if (!data.success) throw new Error("Something went wrong");
+		return data.task;
 	};
 
 	const getTaskStatus = (status: string) => {
@@ -61,5 +82,5 @@ export const useTask = () => {
 		}
 	};
 
-	return { task, fetchTask, deleteTask, createNewTask, updateTask, getTaskStatus };
+	return { task, fetchTask, deleteTask, createNewTask, updateTask, getTaskStatus, fetchTasks };
 };

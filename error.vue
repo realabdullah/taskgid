@@ -1,9 +1,12 @@
 <script setup lang="ts">
-defineProps({
+const { error } = defineProps({
 	error: Object,
 });
-
-const handleError = () => clearError({ redirect: "/" });
+const { clearToken } = useToken();
+const handleError = () => {
+	if (error?.statusCode === 401) clearToken();
+	clearError({ redirect: "/" });
+};
 </script>
 
 <template>

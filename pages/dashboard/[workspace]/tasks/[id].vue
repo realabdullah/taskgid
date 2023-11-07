@@ -26,14 +26,14 @@ await fetchTask();
 				<span class="weight-medium col-darkBlue">{{ task.title }}</span>
 			</div>
 
-			<nuxt-link to="/dashboard/tasks" class="back flex items-center content-center text-unset bg-white col-blue">
+			<nuxt-link :to="`/dashboard/${$route.params.workspace}/tasks`" class="back flex items-center content-center text-unset bg-white col-blue">
 				<IconsArrow variant="left" />
 			</nuxt-link>
 
 			<div class="task-card bg-white flex items-stretch content-between">
 				<div class="task-card__detail flex flex-column items-start">
 					<p class="title weight-medium col-black">{{ task.title }}</p>
-					<span class="status block weight-medium col-green bg-white" :class="getTaskStatus(task.status)">{{ task.status }}</span>
+					<span class="status block weight-medium col-green bg-white text-capitalize" :class="getTaskStatus(task.status)">{{ task.status }}</span>
 					<p class="desc weight-regular col-grey-3">{{ task.description }}</p>
 					<div class="ctas flex items-center">
 						<BaseButton v-if="task.status === 'Pending'" class="btn text-nowrap" value="Work on it Now" />
@@ -57,7 +57,7 @@ await fetchTask();
 					<div class="task-date flex items-center">
 						<div class="task-date__created flex flex-column items-start">
 							<span class="title weight-regular col-grey-3 text-nowrap">Date Created</span>
-							<span class="date weight-bold col-grey-3 text-nowrap">{{ task.dateAdded }}</span>
+							<span class="date weight-bold col-grey-3 text-nowrap">{{ task.createdAt }}</span>
 						</div>
 						<IconsEllipse variant="outline" />
 					</div>
@@ -74,7 +74,7 @@ await fetchTask();
 		</div>
 
 		<!-- UPDATE TASK MODAL -->
-		<TasksCreate v-if="showUpdateTaskModal" usage="update" :task-to-be-updated="task" @close="showUpdateTaskModal = false" @task-created="updateTask" />
+		<TasksCreate v-if="showUpdateTaskModal" usage="update" :task="task" @close="showUpdateTaskModal = false" @success="updateTask" />
 
 		<!-- DELETE TASK -->
 		<BaseModal v-if="showDeleteModal" width="50rem" @close-modal="showDeleteModal = false">

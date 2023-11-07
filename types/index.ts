@@ -2,22 +2,26 @@ export {};
 
 declare global {
 	interface Task {
-		id: string;
+		_id: string;
 		title: string;
 		description: string;
 		priority: string;
-		dateAdded: string;
 		dueDate: string;
 		status: string;
-		task_no: number;
-		workspace_id: string;
-		user_id: string;
-		assigned_to: string[];
+		workspace: string;
+		user: {
+			username: string;
+			name: string;
+		};
+		assignees: string[];
+		createdAt: string;
 	}
 
-	interface member {
-		id: string;
+	interface Team {
 		name: string;
+		username: string;
+		email: string;
+		profile_picture: string;
 	}
 
 	interface Workspace {
@@ -26,6 +30,7 @@ declare global {
 		slug: string;
 		avatar: string;
 		owner: string;
+		team: Team[];
 	}
 
 	interface User {
@@ -58,5 +63,20 @@ declare global {
 
 	interface UserAPiResponse extends TokenAPIResponse {
 		user: User;
+	}
+
+	interface TaskAPIResponse {
+		success: boolean;
+		task: Task;
+	}
+
+	interface TasksAPIResponse {
+		success: boolean;
+		tasks: Task[];
+	}
+
+	interface TeamsAPIResponse {
+		success: boolean;
+		team: Team[];
 	}
 }

@@ -13,7 +13,7 @@ const modelValue = defineModel<string | number>();
 		<span class="label block weight-regular col-darkBlue">{{ label }}</span>
 
 		<select :id="id" v-model="modelValue" :name="id" class="w-100 bg-transparent weight-regular col-grey-2 bordered" required>
-			<option v-for="option in lists" :key="option" :value="option">{{ option }}</option>
+			<option v-for="option in lists" :key="option" class="text-capitalize" :value="option">{{ option }}</option>
 		</select>
 	</label>
 </template>
