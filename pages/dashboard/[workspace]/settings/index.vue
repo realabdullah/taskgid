@@ -5,8 +5,11 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
+const { $axios } = useNuxtApp();
+const route = useRoute();
 const { user, teams } = storeToRefs(useStore());
 const { logout } = useToken();
+const push = usePush();
 
 const name = ref(user.value.firstName + " " + user.value.lastName);
 const email = ref(user.value.email);
@@ -26,11 +29,18 @@ const handleEditProfile = () => {
 };
 
 const sendInvite = () => {
-	loading.value = true;
-	setTimeout(() => {
+	try {
+		loading.value = true;
+		$axios.post("/invite/", { email: inviteeEmail.value, slug: route.params.workspace });
 		loading.value = false;
-		openOrCloseModal(false, "");
-	}, 2000);
+		push.success("Invite sent successfully!");
+	} catch (error) {
+		setTimeout(() => {
+			loading.value = false;
+			openOrCloseModal(false, "");
+			push.error("Something went wrong, please try again");
+		}, 2000);
+	}
 };
 
 const modalHeader = computed(() => {

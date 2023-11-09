@@ -3,7 +3,7 @@ import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
 const route = useRoute();
-const { user, profilePhoto, tasks, workspaces } = storeToRefs(useStore());
+const { user, tasks, workspaces } = storeToRefs(useStore());
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
@@ -90,7 +90,7 @@ await getWorkspaces();
 		<aside v-show="showAccountPanel" class="dashboard-layout__right" aria-label="Dashboard Options">
 			<div class="user-sidebar w-100 bg-white position-fixed overflow-y-auto overflow-x-hidden">
 				<div class="user flex items-center content-center flex-column">
-					<img :src="profilePhoto" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
+					<img :src="user.profile_picture" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
 
 					<div class="user-detail text-center">
 						<h5 class="weight-bold col-darkBlue">{{ user.firstName }} {{ user.lastName }}</h5>
@@ -126,7 +126,7 @@ await getWorkspaces();
 	</div>
 
 	<!-- UPLOAD PROFILE PICTURE -->
-	<ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="profilePhoto" @close="showProfilePictureModal = false" />
+	<ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="user.profile_picture" @close="showProfilePictureModal = false" />
 </template>
 
 <style lang="scss" scoped>

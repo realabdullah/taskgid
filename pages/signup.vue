@@ -8,6 +8,7 @@ definePageMeta({
 const {
 	public: { apiUrl },
 } = useRuntimeConfig();
+const route = useRoute();
 const { user } = storeToRefs(useStore());
 const { setToken } = useToken();
 
@@ -30,6 +31,7 @@ const signUp = async () => {
 		if (!success) throw new Error("We couldn't create your account. Please try again.");
 		user.value = data;
 		setToken(accessToken, refreshToken);
+		if (route.query.token) await $fetch(`${apiUrl}/invite/accept`, { method: "POST", body: { token: route.query.token } });
 		push.success("Account created successfully.");
 		navigateTo("/dashboard");
 	} catch (error) {

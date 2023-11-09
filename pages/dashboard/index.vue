@@ -223,12 +223,8 @@ await getWorkspaces();
 							width: 2rem;
 							height: 2rem;
 							margin-bottom: 0;
-							position: absolute;
-							left: 0;
-
-							&:not(:first-child) {
-								left: 0.5rem;
-							}
+							margin-left: -0.2rem;
+							filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.25));
 						}
 					}
 				}
