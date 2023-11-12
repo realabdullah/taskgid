@@ -33,7 +33,7 @@ const signUp = async () => {
 		setToken(accessToken, refreshToken);
 		if (route.query.token) await $fetch(`${apiUrl}/invite/accept`, { method: "POST", body: { token: route.query.token } });
 		push.success("Account created successfully.");
-		navigateTo("/dashboard");
+		window.location.href = "/dashboard";
 	} catch (error) {
 		submitting.value = false;
 		push.error(useFormatError(error as string));

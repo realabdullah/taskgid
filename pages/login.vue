@@ -14,7 +14,8 @@ const {
 	public: { apiUrl },
 } = useRuntimeConfig();
 const { user } = storeToRefs(useStore());
-const { setToken } = useToken();
+const { rememberMe } = storeToRefs(useTokenStore());
+const { setToken, setTemporaryToken } = useToken();
 
 const push = usePush();
 
@@ -29,10 +30,11 @@ const submitForm = async () => {
 		const { success, user: data, accessToken, refreshToken } = response;
 		if (!success) throw new Error("We couldn't log you in. Please try again.");
 		user.value = data;
-		setToken(accessToken, refreshToken);
+		if (rememberMe.value) setToken(accessToken, refreshToken);
+		else setTemporaryToken(accessToken.token);
 		submitting.value = false;
 		push.success("Logged in successfully.");
-		navigateTo({ name: "home", replace: true });
+		window.location.href = "/dashboard";
 	} catch (error) {
 		submitting.value = false;
 		push.error("Invalid email or password.");
@@ -49,10 +51,15 @@ const submitForm = async () => {
 			<form class="flex flex-column content-center items-center w-100" @submit.prevent="submitForm">
 				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" :required="true" />
 				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :required="true" />
+				<div class="flex items-center content-between w-100">
+					<label for="remember-me" class="flex items-center cursor-pointer" style="gap: 0.5rem">
+						<input id="remember-me" type="checkbox" class="mr-1" />
+						<span class="weight-regular col-grey">Remember Me</span>
+					</label>
+					<NuxtLink to="/forget-password" class="col-blue cursor-pointer text-unset">Forgot Password ?</NuxtLink>
+				</div>
 				<BaseButton :value="submitting ? 'loading' : 'Log In'" />
 			</form>
-
-			<NuxtLink to="/forget-password" class="login__form-footer col-blue text-unset weight-semiBold cursor-pointer">Forgot Password ?</NuxtLink>
 		</div>
 	</NuxtLayout>
 </template>
@@ -66,11 +73,6 @@ const submitForm = async () => {
 
 	form {
 		@include gap(2.4rem);
-	}
-
-	&-footer {
-		@include font(1.8rem, 2.2rem);
-		margin-top: 2rem;
 	}
 }
 </style>

@@ -1,14 +1,15 @@
 import axios from "axios";
 
 export default defineNuxtPlugin(() => {
+	const { token, rememberMe } = storeToRefs(useTokenStore());
+	const bearerToken = computed(() => (rememberMe.value ? useStatefulCookie("esAccessToken").value : token.value));
 	const config = useRuntimeConfig();
 	const baseURL = config.public.apiUrl;
-	const token = useCookie("esAccessToken");
 	const instance = axios.create({
 		baseURL,
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: "Bearer " + token.value,
+			Authorization: "Bearer " + bearerToken.value,
 		},
 	});
 

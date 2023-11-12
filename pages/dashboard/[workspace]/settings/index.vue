@@ -12,7 +12,7 @@ const { logout } = useToken();
 const push = usePush();
 
 const name = ref(user.value.firstName + " " + user.value.lastName);
-const email = ref(user.value.email);
+const email = user.value.email;
 const password = ref("");
 const showModal = ref(false);
 const modalState = ref("edit-profile");
@@ -112,7 +112,7 @@ const modalHeader = computed(() => {
 					<h1 class="weight-semiBold col-darkBlue">{{ modalHeader }}</h1>
 					<form v-if="modalState === 'edit-profile'" class="flex flex-column" @submit.prevent="handleEditProfile">
 						<BaseInput id="name" v-model="name" label="Fullname" type="text" />
-						<BaseInput id="email" v-model="email" label="Email Address" type="email" />
+						<BaseInput id="email" v-model="email" label="Email Address" type="email" :disabled="true" />
 						<BaseInput id="password" v-model="password" label="Password" type="password" />
 
 						<BaseButton value="Save" />

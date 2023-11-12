@@ -9,6 +9,7 @@ const {
 	label?: string;
 	type: string;
 	required?: boolean;
+	disabled?: boolean;
 }>();
 
 const modelValue = defineModel<string | number>();
@@ -24,7 +25,7 @@ const togglePassword = () => {
 	<label :for="id" class="w-100 flex flex-column items-start content-center">
 		<span v-if="!!label" class="form-label col-grey weight-regular">{{ label }}</span>
 		<div class="position-relative w-100">
-			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular col-grey-2 bordered" />
+			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular col-grey-2 bordered" :disabled="disabled" />
 
 			<span v-if="type === 'password'" class="eye position-absolute cursor-pointer" @click="togglePassword">
 				<IconsEye />
@@ -50,6 +51,11 @@ label {
 		border-radius: 1.2rem;
 		padding: 1.5rem;
 		@include font(1.6rem, 1.9rem);
+
+		&:disabled {
+			cursor: not-allowed;
+			background-color: #f5f5f5;
+		}
 	}
 }
 

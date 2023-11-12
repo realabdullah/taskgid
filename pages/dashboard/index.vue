@@ -103,7 +103,11 @@ await getWorkspaces();
 			</div>
 
 			<ul class="workspace grid">
-				<li v-for="workspace in workspaces" :key="workspace.slug" class="workspace__card w-100 position-relative flex flex-column items-start" @contextmenu.prevent="openMenu(workspace.slug)">
+				<li
+					v-for="workspace in workspaces"
+					:key="workspace.slug"
+					class="workspace__card w-100 position-relative flex flex-column items-start"
+					@contextmenu.prevent="name.toLowerCase() === workspace.owner.toLowerCase() && openMenu(workspace.slug)">
 					<img :src="workspace.avatar" :alt="workspace.title" />
 					<h3 class="weight-medium">{{ workspace.title }}</h3>
 					<p>{{ workspace.description }}</p>
