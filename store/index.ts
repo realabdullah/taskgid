@@ -9,6 +9,7 @@ export const useStore = defineStore(
 		const workspaces = ref([] as Workspace[]);
 		const currentWorkspace = ref({} as Workspace);
 		const teams = ref([] as Team[]);
+		const rememberMe = ref(false);
 
 		return {
 			user,
@@ -17,6 +18,7 @@ export const useStore = defineStore(
 			workspaces,
 			currentWorkspace,
 			teams,
+			rememberMe,
 		};
 	},
 	{ persist: true },

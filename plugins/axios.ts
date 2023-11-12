@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export default defineNuxtPlugin(() => {
-	const { token, rememberMe } = storeToRefs(useTokenStore());
+	const { token } = storeToRefs(useTokenStore());
+	const { rememberMe } = storeToRefs(useStore());
 	const bearerToken = computed(() => (rememberMe.value ? useStatefulCookie("esAccessToken").value : token.value));
 	const config = useRuntimeConfig();
 	const baseURL = config.public.apiUrl;

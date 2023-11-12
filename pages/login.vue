@@ -13,8 +13,7 @@ const submitting = ref(false);
 const {
 	public: { apiUrl },
 } = useRuntimeConfig();
-const { user } = storeToRefs(useStore());
-const { rememberMe } = storeToRefs(useTokenStore());
+const { user, rememberMe } = storeToRefs(useStore());
 const { setToken, setTemporaryToken } = useToken();
 
 const push = usePush();
@@ -53,7 +52,7 @@ const submitForm = async () => {
 				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :required="true" />
 				<div class="flex items-center content-between w-100">
 					<label for="remember-me" class="flex items-center cursor-pointer" style="gap: 0.5rem">
-						<input id="remember-me" type="checkbox" class="mr-1" />
+						<input id="remember-me" v-model="rememberMe" type="checkbox" class="mr-1" />
 						<span class="weight-regular col-grey">Remember Me</span>
 					</label>
 					<NuxtLink to="/forget-password" class="col-blue cursor-pointer text-unset">Forgot Password ?</NuxtLink>
