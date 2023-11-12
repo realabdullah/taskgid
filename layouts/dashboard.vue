@@ -105,7 +105,8 @@ await getWorkspaces();
 			</div>
 		</aside>
 		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">
-			<header class="position-sticky flex items-center content-between">
+			<NuxtLoadingIndicator color="#3754DB" />
+			<header class="flex items-center content-between">
 				<label for="search" class="search position-relative w-100">
 					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
 					<IconsSearch class="search-icon position-absolute cursor-pointer" />
@@ -122,8 +123,7 @@ await getWorkspaces();
 					<Notifications v-if="notification" />
 				</div>
 			</header>
-			<NuxtLoadingIndicator color="#3754DB" />
-			<div style="padding-bottom: 5rem">
+			<div class="main overflow-y-auto h-100" style="padding-bottom: 15rem">
 				<slot />
 			</div>
 		</main>
@@ -318,20 +318,6 @@ await getWorkspaces();
 				padding-top: 2rem;
 				border-top: 1.5px solid #e2e2e8;
 			}
-
-			.btn {
-				width: 100%;
-				padding: 1.2rem;
-				border-radius: 1.2rem;
-				background-color: #3754db;
-				color: #ffffff;
-				@include font(1.4rem, 130%);
-				transition: all 0.3s ease-in-out;
-
-				&:hover {
-					background-color: #2b46c0;
-				}
-			}
 		}
 	}
 
@@ -342,6 +328,8 @@ await getWorkspaces();
 		border-radius: 1.4rem;
 		border: 1.5px solid #e2e2e8;
 		box-shadow: #959da533 0px 8px 24px;
+		z-index: 100;
+		overflow: hidden;
 
 		header {
 			margin-bottom: 5rem;
@@ -361,6 +349,15 @@ await getWorkspaces();
 					transform: translate(0, -50%);
 					right: 1.5rem;
 				}
+			}
+		}
+
+		.main {
+			-ms-overflow-style: none;
+			scrollbar-width: none;
+
+			&::-webkit-scrollbar {
+				display: none;
 			}
 		}
 	}
