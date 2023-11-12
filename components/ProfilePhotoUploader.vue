@@ -78,6 +78,7 @@ const previewImage = (e: any) => {
 
 		img {
 			object-fit: cover;
+			border: 1.5px solid #e2e2e8;
 			border-radius: 2.4rem;
 		}
 

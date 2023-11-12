@@ -62,7 +62,7 @@ const modalHeader = computed(() => {
 				<h5 class="weight-regular col-darkBlue">Account Settings</h5>
 				<div class="card-content bg-white flex flex-column items-start">
 					<div class="card-content__box w-100 flex items-center bordered">
-						<IconsUser class="icon" />
+						<IconsUser :active="false" class="icon" />
 						<div class="details flex flex-column">
 							<span class="weight-regular col-grey-3">Fullname</span>
 							<span class="weight-semiBold col-black">{{ `${user.firstName} ${user.lastName}` }}</span>

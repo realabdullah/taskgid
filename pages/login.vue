@@ -15,7 +15,6 @@ const {
 } = useRuntimeConfig();
 const { user, rememberMe } = storeToRefs(useStore());
 const { setToken, setTemporaryToken } = useToken();
-
 const push = usePush();
 
 const submitForm = async () => {

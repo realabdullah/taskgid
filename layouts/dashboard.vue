@@ -14,10 +14,10 @@ const navs = [
 const notification = ref(false);
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
-const currentCalendarTab = ref("calendar");
-const showAccountPanel = ref(false);
+const showWorkspaceDropdown = ref(false);
 
 const currentWorkspace = computed(() => workspaces.value.find((workspace) => workspace.slug === route.params.workspace));
+const filteredWorkspaces = computed(() => workspaces.value.filter((workspace) => workspace.slug !== route.params.workspace));
 
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
@@ -27,11 +27,11 @@ const calendarData = computed(() =>
 		: [],
 );
 
-const switchWorkspace = (workspaceId: string) => {
-	navigateTo({ name: "dashboard", params: { workspace: workspaceId } });
+const switchWorkspace = (workspace: string) => {
+	navigateTo({ name: "dashboard", params: { workspace } });
 };
 
-const accountToggleStyle = computed(() => (showAccountPanel.value ? "29rem" : "2rem"));
+const currentYear = computed(() => new Date().getFullYear());
 
 onMounted(() => useListen("profilePic", (value) => (showProfilePictureModal.value = value)));
 
@@ -39,90 +39,84 @@ await getWorkspaces();
 </script>
 
 <template>
-	<div class="dashboard-layout bg-greyishBlue w-100 flex position-fixed overflow-y-auto">
-		<aside class="dashboard-layout__left w-100 position-fixed overflow-y-auto overflow-x-hidden flex bg-white" aria-label="Dashboard Navigation">
-			<div class="workspace-icons w-100 bg-blue flex flex-column items-center">
-				<button
-					v-for="workspace in workspaces"
-					:key="workspace.slug"
-					class="workspace-avatar bg-blue flex items-center content-center cursor-pointer"
-					:class="{ active: workspace.slug === $route.params.workspace }"
-					@click="switchWorkspace(workspace.slug)">
-					<img :src="workspace.avatar" :alt="workspace.title" />
-				</button>
+	<div class="dashboard w-100 flex position-fixed overflow-y-auto">
+		<aside class="dashboard__left position-relative w-100" aria-label="Dashboard Navigation">
+			<div class="workspace w-100 position-fixed overflow-y-auto overflow-x-hidden flex flex-column items-start">
+				<div class="workspace__dropdown w-100" :class="{ active: showWorkspaceDropdown }">
+					<button class="current bg-transparent w-100 flex items-center content-between cursor-pointer" @click="showWorkspaceDropdown = !showWorkspaceDropdown">
+						<div class="flex items-center" style="gap: 1.2rem">
+							<img :src="currentWorkspace?.avatar" :alt="currentWorkspace?.title" />
+							<div class="detail flex flex-column items-start">
+								<span class="weight-medium">Workspace</span>
+								<p class="title weight-semiBold">{{ currentWorkspace?.title }}</p>
+							</div>
+						</div>
+						<IconsUpDown />
+					</button>
 
-				<button class="add-workspace col-blue cursor-pointer" @click="navigateTo('/create-workspace')"><IconsPlus /></button>
-			</div>
-			<div class="workspace-details w-100 flex flex-column items-start">
-				<div class="workspace-detail flex flex-column items-start">
-					<h4 class="weight-bold col-darkBlue">{{ currentWorkspace?.title }}'s space</h4>
+					<ul v-show="showWorkspaceDropdown" class="workspace__dropdown-list bg-white flex flex-column items-start">
+						<li v-for="workspace in filteredWorkspaces" :key="workspace.slug" class="w-100 flex items-center cursor-pointer" style="gap: 1.5rem" @click="switchWorkspace(workspace.slug)">
+							<img :src="workspace.avatar" :alt="workspace.title" />
+							<span class="weight-medium">{{ workspace.title }}</span>
+						</li>
+						<button class="bg-transparent w-100 flex items-center cursor-pointer" style="gap: 1.5rem">
+							<IconsAdd />
+							<span class="weight-medium">Create Workspace</span>
+						</button>
+					</ul>
 				</div>
 
-				<div class="workspace-nav flex items-start flex-column">
+				<div class="workspace__nav w-100 flex items-start flex-column">
 					<NuxtLink
-						v-for="(nav, index) in navs"
-						:key="index"
+						v-for="nav in navs"
+						:key="nav.route"
 						:to="nav.route"
-						class="workspace-nav__item flex items-center text-unset weight-regular text-capitalize"
-						:class="$route.path === nav.route ? 'weight-bold col-blue' : 'col-grey-3'">
+						class="workspace__nav-item w-100 flex items-center text-unset weight-regular text-capitalize"
+						:class="{ active: $route.path === nav.route }">
 						<IconsSideNav :variant="nav.name" />
 						<span>{{ nav.name }}</span>
 					</NuxtLink>
 				</div>
+
+				<div class="calendar bg-whitishBlue w-100">
+					<DatePicker v-model="date" :attributes="calendarData" transparent borderless />
+				</div>
+			</div>
+
+			<div class="user position-absolute flex flex-column">
+				<div class="flex items-center" style="gap: 1rem">
+					<img :src="user.profile_picture" class="w-100 h-100 cursor-pointer" alt="avatar" @click="showProfilePictureModal = true" />
+
+					<div class="user-detail flex flex-column">
+						<h5 class="weight-bold">{{ user.firstName }} {{ user.lastName }}</h5>
+						<span class="weight-regular">{{ user.email }}</span>
+					</div>
+				</div>
+
+				<p class="copyright">© {{ currentYear }} Ergosphere Inc.</p>
 			</div>
 		</aside>
-		<main class="dashboard-layout__center position-relative w-100 overflow-x-hidden">
-			<header class="position-sticky bg-greyishBlue flex items-center content-between">
+		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">
+			<header class="position-sticky flex items-center content-between">
 				<label for="search" class="search position-relative w-100">
 					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
 					<IconsSearch class="search-icon position-absolute cursor-pointer" />
 				</label>
 
-				<button class="notification-bell bg-transparent cursor-pointer">
-					<IconsNotificationBell :notification="notification" />
-				</button>
+				<div class="flex items-center" style="gap: 1.2rem">
+					<button class="bg-transparent cursor-pointer">
+						<IconsUser :active="false" />
+					</button>
+					<button class="bg-transparent cursor-pointer">
+						<IconsNotificationBell :notification="notification" />
+					</button>
+				</div>
 			</header>
 			<NuxtLoadingIndicator color="#3754DB" />
 			<div style="padding-bottom: 5rem">
 				<slot />
 			</div>
 		</main>
-		<aside v-show="showAccountPanel" class="dashboard-layout__right" aria-label="Dashboard Options">
-			<div class="user-sidebar w-100 bg-white position-fixed overflow-y-auto overflow-x-hidden">
-				<div class="user flex items-center content-center flex-column">
-					<img :src="user.profile_picture" class="w-100 h-100 cursor-pointer" alt="ABD" @click="showProfilePictureModal = true" />
-
-					<div class="user-detail text-center">
-						<h5 class="weight-bold col-darkBlue">{{ user.firstName }} {{ user.lastName }}</h5>
-						<span class="weight-regular col-grey-3">{{ user.email }}</span>
-					</div>
-
-					<BaseButton class="btn" value="My Profile" />
-
-					<div class="calendar bg-whitishBlue w-100">
-						<div class="calendar__header bg-white flex items-center">
-							<button
-								class="w-100 cursor-pointer"
-								:class="currentCalendarTab === 'calendar' ? 'active bg-blue col-white weight-medium' : 'bg-transparent col-grey weight-regular'"
-								@click="currentCalendarTab = 'calendar'">
-								Calendar
-							</button>
-							<button
-								class="w-100 cursor-pointer"
-								:class="currentCalendarTab === 'reminder' ? 'active bg-blue col-white weight-medium' : 'bg-transparent col-grey weight-regular'"
-								@click="currentCalendarTab = 'reminder'">
-								Reminder
-							</button>
-						</div>
-						<DatePicker v-if="currentCalendarTab === 'calendar'" v-model="date" :attributes="calendarData" transparent borderless />
-					</div>
-				</div>
-			</div>
-		</aside>
-
-		<button class="position-fixed menu-toggle bg-white z-9 cursor-pointer flex items-center content-center" :style="`right: ${accountToggleStyle}`" @click="showAccountPanel = !showAccountPanel">
-			<IconsAccount />
-		</button>
 	</div>
 
 	<!-- UPLOAD PROFILE PICTURE -->
@@ -130,153 +124,201 @@ await getWorkspaces();
 </template>
 
 <style lang="scss" scoped>
-.dashboard-layout {
+.dashboard {
 	height: 100dvh;
-	padding-bottom: 2rem;
+	background: #f8f8f9;
 
 	&__left {
-		top: 0;
-		left: 0;
-		bottom: 0;
-		max-width: 28rem;
-		height: 100dvh;
-		@include gap(2rem);
-		-ms-overflow-style: none;
-		scrollbar-width: none;
+		max-width: 30rem;
 
-		&::-webkit-scrollbar {
-			display: none;
-		}
+		.workspace {
+			max-width: 30rem;
+			top: 1rem;
+			left: 1rem;
+			bottom: 1rem;
+			padding: 1rem;
+			padding-right: 3rem;
+			@include gap(5rem);
+			-ms-overflow-style: none;
+			scrollbar-width: none;
 
-		@media screen and (max-width: 787px) {
-			max-width: 20rem;
-			@include gap(0rem);
-		}
-
-		@media screen and (max-width: 600px) {
-			max-width: 10rem;
-		}
-
-		.workspace-icons {
-			max-width: 7rem;
-			padding: 1.6rem;
-			padding-top: 10rem;
-			gap: 1.6rem;
-
-			@media screen and (max-width: 787px) {
-				max-width: 5rem;
+			&::-webkit-scrollbar {
+				display: none;
 			}
 
-			.workspace-avatar {
-				width: 4.8rem;
-				height: 4.8rem;
-				border-radius: 1.2rem;
-				padding: 0.5rem;
+			&__dropdown {
+				background-color: #ffffff;
+				border: 1.5px solid #e2e2e8;
+				border-radius: 1.4rem;
 
-				@media screen and (max-width: 787px) {
-					width: 3.8rem;
-					height: 3.8rem;
+				&.active {
+					border: none;
+					background-color: #ededef;
 				}
 
-				img {
-					width: 4rem;
-					height: 4rem;
-					object-fit: cover;
-					border-radius: 1rem;
+				.current {
+					padding: 1rem;
 
-					@media screen and (max-width: 787px) {
-						width: 3.2rem;
-						height: 3.2rem;
+					img {
+						width: 4.5rem;
+						height: 4.5rem;
+						border-radius: 1.2rem;
+						object-fit: cover;
 					}
-				}
-			}
 
-			.active {
-				border: 0.14rem solid $col-yellowShade;
-			}
+					.detail {
+						@include gap(0.4rem);
 
-			.add-workspace {
-				width: 3.8rem;
-				height: 3.8rem;
-				background: #ffffff33;
-				border-radius: 1rem;
-				padding: 0.8rem;
+						span {
+							@include font(1.2rem, 100%);
+						}
 
-				@media screen and (max-width: 787px) {
-					width: 3.2rem;
-					height: 3.2rem;
-				}
-			}
-		}
-
-		.workspace-details {
-			max-width: 23rem;
-			padding: 2rem;
-			padding-top: 10rem;
-			@include gap(8rem);
-
-			@media screen and (max-width: 787px) {
-				max-width: 18rem;
-			}
-
-			@media screen and (max-width: 600px) {
-				max-width: 8rem;
-				padding: 10rem 1.2rem 0;
-			}
-
-			.workspace-detail {
-				@include gap(0.4rem);
-
-				@media screen and (max-width: 600px) {
-					display: none !important;
-				}
-
-				h4 {
-					@include font(2rem, 2.4rem);
-				}
-
-				p {
-					@include font(1.4rem, 1.7rem);
-				}
-			}
-
-			.workspace-nav {
-				@include gap(3rem);
-
-				&__item {
-					@include gap(1rem);
-					@include font(1.6rem, 1.9rem);
-
-					span {
-						@media screen and (max-width: 600px) {
-							display: none;
+						.title {
+							@include font(1.4rem, 130%);
 						}
 					}
+				}
+
+				&-list {
+					padding: 1.6rem;
+					border-radius: 1.4rem;
+					border: 1.5px solid #e2e2e8;
+					@include gap(2rem);
+
+					li {
+						@include gap(1.2rem);
+
+						img {
+							width: 3rem;
+							height: 3rem;
+							border-radius: 50%;
+							object-fit: cover;
+						}
+
+						span {
+							color: #66656f;
+							@include font(1.6rem, 100%);
+							transition: color 0.3s ease-in-out;
+
+							&:hover {
+								color: #000000;
+							}
+						}
+					}
+
+					button {
+						padding-top: 2rem;
+						border-top: 1.5px solid #f1f1f2;
+						color: #66656f;
+						@include font(1.6rem, 100%);
+						transition: color 0.3s ease-in-out;
+
+						&:hover {
+							color: #000000;
+						}
+					}
+				}
+			}
+
+			&__nav {
+				@include gap(0.5rem);
+				padding-bottom: 3rem;
+				border-bottom: 1.5px solid #e2e2e8;
+
+				&-item {
+					@include gap(1.2rem);
+					@include font(1.6rem, 100%);
+					letter-spacing: 0.03rem;
+					color: #66656f;
+					padding: 1rem;
+					transition: all 0.3s ease-in-out;
+
+					&:hover {
+						color: #000000;
+						font-weight: 700;
+					}
+
+					&.active {
+						background-color: #ffffff;
+						color: #000000;
+						border-radius: 1.4rem;
+						border: 1.5px solid #e2e2e8;
+						font-weight: 700;
+					}
+				}
+			}
+
+			.calendar {
+				background-color: #ffffff;
+				border: 1.5px solid #e2e2e8;
+				border-radius: 1.4rem;
+				padding: 1.6rem;
+				margin-bottom: 2rem;
+			}
+		}
+
+		.user {
+			bottom: 2rem;
+			left: 1rem;
+			right: 2rem;
+			@include gap(1rem);
+			padding-bottom: 2rem;
+
+			img {
+				width: 4.5rem;
+				height: 4.5rem;
+				border-radius: 50%;
+				object-fit: cover;
+				padding: 0.5rem;
+				border: 1.5px solid #e2e2e8;
+			}
+
+			.user-detail {
+				@include gap(0.3rem);
+
+				h5 {
+					@include font(1.6rem, 100%);
+					color: #454447;
+				}
+
+				span {
+					@include font(1.4rem, 100%);
+					color: #66656f;
+				}
+			}
+
+			.copyright {
+				@include font(1.2rem, 100%);
+				color: #66656f;
+				padding-top: 2rem;
+				border-top: 1.5px solid #e2e2e8;
+			}
+
+			.btn {
+				width: 100%;
+				padding: 1.2rem;
+				border-radius: 1.2rem;
+				background-color: #3754db;
+				color: #ffffff;
+				@include font(1.4rem, 130%);
+				transition: all 0.3s ease-in-out;
+
+				&:hover {
+					background-color: #2b46c0;
 				}
 			}
 		}
 	}
 
-	&__center {
-		margin-left: 28rem;
-		margin-right: calc(25.8rem + 2rem);
-		padding: 2.5rem 4rem;
-
-		@media screen and (max-width: 1110px) {
-			margin-right: 0;
-		}
-
-		@media screen and (max-width: 787px) {
-			margin-left: 20rem;
-			padding: 2rem;
-		}
-
-		@media screen and (max-width: 600px) {
-			margin-left: 10rem;
-		}
+	&__main {
+		padding: 2rem;
+		margin: 2rem;
+		margin-left: 0;
+		border-radius: 1.4rem;
+		border: 1.5px solid #e2e2e8;
+		box-shadow: #959da533 0px 8px 24px;
 
 		header {
-			top: 2.5rem;
 			margin-bottom: 5rem;
 
 			.search {
@@ -284,7 +326,7 @@ await getWorkspaces();
 
 				input {
 					height: 5rem;
-					border: 0.07rem solid #a8abbd;
+					border: 1.5px solid #e2e2e8;
 					border-radius: 1.2rem;
 					padding: 1.6rem;
 				}
@@ -296,106 +338,6 @@ await getWorkspaces();
 				}
 			}
 		}
-
-		.toast {
-			top: 8rem;
-			right: 4rem;
-		}
-	}
-
-	&__right {
-		@media screen and (min-width: 1111px) {
-			display: block !important;
-		}
-
-		.user-sidebar {
-			max-width: 25.8rem;
-			border-radius: 2.4rem;
-			padding: 2rem;
-			right: 2rem;
-			top: 2rem;
-			bottom: 2rem;
-			box-shadow: #959da533 0 0.8rem 2.4rem;
-			-ms-overflow-style: none;
-			scrollbar-width: none;
-
-			&::-webkit-scrollbar {
-				display: none;
-			}
-
-			@media screen and (max-width: 787px) {
-				right: 1rem;
-				top: 1rem;
-				bottom: 1rem;
-				animation: fade-in-right 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
-			}
-
-			.user {
-				@include gap(2.4rem);
-
-				img {
-					max-width: 9rem;
-					max-height: 9rem;
-					object-fit: cover;
-					border-radius: 1.6rem;
-					box-shadow: #110c2e26 0 4.8rem 10rem 0;
-				}
-
-				.user-detail {
-					h5 {
-						@include font(2rem, 2.4rem);
-						margin-bottom: 0.5rem;
-					}
-
-					span {
-						@include font(1.4rem, 1.7rem);
-					}
-				}
-
-				.calendar {
-					max-width: 21.8rem;
-					border-radius: 1.2rem;
-					padding: 1.6rem;
-					margin-top: 8.2rem;
-					margin-bottom: 2rem;
-
-					&__header {
-						padding: 0.4rem 0.3rem;
-						margin-bottom: 2rem;
-						border-radius: 0.4rem;
-						@include gap(0.4rem);
-
-						button {
-							@include font(1rem, normal);
-							padding: 0.8rem 1.6rem;
-							border-radius: 0.4rem;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	.menu-toggle {
-		bottom: 2rem;
-		padding: 1rem;
-		border-radius: 1rem;
-		box-shadow: #959da533 0 0.8rem 2.4rem;
-
-		@media screen and (min-width: 1111px) {
-			display: none !important;
-		}
-	}
-}
-
-@keyframes fade-in-right {
-	0% {
-		transform: translateX(50px);
-		opacity: 0;
-	}
-	100% {
-		transform: translateX(0);
-		opacity: 1;
 	}
 }
 </style>
