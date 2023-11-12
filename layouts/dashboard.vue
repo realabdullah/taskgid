@@ -15,6 +15,13 @@ const notification = ref(false);
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
 const showWorkspaceDropdown = ref(false);
+const isModalOpen = ref(false);
+
+const form = reactive({
+	title: "",
+	description: "",
+	slug: "",
+});
 
 const currentWorkspace = computed(() => workspaces.value.find((workspace) => workspace.slug === route.params.workspace));
 const filteredWorkspaces = computed(() => workspaces.value.filter((workspace) => workspace.slug !== route.params.workspace));
@@ -42,6 +49,7 @@ await getWorkspaces();
 	<div class="dashboard w-100 flex position-fixed overflow-y-auto">
 		<aside class="dashboard__left position-relative w-100" aria-label="Dashboard Navigation">
 			<div class="workspace w-100 position-fixed overflow-y-auto overflow-x-hidden flex flex-column items-start">
+				<NuxtLink to="/dashboard" class="logo text-unset weight-bold text-capitalize">Ergosphere</NuxtLink>
 				<div class="workspace__dropdown w-100" :class="{ active: showWorkspaceDropdown }">
 					<button class="current bg-transparent w-100 flex items-center content-between cursor-pointer" @click="showWorkspaceDropdown = !showWorkspaceDropdown">
 						<div class="flex items-center" style="gap: 1.2rem">
@@ -59,7 +67,7 @@ await getWorkspaces();
 							<img :src="workspace.avatar" :alt="workspace.title" />
 							<span class="weight-medium">{{ workspace.title }}</span>
 						</li>
-						<button class="bg-transparent w-100 flex items-center cursor-pointer" style="gap: 1.5rem">
+						<button class="bg-transparent w-100 flex items-center cursor-pointer" style="gap: 1.5rem" @click="isModalOpen = true">
 							<IconsAdd />
 							<span class="weight-medium">Create Workspace</span>
 						</button>
@@ -121,6 +129,11 @@ await getWorkspaces();
 
 	<!-- UPLOAD PROFILE PICTURE -->
 	<ProfilePhotoUploader v-if="showProfilePictureModal" :profile-picture="user.profile_picture" @close="showProfilePictureModal = false" />
+
+	<!-- CREATE WORKSPACE -->
+	<BaseModal v-if="isModalOpen" width="50rem" @close-modal="isModalOpen = false">
+		<CreateWorkspace :data="form" usage="create" @close="isModalOpen = false" />
+	</BaseModal>
 </template>
 
 <style lang="scss" scoped>
@@ -141,9 +154,16 @@ await getWorkspaces();
 			@include gap(5rem);
 			-ms-overflow-style: none;
 			scrollbar-width: none;
+			height: calc(100% - 14rem);
 
 			&::-webkit-scrollbar {
 				display: none;
+			}
+
+			.logo {
+				@include font(3rem, 100%);
+				color: #171718;
+				margin-bottom: -2rem;
 			}
 
 			&__dropdown {
@@ -154,6 +174,7 @@ await getWorkspaces();
 				&.active {
 					border: none;
 					background-color: #ededef;
+					transition: all 0.3s ease-in-out;
 				}
 
 				.current {
@@ -184,6 +205,7 @@ await getWorkspaces();
 					border-radius: 1.4rem;
 					border: 1.5px solid #e2e2e8;
 					@include gap(2rem);
+					animation: slide-down 0.3s ease-in-out;
 
 					li {
 						@include gap(1.2rem);
@@ -258,11 +280,12 @@ await getWorkspaces();
 		}
 
 		.user {
+			background: #f8f8f9;
 			bottom: 2rem;
 			left: 1rem;
 			right: 2rem;
 			@include gap(1rem);
-			padding-bottom: 2rem;
+			padding: 2rem 0;
 
 			img {
 				width: 4.5rem;
@@ -338,6 +361,15 @@ await getWorkspaces();
 				}
 			}
 		}
+	}
+}
+
+@keyframes slide-down {
+	0% {
+		transform: translateY(-30%);
+	}
+	100% {
+		transform: translateY(0);
 	}
 }
 </style>

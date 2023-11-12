@@ -6,7 +6,7 @@ definePageMeta({
 });
 
 const { workspaces, user } = storeToRefs(useStore());
-const { getWorkspaces, createWorkspace, deleteWorkspace, selectedWorkspaceSlug } = useWorkspace();
+const { getWorkspaces, deleteWorkspace, selectedWorkspaceSlug } = useWorkspace();
 const { logout } = useToken();
 const push = usePush();
 
@@ -20,7 +20,6 @@ const form = reactive({
 	description: "",
 	slug: "",
 });
-const submitting = ref(false);
 
 const editWorkspace = (slug: string) => {
 	const workspace = workspaces.value.find((workspace) => workspace.slug === slug);
@@ -32,20 +31,6 @@ const editWorkspace = (slug: string) => {
 const openMenu = (slug: string) => {
 	activeWorkspaceSlug.value = activeWorkspaceSlug.value === slug ? "" : slug;
 	selectedWorkspaceSlug.value = slug;
-};
-
-const submitForm = async () => {
-	try {
-		submitting.value = true;
-		if (modalState.value === "create") await createWorkspace(form);
-		else if (modalState.value === "update") await createWorkspace(form, "update");
-		submitting.value = false;
-		push.success("Workspace created successfully!");
-		closeModal();
-	} catch (error) {
-		const { message } = formatError(error);
-		push.error(message);
-	}
 };
 
 const handleDeletion = async () => {
@@ -134,12 +119,7 @@ await getWorkspaces();
 	</div>
 
 	<BaseModal v-if="isModalOpen" width="50rem" @close-modal="closeModal">
-		<form v-if="['create', 'update'].includes(modalState)" class="modal w-100 flex flex-column content-center items-center" @submit.prevent="submitForm">
-			<BaseInput id="title" v-model="form.title" type="text" label="Title" :required="true" />
-			<BaseInput id="description" v-model="form.description" type="text" label="Description" :required="true" />
-			<BaseInput id="slug" v-model="form.slug" type="text" label="Slug" :required="true" />
-			<BaseButton :value="submitting ? 'loading' : 'Save'" />
-		</form>
+		<CreateWorkspace v-if="['create', 'update'].includes(modalState)" :data="form" :usage="modalState" :slug="selectedWorkspaceSlug" @close="closeModal" />
 		<template v-else-if="modalState === 'delete'">
 			<div class="modal w-100 flex flex-column content-center items-center">
 				<p class="col-grey-2">Are you sure you want to delete this workspace? This action cannot be undone.</p>
