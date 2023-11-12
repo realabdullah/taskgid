@@ -3,7 +3,7 @@ import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
 const route = useRoute();
-const { user, tasks, workspaces } = storeToRefs(useStore());
+const { user, tasks, workspaces, allNotificationsRead } = storeToRefs(useStore());
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
@@ -111,13 +111,15 @@ await getWorkspaces();
 					<IconsSearch class="search-icon position-absolute cursor-pointer" />
 				</label>
 
-				<div class="flex items-center" style="gap: 1.2rem">
+				<div class="flex items-center position-relative" style="gap: 1.2rem">
 					<button class="bg-transparent cursor-pointer">
 						<IconsUser :active="false" />
 					</button>
-					<button class="bg-transparent cursor-pointer">
-						<IconsNotificationBell :notification="notification" />
+					<button class="bg-transparent cursor-pointer" @click="notification = !notification">
+						<IconsNotificationBell :notification="!allNotificationsRead" />
 					</button>
+
+					<Notifications v-if="notification" />
 				</div>
 			</header>
 			<NuxtLoadingIndicator color="#3754DB" />
