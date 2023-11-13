@@ -7,8 +7,7 @@ const { user, tasks, workspaces, allNotificationsRead } = storeToRefs(useStore()
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
-	{ name: "overview", route: `/dashboard/${route.params.workspace}/` },
-	{ name: "tasks", route: `/dashboard/${route.params.workspace}/tasks` },
+	{ name: "home", route: `/dashboard/${route.params.workspace}` },
 	{ name: "settings", route: `/dashboard/${route.params.workspace}/settings` },
 ];
 const notification = ref(false);
