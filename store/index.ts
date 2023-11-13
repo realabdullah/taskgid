@@ -23,6 +23,7 @@ export const useStore = defineStore(
 		const currentWorkspace = ref({} as Workspace);
 		const teams = ref([] as Team[]);
 		const rememberMe = ref(false);
+		const showNotifications = ref(false);
 		const notifications = ref(
 			Array.from({ length: 10 }, () => ({
 				message: messages[Math.floor(Math.random() * messages.length)],
@@ -43,6 +44,7 @@ export const useStore = defineStore(
 			teams,
 			rememberMe,
 			notifications,
+			showNotifications,
 			allNotificationsRead,
 		};
 	},

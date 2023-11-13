@@ -3,14 +3,14 @@ import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
 const route = useRoute();
-const { user, tasks, workspaces, allNotificationsRead } = storeToRefs(useStore());
+const { user, tasks, workspaces } = storeToRefs(useStore());
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
 	{ name: "home", route: `/dashboard/${route.params.workspace}` },
 	{ name: "settings", route: `/dashboard/${route.params.workspace}/settings` },
 ];
-const notification = ref(false);
+
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
 const showWorkspaceDropdown = ref(false);
@@ -105,23 +105,7 @@ await getWorkspaces();
 		</aside>
 		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">
 			<NuxtLoadingIndicator color="#3754DB" />
-			<header class="flex items-center content-between">
-				<label for="search" class="search position-relative w-100">
-					<input id="search" class="w-100 bg-transparent" type="search" name="search" placeholder="Search your space here..." />
-					<IconsSearch class="search-icon position-absolute cursor-pointer" />
-				</label>
-
-				<div class="flex items-center position-relative" style="gap: 1.2rem">
-					<button class="bg-transparent cursor-pointer">
-						<IconsUser :active="false" />
-					</button>
-					<button class="bg-transparent cursor-pointer" @click="notification = !notification">
-						<IconsNotificationBell :notification="!allNotificationsRead" />
-					</button>
-
-					<Notifications v-if="notification" />
-				</div>
-			</header>
+			<BaseHeader />
 			<div class="main overflow-y-auto h-100" style="padding-bottom: 15rem">
 				<slot />
 			</div>
@@ -329,27 +313,6 @@ await getWorkspaces();
 		box-shadow: #959da533 0px 8px 24px;
 		z-index: 100;
 		overflow: hidden;
-
-		header {
-			margin-bottom: 5rem;
-
-			.search {
-				max-width: 35rem;
-
-				input {
-					height: 5rem;
-					border: 1.5px solid #e2e2e8;
-					border-radius: 1.2rem;
-					padding: 1.6rem;
-				}
-
-				&-icon {
-					top: 50%;
-					transform: translate(0, -50%);
-					right: 1.5rem;
-				}
-			}
-		}
 
 		.main {
 			-ms-overflow-style: none;

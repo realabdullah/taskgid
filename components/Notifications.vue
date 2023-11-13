@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const { notifications } = storeToRefs(useStore());
+const { notifications, showNotifications } = storeToRefs(useStore());
 
 const markAsRead = (index: number) => (notifications.value[index].read = true);
 const markAllAsRead = () => notifications.value.forEach((notification) => (notification.read = true));
 </script>
 
 <template>
-	<div class="notifications__popup position-absolute bg-white">
+	<div v-if="showNotifications" class="notifications__popup position-absolute bg-white">
 		<div class="notifications__popup__header flex items-center content-between">
 			<h3 class="weight-bold">Notifications</h3>
 			<button class="bg-transparent cursor-pointer" @click="markAllAsRead">
