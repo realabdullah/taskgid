@@ -165,7 +165,7 @@ await getWorkspaces();
 
 		.workspace {
 			margin-top: 5rem;
-			grid-template-columns: repeat(auto-fit, minmax(20rem, 40rem));
+			grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
 			@include gap(1.5rem);
 
 			@media screen and (max-width: 600px) {

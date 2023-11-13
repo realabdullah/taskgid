@@ -34,3 +34,13 @@ export const formatError = (error: any) => {
 		message: errorMessage,
 	};
 };
+
+export const formatDate = (value: any) => {
+	const date = new Date(value);
+	const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const month = date.getMonth();
+	const year = date.getFullYear();
+	const day = date.getDate();
+
+	return `${months[month]} ${day}, ${year}`;
+};
