@@ -1,5 +1,22 @@
 <script lang="ts" setup>
 const { allNotificationsRead, showNotifications } = storeToRefs(useStore());
+const { logout } = useToken();
+
+const showPopup = ref(false);
+
+const onOutsideClick = (event: MouseEvent) => {
+	if (!(event.target as HTMLElement).closest(".logout-popup") && !(event.target as HTMLElement).closest(".account")) {
+		showPopup.value = false;
+	}
+};
+
+onMounted(() => {
+	window.addEventListener("click", onOutsideClick);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("click", onOutsideClick);
+});
 </script>
 
 <template>
@@ -10,9 +27,15 @@ const { allNotificationsRead, showNotifications } = storeToRefs(useStore());
 		</label>
 
 		<div class="flex items-center position-relative" style="gap: 1.2rem">
-			<button class="bg-transparent cursor-pointer">
-				<IconsUser :active="false" />
-			</button>
+			<div class="position-relative">
+				<button class="account bg-transparent cursor-pointer" @click="showPopup = !showPopup">
+					<IconsUser :active="false" />
+				</button>
+
+				<div v-show="showPopup" class="logout-popup position-absolute">
+					<button class="bg-transparent cursor-pointer" @click="logout">Logout</button>
+				</div>
+			</div>
 			<button class="bg-transparent cursor-pointer" @click="showNotifications = !showNotifications">
 				<IconsNotificationBell :notification="!allNotificationsRead" />
 			</button>
@@ -40,6 +63,23 @@ header {
 			top: 50%;
 			transform: translate(0, -50%);
 			right: 1.5rem;
+		}
+	}
+
+	.logout-popup {
+		top: 4rem;
+		right: 0;
+		border: 1.5px solid #e2e2e8;
+		border-radius: 1.4rem;
+		padding: 0.7rem 1.5rem;
+		box-shadow: #959da533 0px 8px 24px;
+		transition: all 0.3s ease-in-out;
+
+		button {
+			@include font(1.4rem, 100%);
+			color: #454447;
+			padding: 0.5rem 0;
+			width: 100%;
 		}
 	}
 }

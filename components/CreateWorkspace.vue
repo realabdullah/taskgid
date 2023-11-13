@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useForm } from "vee-validate";
-import * as yup from "yup";
+import { useVuelidate } from "@vuelidate/core";
+import { required, minLength, helpers } from "@vuelidate/validators";
 
 const { usage, data, slug } = defineProps<{
 	usage: string;
@@ -16,28 +16,28 @@ const emit = defineEmits<{
 const push = usePush();
 const { createWorkspace, selectedWorkspaceSlug } = useWorkspace();
 
-const schema = yup.object({
-	title: yup.string().trim().required(),
-	description: yup.string().trim().required(),
-	slug: yup.string().trim().required().min(4),
-});
-
-const { errors, defineInputBinds } = useForm({
-	validationSchema: schema,
-});
+const rules = {
+	title: { required: helpers.withMessage("Title is required.", required) },
+	description: { required: helpers.withMessage("Description is required.", required) },
+	slug: { required: helpers.withMessage("Slug is required.", required), minLength: helpers.withMessage("Slug must be at least 3 characters.", minLength(3)) },
+};
 
 const form = reactive({
-	title: defineInputBinds("title", { validateOnInput: true }),
-	description: defineInputBinds("description", { validateOnInput: true }),
-	slug: defineInputBinds("slug", { validateOnInput: true }),
+	title: "",
+	description: "",
+	slug: "",
 });
+
+const v$ = useVuelidate(rules, form, { $autoDirty: true, $lazy: true });
+
 const submitting = ref(false);
 
 if (usage === "update") Object.assign(form, data);
 
 const submitForm = async () => {
 	try {
-		if (errors.value) return push.error("Please fill all the required fields.");
+		await v$.value.$validate();
+		if (v$.value.$error) return push.error("Please fill all the required fields.");
 		submitting.value = true;
 		if (usage === "create") await createWorkspace(form);
 		else if (usage === "update") {
@@ -57,9 +57,9 @@ const submitForm = async () => {
 
 <template>
 	<form class="modal w-100 flex flex-column content-center items-center" @submit.prevent="submitForm">
-		<BaseInput id="title" v-model="form.title" type="text" label="Title" :error="errors.title" />
-		<BaseInput id="description" v-model="form.description" type="text" label="Description" :error="errors.description" />
-		<BaseInput id="slug" v-model="form.slug" type="text" label="Slug" :error="errors.slug" />
+		<BaseInput id="title" v-model="form.title" type="text" label="Title" :errors="v$.title.$errors" />
+		<BaseInput id="description" v-model="form.description" type="text" label="Description" :errors="v$.description.$errors" />
+		<BaseInput id="slug" v-model="form.slug" type="text" label="Slug" :errors="v$.slug.$errors" />
 		<BaseButton :value="submitting ? 'loading' : 'Save'" />
 	</form>
 </template>

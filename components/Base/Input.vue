@@ -10,10 +10,10 @@ const {
 	type: string;
 	required?: boolean;
 	disabled?: boolean;
-	error?: string;
+	errors?: any[];
 }>();
 
-const modelValue = defineModel<Object>();
+const modelValue = defineModel<String | Number>();
 
 const togglePassword = () => {
 	const input = document.getElementById(id) as HTMLInputElement;
@@ -26,10 +26,20 @@ const togglePassword = () => {
 	<label :for="id" class="w-100 flex flex-column items-start content-center">
 		<span v-if="!!label" class="w-100 form-label col-grey weight-medium flex items-center content-between">
 			{{ label }}
-			<span v-if="!!error" class="error weight-regular text-capitalize">{{ error }}</span>
+			<template v-if="errors && errors.length > 0">
+				<span v-for="error in errors" :key="error.$uid" class="error weight-regular">{{ error.$message }}</span>
+			</template>
 		</span>
 		<div class="position-relative w-100">
-			<input :id="id" v-bind="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular" :class="{ error: !!error }" :disabled="disabled" />
+			<input
+				:id="id"
+				v-model="modelValue"
+				:type="type"
+				:name="id"
+				:required="required"
+				class="w-100 bg-transparent weight-regular"
+				:class="{ error: errors && errors.length > 0 }"
+				:disabled="disabled" />
 
 			<span v-if="type === 'password'" class="eye position-absolute cursor-pointer" @click="togglePassword">
 				<IconsEye />

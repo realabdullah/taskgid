@@ -1,14 +1,25 @@
 <script lang="ts" setup>
+import { useVuelidate } from "@vuelidate/core";
+import { required, email, minLength, helpers } from "@vuelidate/validators";
+
 definePageMeta({
 	title: "Login",
 	name: "login",
 	middleware: ["guest"],
 });
 
+const rules = {
+	email: { required: helpers.withMessage("Email is required.", required), email: helpers.withMessage("Email must be valid.", email) },
+	password: { required: helpers.withMessage("Password is required.", required), minLength: helpers.withMessage("Password must be at least 8 characters.", minLength(8)) },
+};
+
 const form = reactive({
 	email: "",
 	password: "",
 });
+
+const v$ = useVuelidate(rules, form, { $autoDirty: true, $lazy: true });
+
 const submitting = ref(false);
 const {
 	public: { apiUrl },
@@ -19,7 +30,8 @@ const push = usePush();
 
 const submitForm = async () => {
 	try {
-		if (form.email === "" || form.password === "") return;
+		await v$.value.$validate();
+		if (v$.value.$error) return push.error("Please fill all the required fields.");
 		submitting.value = true;
 		const response = await $fetch<UserAPiResponse>(`${apiUrl}/users/login`, {
 			method: "POST",
@@ -47,8 +59,8 @@ const submitForm = async () => {
 			<h5 class="login__form-header weight-bold col-black">Welcome Back.</h5>
 
 			<form class="flex flex-column content-center items-center w-100" @submit.prevent="submitForm">
-				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" :required="true" />
-				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :required="true" />
+				<BaseInput id="email" v-model="form.email" type="email" label="Email Address" :errors="v$.email.$errors" />
+				<BaseInput id="password" v-model="form.password" type="password" label="Enter Your Password" :errors="v$.password.$errors" />
 				<div class="flex items-center content-between w-100">
 					<label for="remember-me" class="flex items-center cursor-pointer" style="gap: 0.5rem">
 						<input id="remember-me" v-model="rememberMe" type="checkbox" class="mr-1" />

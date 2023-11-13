@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useVuelidate } from "@vuelidate/core";
+import { required, minLength, helpers } from "@vuelidate/validators";
+
 definePageMeta({
 	title: "Settings - Dashboard",
 	name: "Settings",
@@ -8,30 +11,64 @@ definePageMeta({
 const { $axios } = useNuxtApp();
 const route = useRoute();
 const { user, teams } = storeToRefs(useStore());
-const { logout } = useToken();
 const push = usePush();
 
-const name = ref(user.value.firstName + " " + user.value.lastName);
-const email = user.value.email;
-const password = ref("");
+const form = reactive({
+	name: user.value.firstName + " " + user.value.lastName,
+	email: user.value.email,
+	password: "",
+});
+
+const rules = {
+	name: { required: helpers.withMessage("Name is required.", required) },
+	password: { minLength: helpers.withMessage("Password must be at least 8 characters.", minLength(8)) },
+};
+const inviteRules = {
+	email: { required: helpers.withMessage("Email is required.", required) },
+};
+
 const showModal = ref(false);
 const modalState = ref("edit-profile");
-const inviteeEmail = ref("");
+const email = ref("");
 const loading = ref(false);
+
+const v$ = useVuelidate(rules, form, { $autoDirty: true, $lazy: true });
+const inviteV$ = useVuelidate(inviteRules, { email }, { $autoDirty: true, $lazy: true });
 
 const openOrCloseModal = (status: boolean, state: string) => {
 	modalState.value = state;
 	showModal.value = status;
 };
 
+const editUser = async () => {
+	try {
+		await v$.value.$validate();
+		if (v$.value.$error) return;
+		loading.value = true;
+		const { name, password } = form;
+		const response = await $axios.put("/users/", { name, password });
+		user.value = { ...user.value, ...response.data };
+		loading.value = false;
+		push.success("Profile updated successfully!");
+	} catch (error) {
+		setTimeout(() => {
+			loading.value = false;
+			openOrCloseModal(false, "");
+			push.error("Something went wrong, please try again");
+		}, 2000);
+	}
+};
+
 const handleEditProfile = () => {
 	openOrCloseModal(false, "");
 };
 
-const sendInvite = () => {
+const sendInvite = async () => {
 	try {
+		await inviteV$.value.$validate();
+		if (inviteV$.value.$error) return;
 		loading.value = true;
-		$axios.post("/invite/", { email: inviteeEmail.value, slug: route.params.workspace });
+		$axios.post("/invite/", { email: email.value, slug: route.params.workspace });
 		loading.value = false;
 		push.success("Invite sent successfully!");
 	} catch (error) {
@@ -42,144 +79,144 @@ const sendInvite = () => {
 		}, 2000);
 	}
 };
-
-const modalHeader = computed(() => {
-	if (modalState.value === "edit-profile") return "Edit Profile";
-	if (modalState.value === "logout") return "You are about to log out";
-	return "Invite Member";
-});
 </script>
 
 <template>
 	<NuxtLayout name="dashboard">
 		<div class="settings-page">
-			<h3 class="weight-semiBold col-darkBlue">Settings</h3>
-			<div class="log-out flex content-end" style="width: 10%; margin-left: auto">
-				<BaseButton value="Log Out" usage="button" type="danger" @click="openOrCloseModal(true, 'logout')" />
+			<h3 class="header weight-regular col-darkBlue">Account Settings</h3>
+			<form class="account__settings flex flex-column" @submit.prevent="editUser">
+				<BaseInput id="name" v-model="form.name" label="Name" type="text" :errors="v$.name.$errors" />
+				<BaseInput id="email" v-model="form.email" label="Email address" type="email" :disabled="true" />
+				<BaseInput id="password" v-model="form.password" label="Password" type="password" :errors="v$.password.$errors" />
+				<button class="bg-transparent weight-regular cursor-pointer" @click="handleEditProfile">Save</button>
+			</form>
+
+			<h3 class="header weight-regular flex items-center content-between">
+				Workspace Members
+				<button class="invite border-none bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
+			</h3>
+			<div class="members__table w-100">
+				<table class="w-100" aria-label="Workspace Members">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Username</th>
+							<th>Email</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="member in teams" :key="member.username">
+							<td>{{ member.name }}</td>
+							<td>{{ member.username }}</td>
+							<td>{{ member.email }}</td>
+							<td>
+								<button class="bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'edit-member')">Edit</button>
+								<button class="bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'delete-member')">Delete</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 
-			<div class="settings-page__card">
-				<h5 class="weight-regular col-darkBlue">Account Settings</h5>
-				<div class="card-content bg-white flex flex-column items-start">
-					<div class="card-content__box w-100 flex items-center bordered">
-						<IconsUser :active="false" class="icon" />
-						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">Fullname</span>
-							<span class="weight-semiBold col-black">{{ `${user.firstName} ${user.lastName}` }}</span>
-						</div>
-					</div>
-
-					<div class="card-content__box w-100 flex items-center bordered">
-						<IconsEmail class="icon" />
-						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">Email Address</span>
-							<span class="weight-semiBold col-black">{{ user.email }}</span>
-						</div>
-					</div>
-
-					<div class="card-content__box w-100 flex items-center bordered">
-						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">Password</span>
-							<span class="weight-semiBold col-black">**********</span>
-						</div>
-					</div>
-
-					<BaseButton style="align-self: flex-end" value="Edit" @click="openOrCloseModal(true, 'edit-profile')" />
-				</div>
-			</div>
-
-			<div class="settings-page__card">
-				<div class="flex items-center content-between">
-					<h5 class="weight-regular col-darkBlue">Workspace Members</h5>
-					<button class="invite border-none bg-transparent weight-regular col-darkBlue cursor-pointer" @click="openOrCloseModal(true, 'invite')">Invite member</button>
-				</div>
-
-				<div v-for="member in teams" :key="member.username" class="card-content bg-white flex flex-column items-start">
-					<div class="card-content__box w-100 flex items-center bordered">
-						<img :src="member.profile_picture" :alt="member.name" />
-						<div class="details flex flex-column">
-							<span class="weight-regular col-grey-3">{{ member.email }}</span>
-							<span class="weight-semiBold col-black">{{ member.name }}</span>
-						</div>
-					</div>
-				</div>
-			</div>
+			<!-- SEND INVITE MODAL -->
+			<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
+				<form class="invite__form flex flex-column items-center content-center">
+					<h3 class="weight-regular col-darkBlue">Invite member</h3>
+					<p class="weight-regular col-grey-3">Enter the email address of the person you want to invite to this workspace.</p>
+					<BaseInput id="invitee-email" v-model="email" label="Email address" type="email" />
+					<button class="bg-transparent weight-regular col-darkBlue cursor-pointer" @click="sendInvite">
+						<span v-if="loading">Sending...</span>
+						<span v-else>Send Invite</span>
+					</button>
+				</form>
+			</BaseModal>
 		</div>
-
-		<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
-			<template #default>
-				<div class="edit-profile flex flex-column">
-					<h1 class="weight-semiBold col-darkBlue">{{ modalHeader }}</h1>
-					<form v-if="modalState === 'edit-profile'" class="flex flex-column" @submit.prevent="handleEditProfile">
-						<BaseInput id="name" v-model="name" label="Fullname" type="text" />
-						<BaseInput id="email" v-model="email" label="Email Address" type="email" :disabled="true" />
-						<BaseInput id="password" v-model="password" label="Password" type="password" />
-
-						<BaseButton value="Save" />
-					</form>
-					<template v-else-if="modalState === 'logout'">
-						<p class="weight-regular col-grey">You can always log on to your task manager and continue from where you left off..</p>
-						<div class="buttons flex">
-							<BaseButton value="Cancel" usage="button" @click="openOrCloseModal(false, '')" />
-							<BaseButton value="Log Out" usage="button" type="danger" @click="logout" />
-						</div>
-					</template>
-					<template v-else-if="modalState === 'invite'">
-						<form class="flex flex-column" @submit.prevent="sendInvite">
-							<BaseInput id="email" v-model="inviteeEmail" label="Email Address" type="email" />
-							<BaseButton :value="loading ? 'loading' : 'Send Invite'" />
-						</form>
-					</template>
-				</div>
-			</template>
-		</BaseModal>
 	</NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
 .settings-page {
-	h3 {
-		@include font(3.2rem, 3.8rem);
-	}
+	.header {
+		color: #3a393e;
+		border-bottom: 1px solid #e2e2e8;
+		padding-bottom: 3rem;
+		@include font(2rem, 100%);
 
-	&__card {
-		margin-top: 2.4rem;
-
-		h5 {
-			@include font(2rem, 2.4rem);
+		&:not(:first-child) {
+			margin-top: 4rem;
 		}
 
 		.invite {
 			@include font(1.5rem, 1.5rem);
+			border: 1.5px solid #e2e2e8;
+			border-radius: 1.4rem;
+			padding: 0.7rem 1.5rem;
 		}
+	}
 
-		.card-content {
-			margin-top: 2.4rem;
-			border-radius: 1.6rem;
-			padding: 3.2rem 2.4rem;
-			gap: 1.5rem;
+	.account__settings {
+		@include gap(2rem);
+		margin-top: 2rem;
+		border: 1.5px solid #e2e2e8;
+		border-radius: 1.4rem;
+		padding: 2rem;
+		box-shadow: #959da533 0px 8px 24px;
 
-			&__box {
-				padding: 2rem;
-				@include gap(2.5rem);
-				border-radius: 1.6rem;
+		button {
+			width: 10rem;
+			border: 1.5px solid #e2e2e8;
+			border-radius: 1.4rem;
+			padding: 1rem;
+			box-shadow: #959da533 0px 8px 24px;
+		}
+	}
 
-				img {
-					width: 6rem;
-					height: 6rem;
-					border-radius: 50%;
+	.members__table {
+		margin-top: 4rem;
+		@include gap(2rem);
+		overflow-x: auto;
+		border: 1.5px solid #e2e2e8;
+		border-radius: 1.4rem;
+		padding: 2rem;
+		padding-bottom: 0;
+		box-shadow: #959da533 0px 8px 24px;
+		min-width: 80rem;
+
+		table {
+			border-collapse: collapse;
+
+			thead {
+				tr {
+					th {
+						@include font(1.5rem, 100%);
+						color: #3a393e;
+						text-align: left;
+						padding-bottom: 1rem;
+					}
 				}
+			}
 
-				.details {
-					@include gap(0.5rem);
+			tbody {
+				tr {
+					&:not(:last-child) {
+						border-bottom: 1px solid #e2e2e8;
+					}
 
-					span {
-						&:first-child {
-							@include font(1.6rem, 1.9rem);
-						}
+					td {
+						@include font(1.5rem, 100%);
+						color: #3a393e;
+						padding: 2rem 0;
+					}
 
-						&:last-child {
-							@include font(2rem, 2.4rem);
+					button {
+						border: 1.5px solid #e2e2e8;
+						border-radius: 1.4rem;
+						padding: 0.7rem 1.5rem;
+
+						&:not(:first-child) {
+							margin-left: 1rem;
 						}
 					}
 				}
@@ -188,24 +225,18 @@ const modalHeader = computed(() => {
 	}
 }
 
-.edit-profile {
-	padding: 4rem;
-	@include gap(2.4rem);
+.invite__form {
+	@include gap(2rem);
+	width: 40rem;
 
-	h1 {
-		@include font(2.8rem, 3.4rem);
-	}
-
-	form {
-		@include gap(2.4rem);
+	h3 {
+		@include font(2rem, 100%);
+		color: #3a393e;
 	}
 
 	p {
-		@include font(1.8rem, 2.4rem);
-	}
-
-	.buttons {
-		@include gap(2rem);
+		@include font(1.5rem, 100%);
+		color: #3a393e;
 	}
 }
 </style>
