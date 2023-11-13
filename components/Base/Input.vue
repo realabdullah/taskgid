@@ -3,16 +3,17 @@ const {
 	id,
 	label,
 	type,
-	required = true,
+	required = false,
 } = defineProps<{
 	id: string;
 	label?: string;
 	type: string;
 	required?: boolean;
 	disabled?: boolean;
+	error?: string;
 }>();
 
-const modelValue = defineModel<string | number>();
+const modelValue = defineModel<Object>();
 
 const togglePassword = () => {
 	const input = document.getElementById(id) as HTMLInputElement;
@@ -23,9 +24,12 @@ const togglePassword = () => {
 
 <template>
 	<label :for="id" class="w-100 flex flex-column items-start content-center">
-		<span v-if="!!label" class="form-label col-grey weight-regular">{{ label }}</span>
+		<span v-if="!!label" class="w-100 form-label col-grey weight-medium flex items-center content-between">
+			{{ label }}
+			<span v-if="!!error" class="error weight-regular text-capitalize">{{ error }}</span>
+		</span>
 		<div class="position-relative w-100">
-			<input :id="id" v-model="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular col-grey-2 bordered" :disabled="disabled" />
+			<input :id="id" v-bind="modelValue" :type="type" :name="id" :required="required" class="w-100 bg-transparent weight-regular" :class="{ error: !!error }" :disabled="disabled" />
 
 			<span v-if="type === 'password'" class="eye position-absolute cursor-pointer" @click="togglePassword">
 				<IconsEye />
@@ -43,19 +47,34 @@ label {
 	}
 
 	.form-label {
-		@include font(1.6rem, 1.9rem);
-		margin-bottom: 1.4rem;
+		@include font(1.4rem, 140%);
+		margin-bottom: 0.6rem;
 	}
 
 	input {
-		border-radius: 1.2rem;
-		padding: 1.5rem;
-		@include font(1.6rem, 1.9rem);
+		color: #667085;
+		border-radius: 0.8rem;
+		border: 1.5px solid #e2e2e8;
+		padding: 0.8rem 1.2rem;
+		@include font(1.6rem, 150%);
+
+		&.error {
+			border-color: #d92d20;
+		}
+
+		&:focus {
+			outline: none;
+		}
 
 		&:disabled {
 			cursor: not-allowed;
 			background-color: #f5f5f5;
 		}
+	}
+
+	.error {
+		color: #d92d20;
+		@include font(1.4rem, 140%);
 	}
 }
 

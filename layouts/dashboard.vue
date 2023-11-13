@@ -104,7 +104,6 @@ await getWorkspaces();
 			</div>
 		</aside>
 		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">
-			<NuxtLoadingIndicator color="#3754DB" />
 			<BaseHeader />
 			<div class="main overflow-y-auto h-100" style="padding-bottom: 15rem">
 				<slot />

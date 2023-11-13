@@ -19,6 +19,15 @@ const openModal = (task: any, mode: string) => {
 	isModalOpen.value = true;
 };
 
+const shortenTextToSummary = (text: string) => {
+	if (text.length <= 200) {
+		return text;
+	} else {
+		const truncatedText = text.substring(0, 200 - 3).trim() + "...";
+		return truncatedText;
+	}
+};
+
 await fetchTeams();
 await fetchTasks();
 </script>
@@ -41,7 +50,7 @@ await fetchTasks();
 									<IconsMore />
 								</button>
 							</div>
-							<p class="task__description">{{ task.description }}</p>
+							<p class="task__description">{{ shortenTextToSummary(task.description) }}</p>
 						</div>
 
 						<div class="task__meta flex items-center content-between">

@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useForm } from "vee-validate";
+import * as yup from "yup";
+
 const { usage, data, slug } = defineProps<{
 	usage: string;
 	data: any;
@@ -13,10 +16,20 @@ const emit = defineEmits<{
 const push = usePush();
 const { createWorkspace, selectedWorkspaceSlug } = useWorkspace();
 
+const schema = yup.object({
+	title: yup.string().trim().required(),
+	description: yup.string().trim().required(),
+	slug: yup.string().trim().required().min(4),
+});
+
+const { errors, defineInputBinds } = useForm({
+	validationSchema: schema,
+});
+
 const form = reactive({
-	title: "",
-	description: "",
-	slug: "",
+	title: defineInputBinds("title", { validateOnInput: true }),
+	description: defineInputBinds("description", { validateOnInput: true }),
+	slug: defineInputBinds("slug", { validateOnInput: true }),
 });
 const submitting = ref(false);
 
@@ -24,6 +37,7 @@ if (usage === "update") Object.assign(form, data);
 
 const submitForm = async () => {
 	try {
+		if (errors.value) return push.error("Please fill all the required fields.");
 		submitting.value = true;
 		if (usage === "create") await createWorkspace(form);
 		else if (usage === "update") {
@@ -43,9 +57,9 @@ const submitForm = async () => {
 
 <template>
 	<form class="modal w-100 flex flex-column content-center items-center" @submit.prevent="submitForm">
-		<BaseInput id="title" v-model="form.title" type="text" label="Title" :required="true" />
-		<BaseInput id="description" v-model="form.description" type="text" label="Description" :required="true" />
-		<BaseInput id="slug" v-model="form.slug" type="text" label="Slug" :required="true" />
+		<BaseInput id="title" v-model="form.title" type="text" label="Title" :error="errors.title" />
+		<BaseInput id="description" v-model="form.description" type="text" label="Description" :error="errors.description" />
+		<BaseInput id="slug" v-model="form.slug" type="text" label="Slug" :error="errors.slug" />
 		<BaseButton :value="submitting ? 'loading' : 'Save'" />
 	</form>
 </template>

@@ -73,16 +73,5 @@ export const useTask = () => {
 		if (index > -1) tasks.value.splice(index, 1, data.task);
 	};
 
-	const getTaskStatus = (status: string) => {
-		switch (status) {
-			case "Pending":
-				return "pending";
-			case "In Progress":
-				return "in-progress";
-			default:
-				return "completed";
-		}
-	};
-
-	return { task, fetchTask, deleteTask, createNewTask, updateTask, getTaskStatus, fetchTasks };
+	return { task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks };
 };
