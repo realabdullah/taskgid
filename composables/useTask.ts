@@ -1,23 +1,23 @@
 export const useTask = () => {
 	const { $axios } = useNuxtApp();
-	const { tasks } = storeToRefs(useStore());
+	const { tasks, user } = storeToRefs(useStore());
 	const push = usePush();
 
 	const route = useRoute();
 	const task = reactive<Task>({
 		_id: "",
-		title: "",
-		description: "",
-		priority: "",
-		dueDate: "",
+		title: "Enter task title",
+		description: "Enter a description for the task",
+		priority: "low",
+		dueDate: new Date().toISOString(),
 		status: "not started",
-		workspace: "",
+		workspace: route.params.workspace as string,
 		user: {
-			username: "",
-			name: "",
+			username: user.value.username,
+			name: user.value.firstName + " " + user.value.lastName,
 		},
 		assignees: [],
-		createdAt: "",
+		createdAt: new Date().toISOString(),
 	});
 
 	const fetchTask = async () => {
@@ -60,7 +60,7 @@ export const useTask = () => {
 		const { _id, createdAt, workspace, user, ...payload } = task;
 		const { data } = await $axios.post<TaskAPIResponse>(`/tasks/${route.params.workspace}/create`, payload);
 		if (!data.success) throw new Error("Something went wrong");
-		return data.task;
+		tasks.value = [...tasks.value, data.task];
 	};
 
 	const updateTask = async (task: Task) => {
@@ -68,7 +68,9 @@ export const useTask = () => {
 		const { _id, createdAt, workspace, user, ...payload } = task;
 		const { data } = await $axios.put<TaskAPIResponse>(`/tasks/${route.params.workspace}/${task._id}`, payload);
 		if (!data.success) throw new Error("Something went wrong");
-		return data.task;
+
+		const index = tasks.value.findIndex((t) => t._id === task._id);
+		if (index > -1) tasks.value.splice(index, 1, data.task);
 	};
 
 	const getTaskStatus = (status: string) => {

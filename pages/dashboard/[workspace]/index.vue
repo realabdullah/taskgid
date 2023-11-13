@@ -5,49 +5,22 @@ definePageMeta({
 	middleware: ["auth"],
 });
 
-// const { tasks } = storeToRefs(useStore());
+const { tasks } = storeToRefs(useStore());
 const { fetchTeams } = useTeam();
-const taskTitles = [
-	"Implement user authentication",
-	"Create task creation form",
-	"Add drag and drop functionality",
-	"Implement task filtering",
-	"Add task assignment feature",
-	"Create task detail view",
-	"Add task priority feature",
-	"Implement task search functionality",
-	"Create team management page",
-	"Add task deadline feature",
-];
+const { task: newTask, fetchTasks } = useTask();
 
-const taskDescriptions = [
-	"Create a login system that allows users to authenticate themselves.",
-	"Create a form that allows users to create new tasks.",
-	"Add the ability to drag and drop tasks to different categories.",
-	"Implement a feature that allows users to filter tasks by category.",
-	"Add the ability to assign tasks to team members.",
-	"Create a page that displays detailed information about a task.",
-	"Implement a feature that allows users to prioritize tasks.",
-	"Implement a search bar that allows users to search for tasks.",
-	"Create a page that allows users to manage their teams.",
-	"Add the ability to set deadlines for tasks.",
-];
-
-const taskPriorities = ["High", "Medium", "Low"];
-
-const taskAssignees = ["John Doe", "Jane Doe", "Bob Smith", "Alice Johnson", "David Lee", "Emily Chen"];
-
-const tasks = Array.from({ length: 10 }, (_, index) => ({
-	id: Math.floor(Math.random() * 100000),
-	title: taskTitles[index],
-	description: taskDescriptions[index],
-	dueDate: "2021-10-31",
-	assignees: [taskAssignees[Math.floor(Math.random() * taskAssignees.length)], taskAssignees[Math.floor(Math.random() * taskAssignees.length)]],
-	priority: taskPriorities[Math.floor(Math.random() * taskPriorities.length)],
-}));
 const isModalOpen = ref(false);
+const selectedTask = ref({ ...newTask });
+const taskModalMode = ref("view");
+
+const openModal = (task: any, mode: string) => {
+	selectedTask.value = task;
+	taskModalMode.value = mode;
+	isModalOpen.value = true;
+};
 
 await fetchTeams();
+await fetchTasks();
 </script>
 
 <template>
@@ -55,12 +28,12 @@ await fetchTeams();
 		<div class="dashboard">
 			<div class="dashboard__header flex items-center content-between">
 				<h1 class="dashboard__header-title">Tasks ({{ tasks.length }})</h1>
-				<button class="dashboard__header-button bg-transparent cursor-pointer">Create Task</button>
+				<button class="dashboard__header-button bg-transparent cursor-pointer" @click="openModal(newTask, 'create')">Create Task</button>
 			</div>
 
 			<div class="dashboard__content">
-				<ul class="dashboard__content-tasks grid">
-					<li v-for="task in tasks" :key="task.id" class="task bg-white cursor-pointer flex flex-column content-between" @click="isModalOpen = !isModalOpen">
+				<ul v-if="tasks && tasks.length > 0" class="dashboard__content-tasks grid">
+					<li v-for="task in tasks" :key="task._id" class="task bg-white cursor-pointer flex flex-column content-between" @click="openModal(task, 'view')">
 						<div class="flex flex-column">
 							<div class="flex items-center content-between">
 								<h3 class="task__title">{{ task.title }}</h3>
@@ -80,15 +53,23 @@ await fetchTeams();
 								</svg>
 								{{ task.dueDate }}
 							</span>
+							<div class="status task__meta-item text-capitalize">{{ task.status }}</div>
 							<span class="task__meta-priority" :class="task.priority.toLowerCase()">{{ task.priority }}</span>
 						</div>
 					</li>
 				</ul>
+
+				<!-- EMPTY STATE -->
+				<div v-else class="dashboard__content-empty position-relative">
+					<p class="dashboard__content-empty-text position-absolute text-center">
+						You have no task created in your workspace yet.
+						<br />
+						Get productive, create a task now.
+					</p>
+				</div>
 			</div>
 
-			<BaseModal width="50rem" @close-modal="isModalOpen = false">
-				<TaskDetails />
-			</BaseModal>
+			<TaskDetails v-if="isModalOpen" :data="selectedTask" :mode="taskModalMode" @close="isModalOpen = false" />
 		</div>
 	</NuxtLayout>
 </template>
@@ -139,6 +120,7 @@ await fetchTeams();
 				}
 
 				&__description {
+					max-width: 60rem;
 					margin-top: 1.5rem;
 					color: #66656f;
 					@include font(1.4rem, 100%);
@@ -172,6 +154,24 @@ await fetchTeams();
 						}
 					}
 				}
+			}
+		}
+
+		&-empty {
+			margin-top: 2rem;
+			@include gap(1rem);
+			width: 100%;
+			height: calc(100dvh - 25rem);
+			border-radius: 1.4rem;
+			border: 1.5px solid #e2e2e8;
+			box-shadow: #959da533 0px 8px 24px;
+
+			&-text {
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				@include font(1.8rem, 130%);
+				color: #66656f;
 			}
 		}
 	}
