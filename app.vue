@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { lightTheme, type NotivueTheme } from "notivue";
+import { lightTheme, type NotivueTheme, type NotivueItem } from "notivue";
+import AcceptInviteNotification, { type AcceptInviteNotificationProps } from "@/components/AcceptInviteNotification.vue";
 
 const theme: NotivueTheme = {
 	...lightTheme,
@@ -11,7 +12,8 @@ const theme: NotivueTheme = {
 
 <template>
 	<Notivue v-slot="item">
-		<Notifications :item="item" :theme="theme" />
+		<AcceptInviteNotification v-if="item.props.type === 'accept'" :item="item as NotivueItem<AcceptInviteNotificationProps>" :theme="theme" />
+		<Notifications v-else :item="item" :theme="theme" />
 	</Notivue>
 	<NuxtLoadingIndicator :height="2" color="#3754db" />
 	<NuxtLayout>

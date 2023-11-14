@@ -40,7 +40,7 @@ onUnmounted(() => {
 				<IconsNotificationBell :notification="!allNotificationsRead" />
 			</button>
 
-			<Notifications />
+			<NotificationBoard />
 		</div>
 	</header>
 </template>

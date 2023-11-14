@@ -17,6 +17,7 @@ export const useStore = defineStore(
 		];
 
 		const user = ref({} as User);
+		const userId = computed(() => user.value._id);
 		const profilePhoto = ref("");
 		const tasks = ref([] as Task[]);
 		const workspaces = ref([] as Workspace[]);
@@ -37,6 +38,7 @@ export const useStore = defineStore(
 
 		return {
 			user,
+			userId,
 			profilePhoto,
 			tasks,
 			workspaces,

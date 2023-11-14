@@ -36,6 +36,8 @@ export default defineNuxtConfig({
 		public: {
 			baseUrl: process.env.BASE_URL,
 			apiUrl: process.env.API_URL,
+			pusherKey: process.env.PUSHER_KEY,
+			pusherCluster: process.env.PUSHER_CLUSTER,
 		},
 	},
 

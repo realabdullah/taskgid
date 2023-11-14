@@ -122,13 +122,12 @@ const sendInvite = async () => {
 
 			<!-- SEND INVITE MODAL -->
 			<BaseModal v-if="showModal" width="50rem" @close-modal="openOrCloseModal(false, '')">
-				<form class="invite__form flex flex-column items-center content-center">
-					<h3 class="weight-regular col-darkBlue">Invite member</h3>
+				<form class="invite__form w-100 flex flex-column items-start content-center" @submit.prevent="sendInvite">
+					<h3 class="weight-regular">Invite member</h3>
 					<p class="weight-regular col-grey-3">Enter the email address of the person you want to invite to this workspace.</p>
 					<BaseInput id="invitee-email" v-model="email" label="Email address" type="email" />
-					<button class="bg-transparent weight-regular col-darkBlue cursor-pointer" @click="sendInvite">
-						<span v-if="loading">Sending...</span>
-						<span v-else>Send Invite</span>
+					<button class="bg-transparent weight-regular col-darkBlue cursor-pointer" type="submit">
+						{{ loading ? "Sending" : "Send Invite" }}
 					</button>
 				</form>
 			</BaseModal>
@@ -227,7 +226,7 @@ const sendInvite = async () => {
 
 .invite__form {
 	@include gap(2rem);
-	width: 40rem;
+	padding: 2rem;
 
 	h3 {
 		@include font(2rem, 100%);
@@ -237,6 +236,14 @@ const sendInvite = async () => {
 	p {
 		@include font(1.5rem, 100%);
 		color: #3a393e;
+	}
+
+	button {
+		width: 10rem;
+		border: 1.5px solid #e2e2e8;
+		border-radius: 1.4rem;
+		padding: 1rem;
+		box-shadow: #959da533 0px 8px 24px;
 	}
 }
 </style>
