@@ -50,6 +50,13 @@ declare global {
 		description: string;
 	}
 
+	interface Notification {
+		id: string;
+		message: string;
+		date: string;
+		read: boolean;
+	}
+
 	interface Token {
 		token: string;
 		expires: string;

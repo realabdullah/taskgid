@@ -72,7 +72,7 @@ await getWorkspaces();
 <template>
 	<div class="container w-100 h-full">
 		<header class="flex items-center content-between">
-			<h1>ErgoSphere</h1>
+			<h1>Taskgid</h1>
 			<button class="flex items-center bg-transparent cursor-pointer col-danger" style="gap: 0.5rem" @click="logout">
 				<IconsLogout />
 				Logout

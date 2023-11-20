@@ -28,6 +28,7 @@
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
+		"@knocklabs/client": "^0.8.14",
 		"@pinia/nuxt": "^0.4.7",
 		"@popperjs/core": "^2.11.8",
 		"@vuelidate/core": "^2.0.3",

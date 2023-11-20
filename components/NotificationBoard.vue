@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { notifications, showNotifications } = storeToRefs(useStore());
 
-const markAsRead = (index: number) => (notifications.value[index].read = true);
+// const markAsRead = (index: number) => (notifications.value[index].read = true);
 const markAllAsRead = () => notifications.value.forEach((notification) => (notification.read = true));
 </script>
 
@@ -16,21 +16,22 @@ const markAllAsRead = () => notifications.value.forEach((notification) => (notif
 				</svg>
 			</button>
 		</div>
-		<ul v-if="notifications && notifications.length > 0" class="notifications__list overflow-y-auto">
-			<li
-				v-for="(notificatn, index) in notifications"
-				:key="index"
-				class="notification flex flex-column items-start content-between w-100 cursor-pointer"
-				:class="{ 'notification--read': notificatn.read }"
-				@click="markAsRead(index)">
-				<p class="notification__message">{{ notificatn.message }}</p>
-				<p class="notification__date">{{ notificatn.date }}</p>
-			</li>
-		</ul>
+		<ClientOnly>
+			<ul v-if="notifications && notifications.length > 0" class="notifications__list overflow-y-auto">
+				<li
+					v-for="notification in notifications"
+					:key="notification.id"
+					class="notification flex flex-column items-start content-between w-100 cursor-pointer"
+					:class="{ 'notification--read': notification.read }">
+					<p class="notification__message" v-html="notification.message"></p>
+					<p class="notification__date">{{ formatDate(notification.date) }}</p>
+				</li>
+			</ul>
 
-		<div v-else class="notifications__empty position-relative">
-			<p class="notifications__empty-text position-absolute text-center">You have no notifications.</p>
-		</div>
+			<div v-else class="notifications__empty position-relative">
+				<p class="notifications__empty-text position-absolute text-center">You have no notifications.</p>
+			</div>
+		</ClientOnly>
 	</div>
 </template>
 

@@ -48,7 +48,7 @@ await getWorkspaces();
 	<div class="dashboard w-100 flex position-fixed overflow-y-auto">
 		<aside class="dashboard__left position-relative w-100" aria-label="Dashboard Navigation">
 			<div class="workspace w-100 position-fixed overflow-y-auto overflow-x-hidden flex flex-column items-start">
-				<NuxtLink to="/dashboard" class="logo text-unset weight-bold text-capitalize">Ergosphere</NuxtLink>
+				<NuxtLink to="/dashboard" class="logo text-unset weight-bold text-capitalize">Taskgid</NuxtLink>
 				<div class="workspace__dropdown w-100" :class="{ active: showWorkspaceDropdown }">
 					<button class="current bg-transparent w-100 flex items-center content-between cursor-pointer" @click="showWorkspaceDropdown = !showWorkspaceDropdown">
 						<div class="flex items-center" style="gap: 1.2rem">
@@ -100,7 +100,7 @@ await getWorkspaces();
 					</div>
 				</div>
 
-				<p class="copyright">© {{ currentYear }} Ergosphere Inc.</p>
+				<p class="copyright">© {{ currentYear }} Taskgid Inc.</p>
 			</div>
 		</aside>
 		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">

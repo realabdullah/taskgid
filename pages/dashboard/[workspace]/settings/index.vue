@@ -70,6 +70,7 @@ const sendInvite = async () => {
 		loading.value = true;
 		$axios.post("/invite/", { email: email.value, slug: route.params.workspace });
 		loading.value = false;
+		openOrCloseModal(false, "");
 		push.success("Invite sent successfully!");
 	} catch (error) {
 		setTimeout(() => {
