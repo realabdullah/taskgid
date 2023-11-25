@@ -107,7 +107,7 @@ await fetchTasks();
 
 	&__content {
 		&-tasks {
-			grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(40rem, 1fr));
 			@include gap(2rem);
 
 			.task {
