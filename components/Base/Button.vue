@@ -8,16 +8,10 @@ const {
 	usage?: "button" | "submit";
 	type?: string;
 }>();
-
-const background = computed(() => {
-	if (type === "danger") return "bg-danger";
-	else if (type === "outline") return "bg-transparent outline";
-	else return "bg-blue";
-});
 </script>
 
 <template>
-	<button class="__btn w-100 weight-medium col-white self-start" :class="background" :type="usage" :disabled="value === 'loading'">
+	<button class="__btn w-100 bg-transparent weight-medium col-white self-start" :class="type" :type="usage" :disabled="value === 'loading'">
 		<Loader v-if="value === 'loading'" />
 		<span v-else>{{ value }}</span>
 	</button>
@@ -25,10 +19,13 @@ const background = computed(() => {
 
 <style lang="scss" scoped>
 .__btn {
-	padding: 1.5rem;
+	padding: 1.3rem;
 	border-radius: 1.2rem;
 	@include font(1.6rem, 1.9rem);
 	transition: all 0.2s ease-in-out;
+	border: 1px solid #d5d1d1c8;
+	color: #66656f;
+	box-shadow: #959da533 0px 8px 24px;
 
 	&:hover {
 		cursor: pointer;
@@ -40,9 +37,8 @@ const background = computed(() => {
 		cursor: not-allowed;
 	}
 
-	&.outline {
-		border: 1px solid $col-blue;
-		color: $col-blue;
+	&.danger {
+		color: #ff0000;
 	}
 }
 </style>

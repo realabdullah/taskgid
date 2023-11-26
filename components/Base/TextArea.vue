@@ -31,7 +31,7 @@ label {
 		height: 12rem;
 		border-radius: 1.2rem;
 		padding: 1.6rem;
-		font-family: "Gelion", sans-serif;
+		font-family: "Amulya", sans-serif;
 		@include font(1.6rem, 1.9rem);
 		resize: none;
 	}

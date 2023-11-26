@@ -135,7 +135,7 @@ const updateExistingTask = async () => {
 					<span class="task__meta-value">{{ formatDate(task.createdAt) }}</span>
 				</li>
 				<li class="task__meta flex items-center w-100">
-					<span class="task__meta-title">Due Date</span>
+					<span class="task__meta-title text-nowrap">Due Date</span>
 					<span class="task__meta-value date position-relative" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('date')">
 						{{ formatDate(task.dueDate) }}
 						<div v-show="currentPopup === 'date'" class="date popup bg-white position-absolute">
@@ -144,7 +144,7 @@ const updateExistingTask = async () => {
 					</span>
 				</li>
 				<li class="task__meta flex items-center w-100">
-					<span class="task__meta-title">Added by</span>
+					<span class="task__meta-title text-nowrap">Added by</span>
 					<span class="task__meta-value">{{ task.user.name }}</span>
 				</li>
 			</ul>
