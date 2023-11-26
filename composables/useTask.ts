@@ -43,7 +43,7 @@ export const useTask = () => {
 			const { code, message } = formatError(error);
 			throw createError({
 				statusCode: code,
-				statusMessage: message,
+				statusMessage: (error as any)?.response?.data?.error ?? message,
 			});
 		}
 	};

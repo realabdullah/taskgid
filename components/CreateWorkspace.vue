@@ -49,8 +49,7 @@ const submitForm = async () => {
 		emit("close");
 	} catch (error) {
 		submitting.value = false;
-		const { message } = formatError(error);
-		push.error(message);
+		push.error((error as any)?.response?.data?.error ?? "Something went wrong!");
 	}
 };
 </script>
