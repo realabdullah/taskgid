@@ -89,6 +89,20 @@ const filteredTasksByStatus = computed(() => {
 
 await fetchTeams();
 await fetchTasks();
+
+const onOutsideClick = (event: MouseEvent) => {
+	if (!(event.target as HTMLElement).closest(".popup") && !(event.target as HTMLElement).closest(".dashboard__header-button")) {
+		popup.value = "";
+	}
+};
+
+onMounted(() => {
+	window.addEventListener("click", onOutsideClick);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("click", onOutsideClick);
+});
 </script>
 
 <template>

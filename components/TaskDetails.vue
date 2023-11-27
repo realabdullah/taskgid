@@ -136,12 +136,14 @@ const updateExistingTask = async () => {
 				</li>
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title text-nowrap">Due Date</span>
-					<span class="task__meta-value date position-relative" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('date')">
-						{{ formatDate(task.dueDate) }}
+					<div class="position-relative">
+						<span class="task__meta-value date" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('date')">
+							{{ formatDate(task.dueDate) }}
+						</span>
 						<div v-show="currentPopup === 'date'" class="date popup bg-white position-absolute">
 							<DatePicker v-model="task.dueDate" transparent borderless />
 						</div>
-					</span>
+					</div>
 				</li>
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title text-nowrap">Added by</span>
