@@ -45,7 +45,7 @@ const submitForm = async () => {
 			await createWorkspace(form, "update");
 		}
 		submitting.value = false;
-		push.success("Workspace created successfully!");
+		push.success(`Workspace ${usage === "create" ? "created" : "updated"} successfully!`);
 		emit("close");
 	} catch (error) {
 		submitting.value = false;

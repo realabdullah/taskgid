@@ -8,7 +8,7 @@ export const useTask = () => {
 		_id: "",
 		title: "Enter task title",
 		description: "Enter a description for the task",
-		priority: "low",
+		priority: "Low",
 		dueDate: new Date().toISOString(),
 		status: "not started",
 		workspace: route.params.workspace as string,

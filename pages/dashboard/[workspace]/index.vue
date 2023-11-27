@@ -22,15 +22,6 @@ const openModal = (task: any, mode: string) => {
 	isModalOpen.value = true;
 };
 
-const shortenTextToSummary = (text: string) => {
-	if (text.length <= 200) {
-		return text;
-	} else {
-		const truncatedText = text.substring(0, 200 - 3).trim() + "...";
-		return truncatedText;
-	}
-};
-
 const openPopup = (name: string) => {
 	popup.value = popup.value === name ? "" : name;
 };
@@ -46,31 +37,41 @@ const filterOptions = [
 	{ name: "All", value: "all" },
 	{ name: "Not started", value: "not started" },
 	{ name: "In Progress", value: "In Progress" },
-	{ name: "Completed", value: "Completed" },
 	{ name: "Low Priority", value: "Low" },
 	{ name: "Medium Priority", value: "Medium" },
 	{ name: "High Priority", value: "High" },
 ];
+
+const completedTasks = computed(() => {
+	if (!tasks.value || !Array.isArray(tasks.value) || tasks.value.length === 0) {
+		return [];
+	}
+
+	return tasks.value.filter((task) => task.status.toLowerCase() === "completed");
+});
 
 const sortedTasks = computed(() => {
 	if (!tasks.value || !Array.isArray(tasks.value) || tasks.value.length === 0) {
 		return [];
 	}
 
-	return tasks.value.slice().sort((a, b) => {
-		switch (selectedSortOption.value) {
-			case "title":
-				return a.title.localeCompare(b.title);
-			case "dueDate":
-				return new Date(a.dueDate).valueOf() - new Date(b.dueDate).valueOf();
-			case "priority":
-				return a.priority.localeCompare(b.priority);
-			case "status":
-				return a.status.localeCompare(b.status);
-			default:
-				return 0;
-		}
-	});
+	return tasks.value
+		.slice()
+		.sort((a, b) => {
+			switch (selectedSortOption.value) {
+				case "title":
+					return a.title.localeCompare(b.title);
+				case "dueDate":
+					return new Date(a.dueDate).valueOf() - new Date(b.dueDate).valueOf();
+				case "priority":
+					return a.priority.localeCompare(b.priority);
+				case "status":
+					return a.status.localeCompare(b.status);
+				default:
+					return 0;
+			}
+		})
+		.filter((task) => task.status.toLowerCase() !== "completed");
 });
 
 const filteredTasksByStatus = computed(() => {
@@ -151,30 +152,7 @@ onUnmounted(() => {
 
 			<div class="dashboard__content">
 				<ul v-if="filteredTasksByStatus && filteredTasksByStatus.length > 0" class="dashboard__content-tasks grid">
-					<li v-for="task in filteredTasksByStatus" :key="task._id" class="task bg-white cursor-pointer flex flex-column content-between" @click="openModal(task, 'view')">
-						<div class="flex flex-column">
-							<div class="flex items-center content-between">
-								<h3 class="task__title">{{ task.title }}</h3>
-								<button class="task__action bg-transparent cursor-pointer">
-									<IconsMore />
-								</button>
-							</div>
-							<p class="task__description">{{ shortenTextToSummary(task.description) }}</p>
-						</div>
-
-						<div class="task__meta flex items-center content-between">
-							<span class="task__meta-item flex items-center" style="gap: 0.5rem">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
-									<path
-										d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"
-										fill="rgba(102,101,111,1)"></path>
-								</svg>
-								{{ formatDate(task.dueDate) }}
-							</span>
-							<div class="status task__meta-item text-capitalize">{{ task.status }}</div>
-							<span class="task__meta-priority" :class="task.priority.toLowerCase()">{{ task.priority }}</span>
-						</div>
-					</li>
+					<TaskCard v-for="(task, index) in filteredTasksByStatus" :key="task._id" v-model="filteredTasksByStatus[index]" @open-modal="openModal(task, 'view')" />
 				</ul>
 
 				<!-- EMPTY STATE -->
@@ -185,6 +163,15 @@ onUnmounted(() => {
 						Get productive, create a task now.
 					</p>
 				</div>
+
+				<template v-if="completedTasks && completedTasks.length > 0">
+					<div class="dashboard__header flex items-center content-between">
+						<h1 class="dashboard__header-title">Completed Tasks ({{ completedTasks.length }})</h1>
+					</div>
+					<ul class="dashboard__content-tasks grid">
+						<TaskCard v-for="(task, index) in completedTasks" :key="task._id" v-model="completedTasks[index]" @open-modal="openModal(task, 'view')" />
+					</ul>
+				</template>
 			</div>
 
 			<TaskDetails v-if="isModalOpen" :data="selectedTask" :mode="taskModalMode" @close="isModalOpen = false" />
@@ -199,6 +186,10 @@ onUnmounted(() => {
 
 		&-title {
 			@include font(2.4rem, 130%);
+
+			&:last-child {
+				margin-top: 4rem;
+			}
 		}
 
 		&-button {
@@ -256,61 +247,6 @@ onUnmounted(() => {
 		&-tasks {
 			grid-template-columns: repeat(auto-fit, minmax(40rem, 1fr));
 			@include gap(2rem);
-
-			.task {
-				padding: 1.6rem;
-				border-radius: 1.4rem;
-				border: 1.5px solid #e2e2e8;
-				@include gap(1.2rem);
-				box-shadow: #959da533 0px 8px 24px;
-
-				&__title {
-					color: #454447;
-					@include font(1.6rem, 130%);
-				}
-
-				&__action {
-					color: #e2e2e8;
-					width: 2rem;
-					height: 2rem;
-				}
-
-				&__description {
-					max-width: 60rem;
-					margin-top: 1.5rem;
-					color: #66656f;
-					@include font(1.4rem, 100%);
-				}
-
-				&__meta {
-					margin-top: 2.5rem;
-					@include gap(1.2rem);
-
-					&-item {
-						color: #66656f;
-						@include font(1.4rem, 100%);
-					}
-
-					&-priority {
-						color: #66656f;
-						padding: 0.5rem 2rem 0.7rem;
-						border-radius: 1.4rem;
-						@include font(1.4rem, 100%);
-
-						&.high {
-							background-color: #f4433662;
-						}
-
-						&.medium {
-							background-color: #ffc10773;
-						}
-
-						&.low {
-							background-color: #4caf4f58;
-						}
-					}
-				}
-			}
 		}
 
 		&-empty {
