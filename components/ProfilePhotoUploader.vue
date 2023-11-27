@@ -22,19 +22,21 @@ const uploadProfilePicture = async () => {
 	try {
 		uploading.value = true;
 		const imageUrl = await uploadImageToCloudinary(pictureFile.value, "profile-picture");
-		const { data } = await $axios.post<{ success: boolean }>(`/users/update-profile-picture/${user.value.username}`, {
+		const { data } = await $axios.post<{ success: boolean }>(`/users/update-profile-picture`, {
 			profile_picture: imageUrl,
 		});
 		if (data.success) {
 			photoUploaded.value = true;
 			pictureUrl.value = imageUrl;
-		}
+			push.success("Profile picture uploaded successfully.");
+			user.value.profile_picture = imageUrl;
+		} else throw new Error("An error occurred while uploading your profile picture.");
 		uploading.value = false;
-		emit("success", imageUrl);
-		push.success("Profile picture uploaded successfully.");
+		setTimeout(() => {
+			emit("close");
+		}, 1000);
 	} catch (error) {
 		uploading.value = false;
-
 		push.error("An error occurred while uploading your profile picture.");
 	}
 };
