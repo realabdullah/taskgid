@@ -10,6 +10,9 @@ const { fetchTeams } = useTeam();
 const { task: newTask, fetchTasks } = useTask();
 
 const isModalOpen = ref(false);
+const popup = ref("");
+const selectedSortOption = ref("dueDate");
+const selectedFilterOption = ref("all");
 const selectedTask = ref({ ...newTask });
 const taskModalMode = ref("view");
 
@@ -28,6 +31,62 @@ const shortenTextToSummary = (text: string) => {
 	}
 };
 
+const openPopup = (name: string) => {
+	popup.value = popup.value === name ? "" : name;
+};
+
+const sortOptions = [
+	{ name: "title", value: "title" },
+	{ name: "due date", value: "dueDate" },
+	{ name: "priority", value: "priority" },
+	{ name: "status", value: "status" },
+];
+
+const filterOptions = [
+	{ name: "All", value: "all" },
+	{ name: "Not started", value: "not started" },
+	{ name: "In Progress", value: "In Progress" },
+	{ name: "Completed", value: "Completed" },
+	{ name: "Low Priority", value: "Low" },
+	{ name: "Medium Priority", value: "Medium" },
+	{ name: "High Priority", value: "High" },
+];
+
+const sortedTasks = computed(() => {
+	if (!tasks.value || !Array.isArray(tasks.value) || tasks.value.length === 0) {
+		return [];
+	}
+
+	return tasks.value.slice().sort((a, b) => {
+		switch (selectedSortOption.value) {
+			case "title":
+				return a.title.localeCompare(b.title);
+			case "dueDate":
+				return new Date(a.dueDate).valueOf() - new Date(b.dueDate).valueOf();
+			case "priority":
+				return a.priority.localeCompare(b.priority);
+			case "status":
+				return a.status.localeCompare(b.status);
+			default:
+				return 0;
+		}
+	});
+});
+
+const filteredTasksByStatus = computed(() => {
+	if (sortedTasks.value && Array.isArray(sortedTasks.value) && sortedTasks.value.length > 0) {
+		if (selectedFilterOption.value === "all") {
+			return sortedTasks.value;
+		} else {
+			return sortedTasks.value.filter(
+				(task) => task.status.toLowerCase() === selectedFilterOption.value.toLowerCase() || task.priority.toLowerCase() === selectedFilterOption.value.toLowerCase(),
+			);
+		}
+	} else {
+		return [];
+	}
+});
+
 await fetchTeams();
 await fetchTasks();
 </script>
@@ -36,13 +95,49 @@ await fetchTasks();
 	<NuxtLayout name="dashboard">
 		<div class="dashboard">
 			<div class="dashboard__header flex items-center content-between">
-				<h1 class="dashboard__header-title">Tasks ({{ tasks.length }})</h1>
-				<button class="dashboard__header-button bg-transparent cursor-pointer" @click="openModal(newTask, 'create')">Create Task</button>
+				<h1 class="dashboard__header-title">Tasks ({{ filteredTasksByStatus.length }})</h1>
+				<div class="flex items-center" style="gap: 1rem">
+					<button class="dashboard__header-button bg-transparent cursor-pointer flex items-center position-relative" style="gap: 0.5rem" @click="openPopup('filter')">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="15">
+							<path d="M21 4V6H20L15 13.5V22H9V13.5L4 6H3V4H21ZM6.4037 6L11 12.8944V20H13V12.8944L17.5963 6H6.4037Z" fill="rgba(69,68,71,1)"></path>
+						</svg>
+						Filter
+
+						<div v-if="popup === 'filter'" class="popup bg-white position-absolute">
+							<button
+								v-for="option in filterOptions"
+								:key="option.value"
+								class="bg-transparent cursor-pointer text-capitalize text-left"
+								:class="{ selected: option.value === selectedFilterOption }"
+								@click="selectedFilterOption = option.value">
+								{{ option.name }}
+							</button>
+						</div>
+					</button>
+					<button class="dashboard__header-button bg-transparent cursor-pointer flex items-center position-relative" style="gap: 0.5rem" @click="openPopup('sort')">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14">
+							<path d="M20 4V16H23L19 21L15 16H18V4H20ZM12 18V20H3V18H12ZM14 11V13H3V11H14ZM14 4V6H3V4H14Z" fill="rgba(69,68,71,1)"></path>
+						</svg>
+						Sort
+
+						<div v-if="popup === 'sort'" class="popup bg-white position-absolute flex flex-column" style="gap: 1rem">
+							<button
+								v-for="option in sortOptions"
+								:key="option.value"
+								class="bg-transparent cursor-pointer text-capitalize text-left"
+								:class="{ selected: option.value === selectedSortOption }"
+								@click="selectedSortOption = option.value">
+								{{ option.name }}
+							</button>
+						</div>
+					</button>
+					<button class="dashboard__header-button bg-transparent cursor-pointer" @click="openModal(newTask, 'create')">Create Task</button>
+				</div>
 			</div>
 
 			<div class="dashboard__content">
-				<ul v-if="tasks && tasks.length > 0" class="dashboard__content-tasks grid">
-					<li v-for="task in tasks" :key="task._id" class="task bg-white cursor-pointer flex flex-column content-between" @click="openModal(task, 'view')">
+				<ul v-if="filteredTasksByStatus && filteredTasksByStatus.length > 0" class="dashboard__content-tasks grid">
+					<li v-for="task in filteredTasksByStatus" :key="task._id" class="task bg-white cursor-pointer flex flex-column content-between" @click="openModal(task, 'view')">
 						<div class="flex flex-column">
 							<div class="flex items-center content-between">
 								<h3 class="task__title">{{ task.title }}</h3>
@@ -101,6 +196,44 @@ await fetchTasks();
 
 			&:hover {
 				background-color: #e2e2e8;
+			}
+
+			.popup {
+				width: 15rem;
+				top: 4rem;
+				right: 0;
+				border: 1.5px solid #e2e2e8;
+				border-radius: 1.4rem;
+				box-shadow: #959da533 0px 8px 24px;
+				transition: all 0.3s ease-in-out;
+				z-index: 9;
+
+				button {
+					@include font(1.4rem, 100%);
+					color: #454447;
+					width: 100%;
+					padding: 0.7rem 1.5rem;
+
+					&:first-child {
+						padding-top: 1.5rem;
+						border-top-left-radius: 1.4rem;
+						border-top-right-radius: 1.4rem;
+					}
+
+					&:last-child {
+						padding-bottom: 1.5rem;
+						border-bottom-left-radius: 1.4rem;
+						border-bottom-right-radius: 1.4rem;
+					}
+
+					&:hover {
+						background-color: #e2e2e8;
+					}
+
+					&.selected {
+						background-color: #e2e2e8;
+					}
+				}
 			}
 		}
 	}
