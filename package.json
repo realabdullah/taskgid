@@ -34,6 +34,7 @@
 		"@vuelidate/core": "^2.0.3",
 		"@vuelidate/validators": "^2.0.4",
 		"axios": "^1.6.0",
+		"cloudinary": "^1.41.0",
 		"mitt": "^3.0.0",
 		"notivue": "^1.4.4",
 		"pinia": "^2.0.33",

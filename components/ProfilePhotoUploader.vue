@@ -3,38 +3,49 @@ const { profilePicture } = defineProps<{
 	profilePicture: string;
 }>();
 
+const { user } = storeToRefs(useStore());
+const push = usePush();
+const { $axios } = useNuxtApp();
+const { uploadImageToCloudinary, readFileAsDataURL } = useImage();
 const photoUploaded = ref(false);
 const pictureSelected = ref(false);
-const pictureFile = ref("");
 const uploading = ref(false);
+const pictureFile = ref(profilePicture);
 const pictureUrl = ref(profilePicture);
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+	(event: "success", value: string): void;
+	(event: "close"): void;
+}>();
 
-const uploadProfilePicture = () => {
+const uploadProfilePicture = async () => {
 	try {
 		uploading.value = true;
-		setTimeout(() => {
-			uploading.value = false;
-			emit("close");
-		}, 3000);
+		const imageUrl = await uploadImageToCloudinary(pictureFile.value, "profile-picture");
+		const { data } = await $axios.post<{ success: boolean }>(`/users/update-profile-picture/${user.value.username}`, {
+			profile_picture: imageUrl,
+		});
+		if (data.success) {
+			photoUploaded.value = true;
+			pictureUrl.value = imageUrl;
+		}
+		uploading.value = false;
+		emit("success", imageUrl);
+		push.success("Profile picture uploaded successfully.");
 	} catch (error) {
 		uploading.value = false;
+
+		push.error("An error occurred while uploading your profile picture.");
 	}
 };
-const previewImage = (e: any) => {
-	const file = e.target.files[0];
-	const reader = new FileReader();
+const previewImage = async (e: Event) => {
+	const file = (e.target as HTMLInputElement)?.files?.[0];
 
-	reader.onload = (e) => {
-		if (e.target) {
-			pictureUrl.value = e.target.result as string;
-			pictureSelected.value = true;
-		}
-	};
+	if (!file) return alert("No file selected.");
 
-	reader.readAsDataURL(file);
-	pictureFile.value = file;
+	pictureSelected.value = true;
+	const result = await readFileAsDataURL(file);
+	pictureFile.value = result;
 };
 </script>
 
@@ -44,7 +55,7 @@ const previewImage = (e: any) => {
 			<div class="profile-uploader flex flex-column">
 				<h3 class="weight-bold">{{ photoUploaded ? "Profile picture taken" : !!pictureUrl ? "Change your profile picture" : "Upload your profile picture" }}</h3>
 				<label class="profile-container block position-relative w-100 cursor-pointer" for="profilePicture">
-					<img class="w-100 h-100" :src="pictureUrl || 'https://i.ibb.co/kBGCJnQ/Group-67.png'" alt="photo" />
+					<img class="w-100 h-100" :src="pictureFile" alt="photo" />
 					<span v-if="!photoUploaded" class="position-absolute block weight-regular col-white text-nowrap">Tap to {{ !!pictureUrl ? "change" : "select" }} picture</span>
 					<IconsCheck v-if="photoUploaded" class="uploaded position-absolute" variant="large" />
 
