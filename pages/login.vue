@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useVuelidate } from "@vuelidate/core";
-import { required, email, minLength, helpers } from "@vuelidate/validators";
+import { required, email, helpers } from "@vuelidate/validators";
 
 definePageMeta({
 	title: "Login",
@@ -17,7 +17,7 @@ const push = usePush();
 
 const rules = {
 	email: { required: helpers.withMessage("Email is required.", required), email: helpers.withMessage("Email must be valid.", email) },
-	password: { required: helpers.withMessage("Password is required.", required), minLength: helpers.withMessage("Password must be at least 8 characters.", minLength(8)) },
+	password: { required: helpers.withMessage("Password is required.", required) },
 };
 
 const submitting = ref(false);

@@ -10,7 +10,7 @@ const route = useRoute();
 	</div>
 
 	<div class="auth-cta position-fixed">
-		<button class="bg-white col-blue weight-medium cursor-pointer text-nowrap" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
+		<button class="bg-white weight-medium cursor-pointer text-nowrap" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
 			<slot name="cta" />
 		</button>
 	</div>
@@ -42,8 +42,8 @@ const route = useRoute();
 		width: 18rem;
 		border-radius: 1.2rem;
 		padding: 1.5rem 3rem;
-		border: 0.17rem solid $col-blue;
-		box-shadow: #64646f33 0 0.7rem 2.9rem 0;
+		border: 1px solid #d5d1d1c8;
+		box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 		transition: all 0.2s ease-in-out;
 
 		&:hover {
