@@ -1714,6 +1714,18 @@
     "@sigstore/protobuf-specs" "^0.2.1"
     tuf-js "^2.1.0"
 
+"@simplewebauthn/browser@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@simplewebauthn/browser/-/browser-8.3.4.tgz#e4aa93c30ca05980e6e2972d1235fe0ba23dd3f2"
+  integrity sha512-rO0hZ0ESD28bZl6Qe8k7RUuYvDLbsS6oPezkMMTtZ5vC80U07j4qBELKBzojDD6BsdL3dIJ9SExVp8E7pqQ5fA==
+  dependencies:
+    "@simplewebauthn/typescript-types" "^8.3.4"
+
+"@simplewebauthn/typescript-types@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@simplewebauthn/typescript-types/-/typescript-types-8.3.4.tgz#bd7793653e25f7e4e57215776db57873dfa7d883"
+  integrity sha512-38xtca0OqfRVNloKBrFB5LEM6PN5vzFbJG6rAutPVrtGHFYxPdiV3btYWq0eAZAZmP+dqFPYJxJWeJrGfmYHng==
+
 "@tootallnate/once@2":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"

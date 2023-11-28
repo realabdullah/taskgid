@@ -28,8 +28,8 @@ const filteredWorkspaces = computed(() => workspaces.value.filter((workspace) =>
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
 		? tasks.value
-				.filter((task) => task?.dueDate)
-				.map((task) => ({ dates: [task.dueDate], dot: { color: task.status === "completed" ? "#00FF00" : "#FF0000" }, popover: { label: task.title + " is due." } }))
+				.filter((task) => task.status !== "Completed")
+				.map((task) => ({ dates: [task.dueDate], dot: new Date(task.dueDate) < new Date() ? "red" : "blue", popover: { label: task.title + " is due." } }))
 		: [],
 );
 

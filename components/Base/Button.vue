@@ -11,9 +11,10 @@ const {
 </script>
 
 <template>
-	<button class="__btn w-100 bg-transparent weight-medium col-white self-start" :class="type" :type="usage" :disabled="value === 'loading'">
+	<button class="__btn w-100 flex items-center content-center bg-transparent weight-medium col-white self-start" :class="type" :type="usage" :disabled="value === 'loading'">
 		<Loader v-if="value === 'loading'" />
 		<span v-else>{{ value }}</span>
+		<slot />
 	</button>
 </template>
 
@@ -26,6 +27,7 @@ const {
 	border: 1px solid #d5d1d1c8;
 	color: #66656f;
 	box-shadow: #959da533 0px 8px 24px;
+	gap: 0.5rem;
 
 	&:hover {
 		cursor: pointer;

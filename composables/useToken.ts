@@ -4,31 +4,28 @@ export const useToken = () => {
 		public: { apiUrl },
 	} = useRuntimeConfig();
 	const push = usePush();
-	const { token } = storeToRefs(useTokenStore());
 	const currentTime = new Date().toISOString();
 
 	const setToken = (access: Token, refresh: Token) => {
-		useStatefulCookie("esAccessToken").value = access.token;
-		useStatefulCookie("esRefreshToken").value = refresh.token;
-		useStatefulCookie("esAccessTokenExpires").value = access.expires;
-		useStatefulCookie("esRefreshTokenExpires").value = refresh.expires;
+		useStatefulCookie("accessToken").value = access.token;
+		useStatefulCookie("refreshToken").value = refresh.token;
+		useStatefulCookie("accessTokenExpires").value = access.expires;
+		useStatefulCookie("refreshTokenExpires").value = refresh.expires;
 	};
 
-	const setTemporaryToken = (tkn: string) => (token.value = tkn);
-
 	const clearToken = () => {
-		useStatefulCookie("esAccessToken").value = "";
-		useStatefulCookie("esRefreshToken").value = "";
-		useStatefulCookie("esAccessTokenExpires").value = "";
-		useStatefulCookie("esRefreshTokenExpires").value = "";
+		useStatefulCookie("accessToken").value = "";
+		useStatefulCookie("refreshToken").value = "";
+		useStatefulCookie("accessTokenExpires").value = "";
+		useStatefulCookie("refreshTokenExpires").value = "";
 		useCookie("store").value = "";
 	};
 
 	const refreshAccessToken = async () => {
 		try {
-			const { data } = await $axios.post(`${apiUrl}/users/refresh`, {
+			const { data } = await $axios.post(`${apiUrl}/auth/refresh`, {
 				method: "POST",
-				body: JSON.stringify({ refreshToken: useStatefulCookie("esRefreshToken").value }),
+				body: JSON.stringify({ refreshToken: useStatefulCookie("refreshToken").value }),
 			});
 			const { success, accessToken, refreshToken } = data as TokenAPIResponse;
 			if (!success) throw new Error("Failed to refresh token");
@@ -40,7 +37,7 @@ export const useToken = () => {
 
 	const logout = async () => {
 		try {
-			const { data } = await $axios.post(`${apiUrl}/users/logout`, {
+			const { data } = await $axios.post(`${apiUrl}/auth/logout`, {
 				method: "POST",
 			});
 			const { success } = data as { success: boolean };
@@ -52,10 +49,10 @@ export const useToken = () => {
 		}
 	};
 
-	const isTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("esAccessTokenExpires").value!));
-	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("esRefreshTokenExpires").value!));
-	const isTokenValid = computed(() => useStatefulCookie("esAccessToken").value && !isTokenExpired.value);
-	const isRefreshTokenValid = computed(() => useStatefulCookie("esRefreshToken").value && !isRefreshTokenExpired.value);
+	const isTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("accessTokenExpires").value!));
+	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("refreshTokenExpires").value!));
+	const isTokenValid = computed(() => useStatefulCookie("accessToken").value && !isTokenExpired.value);
+	const isRefreshTokenValid = computed(() => useStatefulCookie("refreshToken").value && !isRefreshTokenExpired.value);
 
-	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout, setTemporaryToken };
+	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
 };

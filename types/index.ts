@@ -86,4 +86,9 @@ declare global {
 		success: boolean;
 		team: Team[];
 	}
+
+	interface Authn {
+		_id: string;
+		device: string;
+	}
 }

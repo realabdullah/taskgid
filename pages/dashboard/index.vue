@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { workspaces, user } = storeToRefs(useStore());
+const { getUser } = useStore();
 const { getWorkspaces, deleteWorkspace, selectedWorkspaceSlug } = useWorkspace();
 const { logout } = useToken();
 const push = usePush();
@@ -66,6 +67,7 @@ onUnmounted(() => {
 	document.removeEventListener("click", onClickOutside);
 });
 
+await getUser();
 await getWorkspaces();
 </script>
 

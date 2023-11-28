@@ -10,7 +10,7 @@ const route = useRoute();
 	</div>
 
 	<div class="auth-cta position-fixed">
-		<button class="bg-white col-blue weight-medium cursor-pointer" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
+		<button class="bg-white col-blue weight-medium cursor-pointer text-nowrap" @click="navigateTo(route.path === '/login' ? '/signup' : '/login')">
 			<slot name="cta" />
 		</button>
 	</div>

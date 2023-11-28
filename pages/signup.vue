@@ -23,7 +23,7 @@ const push = usePush();
 const signUp = async () => {
 	try {
 		submitting.value = true;
-		const response = await $fetch<UserAPiResponse>(`${apiUrl}/users/create`, {
+		const response = await $fetch<UserAPiResponse>(`${apiUrl}/auth/create`, {
 			method: "POST",
 			body: { ...form },
 		});
