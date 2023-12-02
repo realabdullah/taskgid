@@ -9,6 +9,7 @@ const { data, mode = "view" } = defineProps<{
 
 const emit = defineEmits<(event: "close") => void>();
 
+const { teams } = storeToRefs(useStore());
 const { createNewTask, updateTask } = useTask();
 const task = reactive({ ...data });
 const usage = ref(mode);
@@ -59,6 +60,28 @@ const updateExistingTask = async () => {
 		push.error("An error occurred while updating task.");
 	}
 };
+
+const assignTask = (assignee: string) => {
+	if (task.assignees.includes(assignee)) {
+		task.assignees = task.assignees.filter((username) => username !== assignee);
+	} else {
+		task.assignees.push(assignee);
+	}
+};
+
+const onOutsideClick = (event: MouseEvent) => {
+	if (!(event.target as HTMLElement).closest(".popup") && !(event.target as HTMLElement).closest(".toggle")) {
+		currentPopup.value = "";
+	}
+};
+
+onMounted(() => {
+	window.addEventListener("click", onOutsideClick);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("click", onOutsideClick);
+});
 </script>
 
 <template>
@@ -83,11 +106,11 @@ const updateExistingTask = async () => {
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title">Status</span>
 					<span
-						class="task__meta-value text-capitalize status position-relative"
+						class="task__meta-value text-capitalize status position-relative toggle"
 						:class="[{ 'cursor-pointer': usage !== 'view' }, task.status.toLowerCase().replace(' ', '')]"
 						@click="usage !== 'view' && setPopup('status')">
 						{{ task.status }}
-						<div v-show="currentPopup === 'status'" class="status popup bg-white position-absolute">
+						<div v-show="currentPopup === 'status'" class="status popup bg-white position-absolute z-2">
 							<ul class="flex flex-column items-start">
 								<li class="status__item flex items-center cursor-pointer col-grey-3" @click="task.status = 'not started'">
 									<span class="status__item-value">Not Started</span>
@@ -105,11 +128,11 @@ const updateExistingTask = async () => {
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title">Priority</span>
 					<span
-						class="task__meta-value priority position-relative"
+						class="task__meta-value priority position-relative toggle"
 						:class="[task.priority.toLowerCase(), { 'cursor-pointer': usage !== 'view' }]"
 						@click="usage !== 'view' && setPopup('priority')">
 						{{ task.priority }}
-						<div v-show="currentPopup === 'priority'" class="priority popup bg-white position-absolute">
+						<div v-show="currentPopup === 'priority'" class="priority popup bg-white position-absolute z-2">
 							<ul class="flex flex-column items-start">
 								<li class="priority__item flex items-center cursor-pointer" @click="task.priority = 'High'">
 									<span class="priority__item-value high">High</span>
@@ -126,8 +149,19 @@ const updateExistingTask = async () => {
 				</li>
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title">Assignees</span>
-					<div class="task__meta-value">
-						<span v-for="(assignee, index) in task.assignees" :key="index">{{ assignee + (index !== task.assignees.length - 1 ? ", " : ".") }}</span>
+					<div class="task__meta-value position-relative">
+						<span class="task__meta-value assignees toggle" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('assign')">
+							<template v-if="task.assignees && task.assignees.length > 0">
+								<span v-for="(assignee, index) in task.assignees" :key="assignee">{{ assignee + (index !== task.assignees.length - 1 ? ", " : ".") }}</span>
+							</template>
+							<span v-else>Tap here to assign...</span>
+						</span>
+
+						<ul v-show="currentPopup === 'assign'" class="assignees__popup popup flex flex-column items-start bg-white position-absolute z-2">
+							<li v-for="member in teams" :key="member.username" class="assignees__popup-item flex items-center cursor-pointer" @click="assignTask(member.username)">
+								<span class="assignees__popup-item-value">{{ member.username }}</span>
+							</li>
+						</ul>
 					</div>
 				</li>
 				<li class="task__meta flex items-center w-100">
@@ -137,7 +171,7 @@ const updateExistingTask = async () => {
 				<li class="task__meta flex items-center w-100">
 					<span class="task__meta-title text-nowrap">Due Date</span>
 					<div class="position-relative">
-						<span class="task__meta-value date" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('date')">
+						<span class="task__meta-value date toggle" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('date')">
 							{{ formatDate(task.dueDate) }}
 						</span>
 						<div v-show="currentPopup === 'date'" class="date popup bg-white position-absolute">
@@ -209,6 +243,34 @@ const updateExistingTask = async () => {
 					padding: 0.5rem 2rem 0.7rem;
 					border-radius: 1.4rem;
 					@include font(1.4rem, 100%);
+				}
+
+				&.assignees {
+					color: #66656f;
+					border-radius: 1.4rem;
+					@include font(1.4rem, 100%);
+				}
+
+				.assignees__popup {
+					top: 3rem;
+					left: 15rem;
+					width: 25rem;
+					height: auto;
+					border: 1.5px solid #e2e2e8;
+					border-radius: 1rem;
+					padding: 1rem;
+
+					&-item {
+						&-value {
+							padding: 0.5rem 1rem 0.7rem;
+							border-radius: 1.4rem;
+							@include font(1.4rem, 100%);
+						}
+
+						&:hover {
+							background-color: #f2f2f2;
+						}
+					}
 				}
 			}
 		}
