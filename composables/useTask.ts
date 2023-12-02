@@ -48,11 +48,11 @@ export const useTask = () => {
 		}
 	};
 
-	const deleteTask = async () => {
-		const { data } = await $axios.delete<{ success: boolean }>(`/tasks/${route.params.workspace}/${route.params.id}`);
-		if (!data.success) throw new Error("Something went wrong");
+	const deleteTask = async (id: string) => {
+		const { data } = await $axios.delete<{ success: boolean }>(`/tasks/${route.params.workspace}/${id}`);
+		if (!data.success) push.error("An error occurred while deleting task.");
 		push.success("Task deleted successfully.");
-		navigateTo(`/${route.params.workspace}/tasks`);
+		tasks.value = tasks.value.filter((task) => task._id !== id);
 	};
 
 	const createNewTask = async (task: Task) => {

@@ -7,7 +7,7 @@ definePageMeta({
 
 const { tasks } = storeToRefs(useStore());
 const { fetchTeams } = useTeam();
-const { task: newTask, fetchTasks } = useTask();
+const { task: newTask, fetchTasks, deleteTask } = useTask();
 
 const isModalOpen = ref(false);
 const popup = ref("");
@@ -152,7 +152,13 @@ onUnmounted(() => {
 
 			<div class="dashboard__content">
 				<ul v-if="filteredTasksByStatus && filteredTasksByStatus.length > 0" class="dashboard__content-tasks grid">
-					<TaskCard v-for="(task, index) in filteredTasksByStatus" :key="task._id" v-model="filteredTasksByStatus[index]" @open-modal="openModal(task, 'view')" />
+					<TaskCard
+						v-for="(task, index) in filteredTasksByStatus"
+						:key="task._id"
+						v-model="filteredTasksByStatus[index]"
+						@open-modal="openModal(task, 'view')"
+						@edit="openModal(task, 'edit')"
+						@delete="deleteTask(task._id)" />
 				</ul>
 
 				<!-- EMPTY STATE -->
@@ -169,7 +175,13 @@ onUnmounted(() => {
 						<h1 class="dashboard__header-title">Completed Tasks ({{ completedTasks.length }})</h1>
 					</div>
 					<ul class="dashboard__content-tasks grid">
-						<TaskCard v-for="(task, index) in completedTasks" :key="task._id" v-model="completedTasks[index]" @open-modal="openModal(task, 'view')" />
+						<TaskCard
+							v-for="(task, index) in completedTasks"
+							:key="task._id"
+							v-model="completedTasks[index]"
+							@open-modal="openModal(task, 'view')"
+							@edit="openModal(task, 'edit')"
+							@delete="deleteTask(task._id)" />
 					</ul>
 				</template>
 			</div>

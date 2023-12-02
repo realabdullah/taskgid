@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-defineEmits(["open-modal"]);
+const emit = defineEmits(["open-modal", "edit", "delete"]);
 
 const task = defineModel() as Ref<Task>;
+
+const showOptions = ref(false);
 
 const shortenTextToSummary = (text: string) => {
 	if (text.length <= 200) {
@@ -11,16 +13,29 @@ const shortenTextToSummary = (text: string) => {
 		return truncatedText;
 	}
 };
+
+const onCardClick = () => {
+	if (showOptions.value) {
+		showOptions.value = false;
+		return;
+	}
+	emit("open-modal");
+};
 </script>
 
 <template>
-	<li class="task bg-white cursor-pointer flex flex-column content-between" @click="$emit('open-modal')">
+	<li class="task bg-white cursor-pointer flex flex-column content-between" @click="onCardClick">
 		<div class="flex flex-column">
-			<div class="flex items-center content-between">
+			<div class="flex items-center content-between position-relative">
 				<h3 class="task__title">{{ task.title }}</h3>
-				<button class="task__action bg-transparent cursor-pointer">
+				<button class="task__action bg-transparent cursor-pointer" @click.stop="showOptions = !showOptions">
 					<IconsMore />
 				</button>
+
+				<div v-show="showOptions" class="task__options-popup bg-white position-absolute z-1" style="top: 3rem; right: 0" @click.stop>
+					<button class="w-100 text-left bg-transparent cursor-pointer" @click="$emit('edit')">Edit</button>
+					<button class="w-100 text-left bg-transparent cursor-pointer" @click="$emit('delete')">Delete</button>
+				</div>
 			</div>
 			<p class="task__description">{{ shortenTextToSummary(task.description) }}</p>
 		</div>
@@ -57,6 +72,38 @@ const shortenTextToSummary = (text: string) => {
 		color: #e2e2e8;
 		width: 2rem;
 		height: 2rem;
+	}
+
+	&__options-popup {
+		width: 15rem;
+		top: 4rem;
+		right: 0;
+		border: 1.5px solid #e2e2e8;
+		border-radius: 1.4rem;
+		box-shadow: #959da533 0px 8px 24px;
+		transition: all 0.3s ease-in-out;
+		z-index: 9;
+
+		button {
+			@include font(1.4rem, 100%);
+			color: #454447;
+			padding: 1rem 2rem;
+			transition: all 0.3s ease-in-out;
+
+			&:hover {
+				background-color: #e2e2e8;
+
+				&:first-child {
+					border-top-left-radius: 1.4rem;
+					border-top-right-radius: 1.4rem;
+				}
+
+				&:last-child {
+					border-bottom-left-radius: 1.4rem;
+					border-bottom-right-radius: 1.4rem;
+				}
+			}
+		}
 	}
 
 	&__description {
