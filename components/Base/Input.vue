@@ -8,12 +8,13 @@ const {
 	id: string;
 	label?: string;
 	type: string;
+	placeholder?: string;
 	required?: boolean;
 	disabled?: boolean;
 	errors?: any[];
 }>();
 
-const modelValue = defineModel<String | Number>();
+const modelValue = defineModel<string | number>();
 
 const togglePassword = () => {
 	const input = document.getElementById(id) as HTMLInputElement;
@@ -39,6 +40,7 @@ const togglePassword = () => {
 				:required="required"
 				class="w-100 bg-transparent weight-regular"
 				:class="{ error: errors && errors.length > 0 }"
+				:placeholder="placeholder"
 				:disabled="disabled" />
 
 			<span v-if="type === 'password'" class="eye position-absolute cursor-pointer" @click="togglePassword">

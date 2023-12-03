@@ -15,6 +15,7 @@ const { user, teams, savedDevices } = storeToRefs(useStore());
 const push = usePush();
 
 const form = reactive({
+	username: user.value.username,
 	name: user.value.firstName + " " + user.value.lastName,
 	email: user.value.email,
 	password: "",
@@ -30,6 +31,7 @@ const isDeviceNameValid = computed(() => {
 });
 
 const rules = {
+	username: { required: helpers.withMessage("Username is required.", required) },
 	name: { required: helpers.withMessage("Name is required.", required) },
 	password: { minLength: helpers.withMessage("Password must be at least 8 characters.", minLength(8)) },
 };
@@ -49,9 +51,10 @@ const editUser = async () => {
 		await v$.value.$validate();
 		if (v$.value.$error) return;
 		loading.value = true;
-		const { name, password } = form;
-		const response = await $axios.put("/users/", { name, password });
-		user.value = { ...user.value, ...response.data };
+		const { username, name, password } = form;
+		const response = await $axios.post(`/users/edit/${user.value.username}`, { username, name, password });
+		if (!response.data.success) throw new Error("Something went wrong, please try again");
+		user.value = { ...user.value, ...response.data.user };
 		loading.value = false;
 		push.success("Profile updated successfully!");
 	} catch (error) {
@@ -98,9 +101,10 @@ await getAuthns();
 		<div class="settings-page">
 			<h3 class="header weight-regular col-darkBlue">Account Settings</h3>
 			<form class="account__settings flex flex-column" @submit.prevent="editUser">
+				<BaseInput id="username" v-model="form.username" label="Username" type="text" :errors="v$.username.$errors" />
 				<BaseInput id="name" v-model="form.name" label="Name" type="text" :errors="v$.name.$errors" />
 				<BaseInput id="email" v-model="form.email" label="Email address" type="email" :disabled="true" />
-				<BaseInput id="password" v-model="form.password" label="Password" type="password" :errors="v$.password.$errors" />
+				<BaseInput id="password" v-model="form.password" label="Password" type="password" placeholder="********" :errors="v$.password.$errors" />
 				<button class="bg-transparent weight-regular cursor-pointer" type="submit">Save</button>
 			</form>
 
