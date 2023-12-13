@@ -49,8 +49,8 @@ export const useToken = () => {
 		}
 	};
 
-	const isTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("accessTokenExpires").value!));
-	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) > Date.parse(useStatefulCookie("refreshTokenExpires").value!));
+	const isTokenExpired = computed(() => Date.parse(currentTime) < Date.parse(useStatefulCookie("accessTokenExpires").value!));
+	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) < Date.parse(useStatefulCookie("refreshTokenExpires").value!));
 	const isTokenValid = computed(() => useStatefulCookie("accessToken").value && !isTokenExpired.value);
 	const isRefreshTokenValid = computed(() => useStatefulCookie("refreshToken").value && !isRefreshTokenExpired.value);
 

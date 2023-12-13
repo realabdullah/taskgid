@@ -35,7 +35,5 @@ export default defineNuxtPlugin(async () => {
 				};
 			});
 		});
-	} catch (error) {
-		console.error("Knock error: ", error);
-	}
+	} catch (error) {}
 });
