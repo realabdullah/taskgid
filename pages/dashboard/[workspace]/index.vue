@@ -116,7 +116,7 @@ onUnmounted(() => {
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="15">
 							<path d="M21 4V6H20L15 13.5V22H9V13.5L4 6H3V4H21ZM6.4037 6L11 12.8944V20H13V12.8944L17.5963 6H6.4037Z" fill="rgba(69,68,71,1)"></path>
 						</svg>
-						Filter
+						Filter: {{ selectedFilterOption }}
 
 						<div v-if="popup === 'filter'" class="popup bg-white position-absolute">
 							<button
@@ -133,7 +133,7 @@ onUnmounted(() => {
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14">
 							<path d="M20 4V16H23L19 21L15 16H18V4H20ZM12 18V20H3V18H12ZM14 11V13H3V11H14ZM14 4V6H3V4H14Z" fill="rgba(69,68,71,1)"></path>
 						</svg>
-						Sort
+						Sort: {{ selectedSortOption }}
 
 						<div v-if="popup === 'sort'" class="popup bg-white position-absolute flex flex-column" style="gap: 1rem">
 							<button
@@ -257,7 +257,7 @@ onUnmounted(() => {
 
 	&__content {
 		&-tasks {
-			grid-template-columns: repeat(auto-fit, minmax(40rem, 1fr));
+			grid-template-columns: repeat(auto-fit, 45rem);
 			@include gap(2rem);
 		}
 

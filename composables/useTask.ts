@@ -16,7 +16,7 @@ export const useTask = () => {
 			username: user.value.username,
 			name: user.value.firstName + " " + user.value.lastName,
 		},
-		assignees: [],
+		assignee: "",
 		createdAt: new Date().toISOString(),
 	});
 

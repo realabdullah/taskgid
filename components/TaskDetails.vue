@@ -11,11 +11,22 @@ const emit = defineEmits<(event: "close") => void>();
 
 const { teams } = storeToRefs(useStore());
 const { createNewTask, updateTask } = useTask();
+const push = usePush();
+
 const task = reactive({ ...data });
 const usage = ref(mode);
 const currentPopup = ref("");
 const isSubmitting = ref(false);
-const push = usePush();
+const taskStatuses = [
+	{ key: "Not started", value: "not started" },
+	{ key: "In Progress", value: "In Progress" },
+	{ key: "Completed", value: "Completed" },
+];
+const taskPriorities = [
+	{ key: "Low Priority", value: "Low" },
+	{ key: "Medium Priority", value: "Medium" },
+	{ key: "High Priority", value: "High" },
+];
 
 const header = computed(() => {
 	if (usage.value === "create") return "Create new task";
@@ -29,12 +40,6 @@ const setMode = (mode: string) => {
 
 const setPopup = (popup: string) => {
 	currentPopup.value = currentPopup.value === popup ? "" : popup;
-};
-
-const input = (event: Event) => {
-	const el = event.target as HTMLInputElement;
-	if (el.id === "title") task.title = el.innerText;
-	else if (el.id === "description") task.description = el.innerText;
 };
 
 const addNewTask = async () => {
@@ -61,14 +66,6 @@ const updateExistingTask = async () => {
 	}
 };
 
-const assignTask = (assignee: string) => {
-	if (task.assignees.includes(assignee)) {
-		task.assignees = task.assignees.filter((username) => username !== assignee);
-	} else {
-		task.assignees.push(assignee);
-	}
-};
-
 const onOutsideClick = (event: MouseEvent) => {
 	if (!(event.target as HTMLElement).closest(".popup") && !(event.target as HTMLElement).closest(".toggle")) {
 		currentPopup.value = "";
@@ -89,7 +86,7 @@ onUnmounted(() => {
 		<div class="task bg-white">
 			<h3 class="task__header">{{ header }}</h3>
 			<div class="task__head flex items-center content-between">
-				<h3 id="title" class="task__title" :contenteditable="usage !== 'view'" @input="input">{{ task.title }}</h3>
+				<input id="title" v-model="task.title" class="task__title w-100 bg-transparent border-none" type="text" placeholder="Title" :disabled="usage === 'view'" />
 				<div v-if="usage !== 'create'" class="flex items-center" style="gap: 0.5rem">
 					<button class="task__action flex items-center content-center bg-transparent cursor-pointer" @click="setMode('edit')">
 						<IconsEdit />
@@ -100,71 +97,35 @@ onUnmounted(() => {
 				</div>
 			</div>
 
-			<p id="description" class="task__description" :contenteditable="usage !== 'view'" @input="input">{{ task.description }}</p>
+			<input
+				id="description"
+				v-model="task.description"
+				class="task__description w-100 bg-transparent border-none"
+				type="text"
+				placeholder="Enter task description"
+				:disabled="usage === 'view'" />
 
 			<ul class="flex flex-column items-start">
-				<li class="task__meta flex items-center w-100">
+				<label class="task__meta flex items-center w-100" for="status">
 					<span class="task__meta-title">Status</span>
-					<span
-						class="task__meta-value text-capitalize status position-relative toggle"
-						:class="[{ 'cursor-pointer': usage !== 'view' }, task.status.toLowerCase().replace(' ', '')]"
-						@click="usage !== 'view' && setPopup('status')">
-						{{ task.status }}
-						<div v-show="currentPopup === 'status'" class="status popup bg-white position-absolute z-2">
-							<ul class="flex flex-column items-start">
-								<li class="status__item flex items-center cursor-pointer col-grey-3" @click="task.status = 'not started'">
-									<span class="status__item-value">Not Started</span>
-								</li>
-								<li class="status__item flex items-center cursor-pointer col-grey-3" @click="task.status = 'In Progress'">
-									<span class="status__item-value">In Progress</span>
-								</li>
-								<li class="status__item flex items-center cursor-pointer col-grey-3" @click="task.status = 'Completed'">
-									<span class="status__item-value">Completed</span>
-								</li>
-							</ul>
-						</div>
-					</span>
-				</li>
-				<li class="task__meta flex items-center w-100">
+					<select id="status" v-model="task.status" name="status" class="task__meta-value border-none" :class="[task.status.toLowerCase().replace(' ', '')]" :disabled="usage === 'view'">
+						<option v-for="status in taskStatuses" :key="status.key" :value="status.value">{{ status.key }}</option>
+					</select>
+				</label>
+				<label class="task__meta flex items-center w-100" for="status">
 					<span class="task__meta-title">Priority</span>
-					<span
-						class="task__meta-value priority position-relative toggle"
-						:class="[task.priority.toLowerCase(), { 'cursor-pointer': usage !== 'view' }]"
-						@click="usage !== 'view' && setPopup('priority')">
-						{{ task.priority }}
-						<div v-show="currentPopup === 'priority'" class="priority popup bg-white position-absolute z-2">
-							<ul class="flex flex-column items-start">
-								<li class="priority__item flex items-center cursor-pointer" @click="task.priority = 'High'">
-									<span class="priority__item-value high">High</span>
-								</li>
-								<li class="priority__item flex items-center cursor-pointer" @click="task.priority = 'Medium'">
-									<span class="priority__item-value medium">Medium</span>
-								</li>
-								<li class="priority__item flex items-center cursor-pointer" @click="task.priority = 'Low'">
-									<span class="priority__item-value low">Low</span>
-								</li>
-							</ul>
-						</div>
-					</span>
-				</li>
-				<li class="task__meta flex items-center w-100">
-					<span class="task__meta-title">Assignees</span>
-					<div class="task__meta-value position-relative">
-						<span class="task__meta-value assignees toggle" :class="{ 'cursor-pointer': usage !== 'view' }" @click="usage !== 'view' && setPopup('assign')">
-							<template v-if="task.assignees && task.assignees.length > 0">
-								<span v-for="(assignee, index) in task.assignees" :key="assignee">{{ assignee + (index !== task.assignees.length - 1 ? ", " : ".") }}</span>
-							</template>
-							<span v-else>Tap here to assign...</span>
-						</span>
-
-						<ul v-show="currentPopup === 'assign'" class="assignees__popup popup flex flex-column items-start bg-white position-absolute z-2">
-							<li v-for="member in teams" :key="member.username" class="assignees__popup-item flex items-center cursor-pointer" @click="assignTask(member.username)">
-								<span class="assignees__popup-item-value">{{ member.username }}</span>
-							</li>
-						</ul>
-					</div>
-				</li>
-				<li class="task__meta flex items-center w-100">
+					<select id="priority" v-model="task.priority" name="priority" class="task__meta-value border-none" :class="[task.priority.toLowerCase()]" :disabled="usage === 'view'">
+						<option v-for="priority in taskPriorities" :key="priority.key" :value="priority.value">{{ priority.key }}</option>
+					</select>
+				</label>
+				<label class="task__meta flex items-center w-100" for="status">
+					<span class="task__meta-title">Assignee</span>
+					<select id="assignee" v-model="task.assignee" name="assignee" class="task__meta-value border-none" :disabled="usage === 'view'">
+						<option value="">Choose assignee</option>
+						<option v-for="member in teams" :key="member.username" :value="member.username">{{ member.name }}</option>
+					</select>
+				</label>
+				<li v-if="usage === 'view'" class="task__meta flex items-center w-100">
 					<span class="task__meta-title">Created</span>
 					<span class="task__meta-value">{{ formatDate(task.createdAt) }}</span>
 				</li>
@@ -179,7 +140,7 @@ onUnmounted(() => {
 						</div>
 					</div>
 				</li>
-				<li class="task__meta flex items-center w-100">
+				<li v-if="usage === 'view'" class="task__meta flex items-center w-100">
 					<span class="task__meta-title text-nowrap">Added by</span>
 					<span class="task__meta-value">{{ task.user.name }}</span>
 				</li>
@@ -204,6 +165,20 @@ onUnmounted(() => {
 	&__head {
 		margin-bottom: 2rem;
 		@include gap(2rem);
+	}
+
+	input {
+		outline: none;
+
+		&:focus {
+			border: 0;
+			outline: none;
+		}
+	}
+
+	select {
+		outline: none;
+		appearance: none;
 	}
 
 	&__title {
@@ -237,41 +212,6 @@ onUnmounted(() => {
 
 			&-value {
 				@include font(1.6rem, 100%);
-
-				&.priority {
-					color: #66656f;
-					padding: 0.5rem 2rem 0.7rem;
-					border-radius: 1.4rem;
-					@include font(1.4rem, 100%);
-				}
-
-				&.assignees {
-					color: #66656f;
-					border-radius: 1.4rem;
-					@include font(1.4rem, 100%);
-				}
-
-				.assignees__popup {
-					top: 3rem;
-					left: 15rem;
-					width: 25rem;
-					height: auto;
-					border: 1.5px solid #e2e2e8;
-					border-radius: 1rem;
-					padding: 1rem;
-
-					&-item {
-						&-value {
-							padding: 0.5rem 1rem 0.7rem;
-							border-radius: 1.4rem;
-							@include font(1.4rem, 100%);
-						}
-
-						&:hover {
-							background-color: #f2f2f2;
-						}
-					}
-				}
 			}
 		}
 	}
@@ -292,24 +232,6 @@ onUnmounted(() => {
 		}
 	}
 
-	.status {
-		&__item {
-			&-value {
-				padding: 0.5rem 1rem 0.7rem;
-				border-radius: 1.4rem;
-				@include font(1.4rem, 100%);
-			}
-		}
-	}
-
-	.priority__item {
-		&-value {
-			padding: 0.5rem 2rem 0.7rem;
-			border-radius: 1.4rem;
-			@include font(1.4rem, 100%);
-		}
-	}
-
 	&__footer {
 		margin-top: 3rem;
 		@include gap(2rem);
@@ -325,32 +247,26 @@ onUnmounted(() => {
 }
 
 .high {
-	background-color: #f4433662;
+	color: #f44336;
 }
 
 .medium {
-	background-color: #ffc10773;
+	color: #ffc107;
 }
 
 .low {
-	background-color: #4caf4f58;
+	color: #4caf4f;
 }
 
 .inprogress {
-	padding: 0.5rem 1rem;
-	background: #f2f4fd;
 	color: #3754db;
 }
 
 .notstarted {
-	padding: 0.5rem 1rem;
-	background: #fffdf5;
 	color: #df9a00;
 }
 
 .completed {
-	padding: 0.5rem 1rem;
-	background: #f2fdf5;
 	color: #4caf4f;
 }
 

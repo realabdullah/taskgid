@@ -13,7 +13,7 @@ declare global {
 			username: string;
 			name: string;
 		};
-		assignees: string[];
+		assignee: string;
 		createdAt: string;
 	}
 
