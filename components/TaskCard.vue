@@ -24,7 +24,7 @@ const onCardClick = () => {
 </script>
 
 <template>
-	<li class="task bg-white cursor-pointer flex flex-column content-between" @click="onCardClick">
+	<li class="task bg-white cursor-pointer flex flex-column content-between position-relative" @click="onCardClick">
 		<div class="flex flex-column">
 			<div class="flex items-center content-between position-relative">
 				<h3 class="task__title">{{ task.title }}</h3>
@@ -50,14 +50,16 @@ const onCardClick = () => {
 				{{ formatDate(task.dueDate) }}
 			</span>
 			<div class="status task__meta-item text-capitalize">{{ task.status }}</div>
-			<span class="task__meta-priority" :class="task.priority.toLowerCase()">{{ task.priority }}</span>
 		</div>
+
+		<span class="task__meta-priority position-absolute" :class="task.priority.toLowerCase()">{{ task.priority }}</span>
 	</li>
 </template>
 
 <style lang="scss" scoped>
 .task {
 	padding: 1.6rem;
+	padding-top: 6rem;
 	border-radius: 1.4rem;
 	border: 1.5px solid #e2e2e8;
 	@include gap(1.2rem);
@@ -123,6 +125,8 @@ const onCardClick = () => {
 		}
 
 		&-priority {
+			top: 1.5rem;
+			right: 1.5rem;
 			color: #66656f;
 			padding: 0.5rem 2rem 0.7rem;
 			border-radius: 1.4rem;

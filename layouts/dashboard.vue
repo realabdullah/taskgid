@@ -3,7 +3,7 @@ import "v-calendar/style.css";
 import { DatePicker } from "v-calendar";
 
 const route = useRoute();
-const { user, tasks, workspaces } = storeToRefs(useStore());
+const { user, tasks } = storeToRefs(useStore());
 const { getWorkspaces } = useWorkspace();
 
 const navs = [
@@ -11,19 +11,14 @@ const navs = [
 	{ name: "settings", route: `/dashboard/${route.params.workspace}/settings` },
 ];
 
+const isModalOpen = ref(false);
 const showProfilePictureModal = ref(false);
 const date = ref(new Date());
-const showWorkspaceDropdown = ref(false);
-const isModalOpen = ref(false);
-
 const form = reactive({
 	title: "",
 	description: "",
 	slug: "",
 });
-
-const currentWorkspace = computed(() => workspaces.value.find((workspace) => workspace.slug === route.params.workspace));
-const filteredWorkspaces = computed(() => workspaces.value.filter((workspace) => workspace.slug !== route.params.workspace));
 
 const calendarData = computed(() =>
 	tasks && Array.isArray(tasks.value) && tasks.value.length > 0
@@ -32,10 +27,6 @@ const calendarData = computed(() =>
 				.map((task) => ({ dates: [task.dueDate], dot: new Date(task.dueDate) < new Date() ? "red" : "blue", popover: { label: task.title + " is due." } }))
 		: [],
 );
-
-const switchWorkspace = (workspace: string) => {
-	navigateTo({ name: "dashboard", params: { workspace } });
-};
 
 const currentYear = computed(() => new Date().getFullYear());
 
@@ -49,29 +40,7 @@ await getWorkspaces();
 		<aside class="dashboard__left position-relative w-100" aria-label="Dashboard Navigation">
 			<div class="workspace w-100 position-fixed overflow-y-auto overflow-x-hidden flex flex-column items-start">
 				<NuxtLink to="/dashboard" class="logo text-unset weight-bold text-capitalize">Taskgid</NuxtLink>
-				<div class="workspace__dropdown w-100" :class="{ active: showWorkspaceDropdown }">
-					<button class="current bg-transparent w-100 flex items-center content-between cursor-pointer" @click="showWorkspaceDropdown = !showWorkspaceDropdown">
-						<div class="flex items-center" style="gap: 1.2rem">
-							<img :src="currentWorkspace?.avatar" :alt="currentWorkspace?.title" />
-							<div class="detail flex flex-column items-start">
-								<span class="weight-medium">Workspace</span>
-								<p class="title weight-semiBold">{{ currentWorkspace?.title }}</p>
-							</div>
-						</div>
-						<IconsUpDown />
-					</button>
-
-					<ul v-show="showWorkspaceDropdown" class="workspace__dropdown-list bg-white flex flex-column items-start">
-						<li v-for="workspace in filteredWorkspaces" :key="workspace.slug" class="w-100 flex items-center cursor-pointer" style="gap: 1.5rem" @click="switchWorkspace(workspace.slug)">
-							<img :src="workspace.avatar" :alt="workspace.title" />
-							<span class="weight-medium">{{ workspace.title }}</span>
-						</li>
-						<button class="bg-transparent w-100 flex items-center cursor-pointer" style="gap: 1.5rem" @click="isModalOpen = true">
-							<IconsAdd />
-							<span class="weight-medium">Create Workspace</span>
-						</button>
-					</ul>
-				</div>
+				<WorkspaceDropdown @add-task="isModalOpen = true" />
 
 				<div class="workspace__nav w-100 flex items-start flex-column">
 					<NuxtLink
@@ -92,7 +61,7 @@ await getWorkspaces();
 
 			<div class="user position-absolute flex flex-column">
 				<div class="flex items-center" style="gap: 1rem">
-					<img :src="user.profile_picture" class="w-100 h-100 cursor-pointer" alt="avatar" @click="showProfilePictureModal = true" />
+					<img :src="user.profile_picture" class="avatar w-100 h-100 cursor-pointer" alt="avatar" @click="showProfilePictureModal = true" />
 
 					<div class="user-detail flex flex-column">
 						<h5 class="weight-bold">{{ user.firstName }} {{ user.lastName }}</h5>
@@ -104,6 +73,10 @@ await getWorkspaces();
 			</div>
 		</aside>
 		<main class="dashboard__main position-relative bg-white w-100 overflow-x-hidden">
+			<div class="mobile-nav items-start">
+				<WorkspaceDropdown @add-task="isModalOpen = true" />
+				<img :src="user.profile_picture" class="avatar w-100 h-100 cursor-pointer" alt="avatar" @click="showProfilePictureModal = true" />
+			</div>
 			<BaseHeader />
 			<div class="main overflow-y-auto h-100" style="padding-bottom: 15rem">
 				<slot />
@@ -128,6 +101,10 @@ await getWorkspaces();
 	&__left {
 		max-width: 30rem;
 
+		@media screen and (max-width: 900px) {
+			display: none;
+		}
+
 		.workspace {
 			max-width: 30rem;
 			top: 1rem;
@@ -148,82 +125,6 @@ await getWorkspaces();
 				@include font(3rem, 100%);
 				color: #171718;
 				margin-bottom: -2rem;
-			}
-
-			&__dropdown {
-				background-color: #ffffff;
-				border: 1.5px solid #e2e2e8;
-				border-radius: 1.4rem;
-
-				&.active {
-					border: none;
-					background-color: #ededef;
-					transition: all 0.3s ease-in-out;
-				}
-
-				.current {
-					padding: 1rem;
-
-					img {
-						width: 4.5rem;
-						height: 4.5rem;
-						border-radius: 1.2rem;
-						object-fit: cover;
-					}
-
-					.detail {
-						@include gap(0.4rem);
-
-						span {
-							@include font(1.2rem, 100%);
-						}
-
-						.title {
-							@include font(1.4rem, 130%);
-						}
-					}
-				}
-
-				&-list {
-					padding: 1.6rem;
-					border-radius: 1.4rem;
-					border: 1.5px solid #e2e2e8;
-					@include gap(2rem);
-					animation: slide-down 0.3s ease-in-out;
-
-					li {
-						@include gap(1.2rem);
-
-						img {
-							width: 3rem;
-							height: 3rem;
-							border-radius: 50%;
-							object-fit: cover;
-						}
-
-						span {
-							color: #66656f;
-							@include font(1.6rem, 100%);
-							transition: color 0.3s ease-in-out;
-
-							&:hover {
-								color: #000000;
-							}
-						}
-					}
-
-					button {
-						padding-top: 2rem;
-						border-top: 1.5px solid #f1f1f2;
-						color: #66656f;
-						@include font(1.6rem, 100%);
-						transition: color 0.3s ease-in-out;
-
-						&:hover {
-							color: #000000;
-						}
-					}
-				}
 			}
 
 			&__nav {
@@ -271,15 +172,6 @@ await getWorkspaces();
 			@include gap(1rem);
 			padding: 2rem 0;
 
-			img {
-				width: 4.5rem;
-				height: 4.5rem;
-				border-radius: 50%;
-				object-fit: cover;
-				padding: 0.5rem;
-				border: 1.5px solid #e2e2e8;
-			}
-
 			.user-detail {
 				@include gap(0.3rem);
 
@@ -313,6 +205,21 @@ await getWorkspaces();
 		z-index: 100;
 		overflow: hidden;
 
+		@media screen and (max-width: 900px) {
+			margin: 1rem;
+			padding: 1rem;
+		}
+
+		.mobile-nav {
+			display: none;
+
+			@media screen and (max-width: 900px) {
+				display: flex;
+				gap: 1rem;
+				margin-bottom: 5rem;
+			}
+		}
+
 		.main {
 			-ms-overflow-style: none;
 			scrollbar-width: none;
@@ -322,14 +229,14 @@ await getWorkspaces();
 			}
 		}
 	}
-}
 
-@keyframes slide-down {
-	0% {
-		transform: translateY(-30%);
-	}
-	100% {
-		transform: translateY(0);
+	.avatar {
+		width: 4.5rem;
+		height: 4.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		padding: 0.5rem;
+		border: 1.5px solid #e2e2e8;
 	}
 }
 </style>

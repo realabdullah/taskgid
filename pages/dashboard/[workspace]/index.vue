@@ -196,6 +196,12 @@ onUnmounted(() => {
 	&__header {
 		margin-bottom: 2rem;
 
+		@media screen and (max-width: 900px) {
+			flex-direction: column;
+			align-items: start;
+			gap: 1.5rem;
+		}
+
 		&-title {
 			@include font(2.4rem, 130%);
 
@@ -259,6 +265,14 @@ onUnmounted(() => {
 		&-tasks {
 			grid-template-columns: repeat(auto-fit, 45rem);
 			@include gap(2rem);
+
+			@media screen and (min-width: 1151px) and (max-width: 1280px) {
+				grid-template-columns: 1fr 1fr;
+			}
+
+			@media screen and (max-width: 1150px) {
+				grid-template-columns: 1fr;
+			}
 		}
 
 		&-empty {
