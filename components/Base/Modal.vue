@@ -10,7 +10,7 @@ defineEmits(["close-modal"]);
 <template>
 	<Transition name="fade" mode="out-in" appear>
 		<div class="modal bg-white position-fixed z-9 overflow-auto" :style="`max-width: ${width};`">
-			<button v-if="closable" class="close-modal bg-greyishBlue cursor-pointer position-absolute" @click="$emit('close-modal')">
+			<button v-if="closable" class="close-modal bg-greyishBlue cursor-pointer position-fixed" @click="$emit('close-modal')">
 				<IconsClose />
 			</button>
 
@@ -47,6 +47,7 @@ defineEmits(["close-modal"]);
 		border-radius: 50%;
 		right: 0.5rem;
 		top: 0.5rem;
+		padding-top: 0.45rem;
 	}
 }
 
