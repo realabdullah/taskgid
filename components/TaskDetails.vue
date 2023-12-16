@@ -158,33 +158,37 @@ onUnmounted(() => {
 				<button v-else class="task__footer-button bg-transparent cursor-pointer" @click="updateExistingTask">Update</button>
 			</div>
 
-			<p class="chat__header flex items-center">
-				Comments
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-					<path
-						d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3ZM12 17H14C17.3137 17 20 14.3137 20 11C20 7.68629 17.3137 5 14 5H10C6.68629 5 4 7.68629 4 11C4 14.61 6.46208 16.9656 12 19.4798V17Z"
-						fill="rgba(100,100,111,1)"></path>
-				</svg>
-			</p>
-			<ul class="chats flex flex-column items-start">
-				<li class="w-100 chat box flex flex-column items-start">
-					<textarea id="comment" v-model="message" class="w-100 bg-transparent" name="comment" rows="5" placeholder="Add a comment"></textarea>
-					<div class="cta">
-						<button class="bg-white" :disabled="message.trim() === ''" @click="addTaskChat(task._id, message), (message = '')">Comment</button>
-					</div>
-				</li>
-				<template v-if="sortedChats && sortedChats.length > 0">
-					<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
-						<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
-						<img :src="chat.user.profile_picture" :alt="chat.user.username" />
-						<div class="content flex flex-column items-start">
-							<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
-							<p class="message">{{ chat.message }}</p>
+			<template v-if="usage !== 'create'">
+				<p class="chat__header flex items-center">
+					Comments
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+						<path
+							d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3ZM12 17H14C17.3137 17 20 14.3137 20 11C20 7.68629 17.3137 5 14 5H10C6.68629 5 4 7.68629 4 11C4 14.61 6.46208 16.9656 12 19.4798V17Z"
+							fill="rgba(100,100,111,1)"></path>
+					</svg>
+				</p>
+				<ul class="chats flex flex-column items-start">
+					<li class="w-100 chat box flex flex-column items-start">
+						<textarea id="comment" v-model="message" class="w-100 bg-transparent" name="comment" rows="5" placeholder="Add a comment"></textarea>
+						<div class="cta">
+							<button class="bg-white" :disabled="message.trim() === ''" @click="addTaskChat(task._id, message), (message = '')">Comment</button>
 						</div>
 					</li>
-				</template>
-				<p v-else class="empty">No comments on this task yet...</p>
-			</ul>
+					<template v-if="sortedChats && sortedChats.length > 0">
+						<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
+							<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
+							<div class="group flex items-start">
+								<img :src="chat.user.profile_picture" :alt="chat.user.username" />
+								<div class="content flex flex-column items-start">
+									<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
+									<p class="message">{{ chat.message }}</p>
+								</div>
+							</div>
+						</li>
+					</template>
+					<p v-else class="empty">No comments on this task yet...</p>
+				</ul>
+			</template>
 		</div>
 	</BaseModal>
 </template>
@@ -331,6 +335,10 @@ onUnmounted(() => {
 						box-shadow: #959da533 0px 8px 24px;
 					}
 				}
+			}
+
+			.group {
+				gap: 1.5rem;
 			}
 
 			.date {
