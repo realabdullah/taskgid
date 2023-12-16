@@ -10,13 +10,15 @@ const { data, mode = "view" } = defineProps<{
 const emit = defineEmits<(event: "close") => void>();
 
 const { teams } = storeToRefs(useStore());
-const { chats, createNewTask, updateTask, fetchChats } = useTask();
+const { chats, createNewTask, updateTask, fetchChats, addTaskChat } = useTask();
 const push = usePush();
 
 const task = reactive({ ...data });
 const usage = ref(mode);
 const currentPopup = ref("");
 const isSubmitting = ref(false);
+const message = ref("");
+
 const taskStatuses = [
 	{ key: "Not started", value: "not started" },
 	{ key: "In Progress", value: "In Progress" },
@@ -32,6 +34,9 @@ const header = computed(() => {
 	if (usage.value === "create") return "Create new task";
 	else if (usage.value === "edit") return "Editing task...";
 	else return "Task details";
+});
+const sortedChats = computed(() => {
+	return chats.value.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 });
 
 const setMode = (mode: string) => {
@@ -161,17 +166,25 @@ onUnmounted(() => {
 						fill="rgba(100,100,111,1)"></path>
 				</svg>
 			</p>
-			<ul v-if="chats && chats.length > 0" class="chats flex flex-column items-start">
-				<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
-					<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
-					<img :src="chat.user.profile_picture" :alt="chat.user.username" />
-					<div class="content flex flex-column items-start">
-						<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
-						<p class="message">{{ chat.message }}</p>
+			<ul class="chats flex flex-column items-start">
+				<li class="w-100 chat box flex flex-column items-start">
+					<textarea id="comment" v-model="message" class="w-100 bg-transparent" name="comment" rows="5" placeholder="Add a comment"></textarea>
+					<div class="cta">
+						<button class="bg-white" :disabled="message.trim() === ''" @click="addTaskChat(task._id, message), (message = '')">Comment</button>
 					</div>
 				</li>
+				<template v-if="sortedChats && sortedChats.length > 0">
+					<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
+						<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
+						<img :src="chat.user.profile_picture" :alt="chat.user.username" />
+						<div class="content flex flex-column items-start">
+							<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
+							<p class="message">{{ chat.message }}</p>
+						</div>
+					</li>
+				</template>
+				<p v-else class="empty">No comments on this task yet...</p>
 			</ul>
-			<p v-else class="empty">No comments on this task yet...</p>
 		</div>
 	</BaseModal>
 </template>
@@ -290,6 +303,34 @@ onUnmounted(() => {
 
 			@media screen and (max-width: 600px) {
 				flex-direction: column;
+			}
+
+			&.box {
+				background: #f9f9f9;
+				border-radius: 0.7rem;
+				margin-bottom: 1rem;
+				padding-bottom: 0;
+				border-bottom: 0;
+
+				textarea {
+					border: none;
+					resize: none;
+					padding: 1rem;
+					outline: none;
+					@include font(1.6rem, 130%);
+				}
+
+				.cta {
+					align-self: flex-end;
+					padding: 0 1rem 1rem;
+
+					button {
+						border: 1.5px solid #e2e2e8;
+						border-radius: 1rem;
+						padding: 0.5rem 0.8rem;
+						box-shadow: #959da533 0px 8px 24px;
+					}
+				}
 			}
 
 			.date {

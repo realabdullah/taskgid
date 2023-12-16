@@ -57,6 +57,17 @@ export const useTask = () => {
 		} catch (error) {}
 	};
 
+	const addTaskChat = async (id: string, message: string) => {
+		try {
+			if (message.trim() === "") return;
+			const { data } = await $axios.post<{ success: boolean; chat: Chat }>(`/tasks/${route.params.workspace}/add-chat`, { task: id, message });
+			if (!data.success) throw new Error("Something went wrong");
+			chats.value.unshift(data.chat);
+		} catch (error) {
+			push.error("Failed to add comment");
+		}
+	};
+
 	const deleteTask = async (id: string) => {
 		const { data } = await $axios.delete<{ success: boolean }>(`/tasks/${route.params.workspace}/${id}`);
 		if (!data.success) push.error("An error occurred while deleting task.");
@@ -82,5 +93,5 @@ export const useTask = () => {
 		if (index > -1) tasks.value.splice(index, 1, data.task);
 	};
 
-	return { chats, task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks, fetchChats };
+	return { chats, task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks, fetchChats, addTaskChat };
 };
