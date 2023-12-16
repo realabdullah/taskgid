@@ -19,6 +19,7 @@ export const useTask = () => {
 		assignee: "",
 		createdAt: new Date().toISOString(),
 	});
+	const chats = ref<Chat[]>([]);
 
 	const fetchTask = async () => {
 		try {
@@ -48,6 +49,14 @@ export const useTask = () => {
 		}
 	};
 
+	const fetchChats = async (id: string) => {
+		try {
+			const { data } = await $axios.get<ChatsAPIResponse>(`/tasks/${route.params.workspace}/${id}/comments`);
+			if (!data.success) throw new Error("Something went wrong");
+			chats.value = [...data.chats];
+		} catch (error) {}
+	};
+
 	const deleteTask = async (id: string) => {
 		const { data } = await $axios.delete<{ success: boolean }>(`/tasks/${route.params.workspace}/${id}`);
 		if (!data.success) push.error("An error occurred while deleting task.");
@@ -73,5 +82,5 @@ export const useTask = () => {
 		if (index > -1) tasks.value.splice(index, 1, data.task);
 	};
 
-	return { task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks };
+	return { chats, task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks, fetchChats };
 };

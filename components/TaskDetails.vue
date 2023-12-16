@@ -10,7 +10,7 @@ const { data, mode = "view" } = defineProps<{
 const emit = defineEmits<(event: "close") => void>();
 
 const { teams } = storeToRefs(useStore());
-const { createNewTask, updateTask } = useTask();
+const { chats, createNewTask, updateTask, fetchChats } = useTask();
 const push = usePush();
 
 const task = reactive({ ...data });
@@ -72,8 +72,9 @@ const onOutsideClick = (event: MouseEvent) => {
 	}
 };
 
-onMounted(() => {
+onMounted(async () => {
 	window.addEventListener("click", onOutsideClick);
+	await fetchChats(data._id);
 });
 
 onUnmounted(() => {
@@ -97,13 +98,14 @@ onUnmounted(() => {
 				</div>
 			</div>
 
-			<input
+			<textarea
 				id="description"
 				v-model="task.description"
+				name="description"
 				class="task__description w-100 bg-transparent border-none"
-				type="text"
 				placeholder="Enter task description"
-				:disabled="usage === 'view'" />
+				resize="none"
+				:disabled="usage === 'view'"></textarea>
 
 			<ul class="flex flex-column items-start">
 				<label class="task__meta flex items-center w-100" for="status">
@@ -150,6 +152,26 @@ onUnmounted(() => {
 				<button v-if="usage === 'create'" class="task__footer-button bg-transparent cursor-pointer" @click="addNewTask">Save</button>
 				<button v-else class="task__footer-button bg-transparent cursor-pointer" @click="updateExistingTask">Update</button>
 			</div>
+
+			<p class="chat__header flex items-center">
+				Comments
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+					<path
+						d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3ZM12 17H14C17.3137 17 20 14.3137 20 11C20 7.68629 17.3137 5 14 5H10C6.68629 5 4 7.68629 4 11C4 14.61 6.46208 16.9656 12 19.4798V17Z"
+						fill="rgba(100,100,111,1)"></path>
+				</svg>
+			</p>
+			<ul v-if="chats && chats.length > 0" class="chats flex flex-column items-start">
+				<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
+					<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
+					<img :src="chat.user.profile_picture" :alt="chat.user.username" />
+					<div class="content flex flex-column items-start">
+						<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
+						<p class="message">{{ chat.message }}</p>
+					</div>
+				</li>
+			</ul>
+			<p v-else class="empty">No comments on this task yet...</p>
 		</div>
 	</BaseModal>
 </template>
@@ -195,6 +217,7 @@ onUnmounted(() => {
 	&__description {
 		@include font(1.6rem, 130%);
 		margin-bottom: 3rem;
+		resize: none;
 	}
 
 	ul {
@@ -243,6 +266,63 @@ onUnmounted(() => {
 			padding: 0.8rem 1.6rem;
 			box-shadow: #959da533 0px 8px 24px;
 		}
+	}
+
+	.chat__header {
+		gap: 1rem;
+		@include font(1.6rem, 100%);
+		margin-top: 2rem;
+		border-bottom: 0.1rem solid #e2e2e8;
+		padding-bottom: 1.5rem;
+	}
+
+	.chats {
+		margin-top: 2.5rem;
+		gap: 1.5rem;
+
+		.chat {
+			gap: 0.8rem;
+			padding-bottom: 1.5rem;
+
+			&:not(:last-child) {
+				border-bottom: 0.1rem solid #e2e2e8;
+			}
+
+			@media screen and (max-width: 600px) {
+				flex-direction: column;
+			}
+
+			.date {
+				color: #64646f;
+				@include font(1.3rem, 100%);
+				margin-right: 2rem;
+			}
+
+			img {
+				width: 3rem;
+				height: 3rem;
+				border-radius: 50%;
+				box-shadow: #959da533 0px 8px 24px;
+			}
+
+			.content {
+				gap: 0.5rem;
+
+				.user {
+					color: #64646f;
+					@include font(1.3rem, 100%);
+				}
+
+				.message {
+					@include font(1.5rem, 130%);
+				}
+			}
+		}
+	}
+
+	.empty {
+		margin-top: 2.5rem;
+		@include font(1.5rem, 130%);
 	}
 }
 

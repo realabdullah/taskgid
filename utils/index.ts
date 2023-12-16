@@ -42,5 +42,7 @@ export const formatDate = (value: any) => {
 	const year = date.getFullYear();
 	const day = date.getDate();
 
-	return `${months[month]} ${day}, ${year}`;
+	const dt = `${months[month]} ${day}, ${year}`;
+
+	return dt === "undefined NaN, NaN" ? "" : dt;
 };

@@ -87,6 +87,18 @@ declare global {
 		team: Team[];
 	}
 
+	interface Chat {
+		_id: string;
+		message: string;
+		user: User;
+		createdAt: string;
+	}
+
+	interface ChatsAPIResponse {
+		success: boolean;
+		chats: Chat[];
+	}
+
 	interface Authn {
 		_id: string;
 		device: string;
