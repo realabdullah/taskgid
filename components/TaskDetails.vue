@@ -10,7 +10,7 @@ const { data, mode = "view" } = defineProps<{
 const emit = defineEmits<(event: "close") => void>();
 
 const { teams } = storeToRefs(useStore());
-const { chats, createNewTask, updateTask, fetchChats, addTaskChat } = useTask();
+const { comments, createNewTask, updateTask, fetchComments, addTaskComment } = useTask();
 const push = usePush();
 
 const task = reactive({ ...data });
@@ -35,8 +35,8 @@ const header = computed(() => {
 	else if (usage.value === "edit") return "Editing task...";
 	else return "Task details";
 });
-const sortedChats = computed(() => {
-	return chats.value.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+const sortedComments = computed(() => {
+	return comments.value.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 });
 
 const setMode = (mode: string) => {
@@ -79,7 +79,7 @@ const onOutsideClick = (event: MouseEvent) => {
 
 onMounted(async () => {
 	window.addEventListener("click", onOutsideClick);
-	await fetchChats(data._id);
+	await fetchComments(data._id);
 });
 
 onUnmounted(() => {
@@ -159,7 +159,7 @@ onUnmounted(() => {
 			</div>
 
 			<template v-if="usage !== 'create'">
-				<p class="chat__header flex items-center">
+				<p class="comment__header flex items-center">
 					Comments
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
 						<path
@@ -167,21 +167,21 @@ onUnmounted(() => {
 							fill="rgba(100,100,111,1)"></path>
 					</svg>
 				</p>
-				<ul class="chats flex flex-column items-start">
-					<li class="w-100 chat box flex flex-column items-start">
+				<ul class="comments flex flex-column items-start">
+					<li class="w-100 comment box flex flex-column items-start">
 						<textarea id="comment" v-model="message" class="w-100 bg-transparent" name="comment" rows="5" placeholder="Add a comment"></textarea>
 						<div class="cta">
-							<button class="bg-white" :disabled="message.trim() === ''" @click="addTaskChat(task._id, message), (message = '')">Comment</button>
+							<button class="bg-white" :disabled="message.trim() === ''" @click="addTaskComment(task._id, message), (message = '')">Comment</button>
 						</div>
 					</li>
-					<template v-if="sortedChats && sortedChats.length > 0">
-						<li v-for="chat in chats" :key="chat._id" class="w-100 chat flex items-start">
-							<span class="block date text-nowrap">{{ formatDate(chat.createdAt) }}</span>
+					<template v-if="sortedComments && sortedComments.length > 0">
+						<li v-for="comment in comments" :key="comment._id" class="w-100 comment flex items-start">
+							<span class="block date text-nowrap">{{ formatDate(comment.createdAt) }}</span>
 							<div class="group flex items-start">
-								<img :src="chat.user.profile_picture" :alt="chat.user.username" />
+								<img :src="comment.user.profile_picture" :alt="comment.user.username" />
 								<div class="content flex flex-column items-start">
-									<span class="user text-nowrap">{{ chat.user.firstName + " " + chat.user.lastName }}</span>
-									<p class="message">{{ chat.message }}</p>
+									<span class="user text-nowrap">{{ comment.user.firstName + " " + comment.user.lastName }}</span>
+									<p class="message">{{ comment.message }}</p>
 								</div>
 							</div>
 						</li>
@@ -285,7 +285,7 @@ onUnmounted(() => {
 		}
 	}
 
-	.chat__header {
+	.comment__header {
 		gap: 1rem;
 		@include font(1.6rem, 100%);
 		margin-top: 2rem;
@@ -293,11 +293,11 @@ onUnmounted(() => {
 		padding-bottom: 1.5rem;
 	}
 
-	.chats {
+	.comments {
 		margin-top: 2.5rem;
 		gap: 1.5rem;
 
-		.chat {
+		.comment {
 			gap: 0.8rem;
 			padding-bottom: 1.5rem;
 

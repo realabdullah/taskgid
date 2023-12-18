@@ -19,7 +19,7 @@ export const useTask = () => {
 		assignee: "",
 		createdAt: new Date().toISOString(),
 	});
-	const chats = ref<Chat[]>([]);
+	const comments = ref<Comment[]>([]);
 
 	const fetchTask = async () => {
 		try {
@@ -49,20 +49,20 @@ export const useTask = () => {
 		}
 	};
 
-	const fetchChats = async (id: string) => {
+	const fetchComments = async (id: string) => {
 		try {
-			const { data } = await $axios.get<ChatsAPIResponse>(`/tasks/${route.params.workspace}/${id}/comments`);
+			const { data } = await $axios.get<CommentsAPIResponse>(`/tasks/${route.params.workspace}/${id}/comments`);
 			if (!data.success) throw new Error("Something went wrong");
-			chats.value = [...data.chats];
+			comments.value = [...data.comments];
 		} catch (error) {}
 	};
 
-	const addTaskChat = async (id: string, message: string) => {
+	const addTaskComment = async (id: string, message: string) => {
 		try {
 			if (message.trim() === "") return;
-			const { data } = await $axios.post<{ success: boolean; chat: Chat }>(`/tasks/${route.params.workspace}/add-chat`, { task: id, message });
+			const { data } = await $axios.post<{ success: boolean; comment: Comment }>(`/tasks/${route.params.workspace}/add-comment`, { task: id, message });
 			if (!data.success) throw new Error("Something went wrong");
-			chats.value.unshift(data.chat);
+			comments.value.unshift(data.comment);
 		} catch (error) {
 			push.error("Failed to add comment");
 		}
@@ -93,5 +93,5 @@ export const useTask = () => {
 		if (index > -1) tasks.value.splice(index, 1, data.task);
 	};
 
-	return { chats, task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks, fetchChats, addTaskChat };
+	return { comments, task, fetchTask, deleteTask, createNewTask, updateTask, fetchTasks, fetchComments, addTaskComment };
 };

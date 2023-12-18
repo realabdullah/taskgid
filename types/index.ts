@@ -87,16 +87,16 @@ declare global {
 		team: Team[];
 	}
 
-	interface Chat {
+	interface Comment {
 		_id: string;
 		message: string;
 		user: User;
 		createdAt: string;
 	}
 
-	interface ChatsAPIResponse {
+	interface CommentsAPIResponse {
 		success: boolean;
-		chats: Chat[];
+		comments: Comment[];
 	}
 
 	interface Authn {
