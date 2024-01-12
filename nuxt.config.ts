@@ -15,17 +15,12 @@ export default defineNuxtConfig({
 		},
 		vue: {
 			script: {
-				defineModel: true,
 				propsDestructure: true,
 			},
 		},
 	},
 	imports: {
 		dirs: ["store"],
-	},
-
-	pinia: {
-		autoImports: ["defineStore", "storeToRefs"],
 	},
 
 	devServer: {
