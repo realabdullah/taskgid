@@ -22,14 +22,14 @@
 		"eslint": "^8.50.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.0",
-		"nuxt": "^3.8.2",
+		"nuxt": "^3.9.1",
 		"prettier": "^3.0.3",
 		"sass": "^1.58.3",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
 		"@knocklabs/client": "^0.8.14",
-		"@pinia/nuxt": "^0.4.7",
+		"@pinia/nuxt": "^0.5.1",
 		"@popperjs/core": "^2.11.8",
 		"@simplewebauthn/browser": "^8.3.4",
 		"@vuelidate/core": "^2.0.3",
@@ -38,7 +38,7 @@
 		"cloudinary": "^1.41.0",
 		"mitt": "^3.0.0",
 		"notivue": "^1.4.4",
-		"pinia": "^2.0.33",
+		"pinia": "^2.1.7",
 		"pusher-js": "^8.3.0",
 		"v-calendar": "^3.0.3"
 	}

@@ -54,9 +54,11 @@ await getWorkspaces();
 					</NuxtLink>
 				</div>
 
-				<div class="calendar bg-whitishBlue w-100">
-					<DatePicker v-model="date" :attributes="calendarData" transparent borderless />
-				</div>
+				<ClientOnly>
+					<div class="calendar bg-whitishBlue w-100">
+						<DatePicker v-model="date" :attributes="calendarData" transparent borderless />
+					</div>
+				</ClientOnly>
 			</div>
 
 			<div class="user position-absolute flex flex-column">
