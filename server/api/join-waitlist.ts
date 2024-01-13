@@ -13,8 +13,7 @@ export default defineEventHandler(async (event) => {
             body: JSON.stringify({ email }),
         });
         const data = await response.json();
-        // DEBUG
-        console.log("data: => ", data)
+
         if (data?.error === "Email already on the waitlist.") status = "exists"
         else status = data.success ? "success" : "fail";
     } catch (error) { status = "fail" }
