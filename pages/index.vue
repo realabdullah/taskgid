@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+useSeoMeta({
+    title: 'Taskgid - Join waitlist',
+    ogTitle: 'Taskgid - Join waitlist',
+    description: 'A task management software that helps you keep track of your to-do lists, deadlines, and progress. ',
+    ogDescription: 'A task management software that helps you keep track of your to-do lists, deadlines, and progress. ',
+})
+
 interface FormObj {
     email: string;
     submittedEmail: string;
