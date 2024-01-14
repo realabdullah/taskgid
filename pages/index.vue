@@ -144,7 +144,7 @@ body {
     h4 {
         position: absolute;
         top: 40px;
-        background: -webkit-linear-gradient(#d9d9dd, #262a34);
+        background: -webkit-linear-gradient(#454850, #d1d1d1);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -156,13 +156,13 @@ body {
     }
 
     p {
-        color: #aeaeb1;
+        color: #b9b9b9;
         text-align: center;
         font-size: clamp(0.5rem, 3.464vw + 0.354rem, 1.5rem);
 
 
         span {
-            background: -webkit-linear-gradient(#262a34, #d9d9dd);
+            background: -webkit-linear-gradient(#454850, #d1d1d1);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -203,7 +203,7 @@ body {
                 border: none;
                 outline: none;
                 background: #191920;
-                color: #F1F1F1;
+                color: #b9b9b9;
                 padding: 15px;
                 padding-left: 40px;
                 border-radius: 5px;
@@ -214,12 +214,12 @@ body {
                 }
 
                 &:focus {
-                    border: 1px solid #F1F1F1;
+                    border: 1px solid #b9b9b9;
                     transition: border 0.2s ease-in-out;
                 }
 
                 &:focus+svg {
-                    fill: #F1F1F1;
+                    fill: #b9b9b9;
                     transition: fill 0.2s ease-in-out;
                 }
             }
@@ -233,7 +233,7 @@ body {
             border: none;
             outline: none;
             background: #21212a;
-            color: #F1F1F1;
+            color: #b9b9b9;
             padding: 15px;
             border-radius: 5px;
             cursor: pointer;
@@ -259,7 +259,7 @@ body {
             .loader {
                 width: 15px;
                 height: 15px;
-                border: 2px solid #F1F1F1;
+                border: 2px solid #b9b9b9;
                 border-bottom-color: #191920;
                 border-radius: 50%;
                 display: inline-block;
@@ -296,12 +296,12 @@ body {
         gap: 10px;
 
         span {
-            color: #aeaeb1;
+            color: #b9b9b9;
             font-size: 0.9rem;
 
             .email,
             a {
-                color: #F1F1F1;
+                color: #ffffff;
             }
         }
 
