@@ -1,5 +1,10 @@
 export default defineNuxtRouteMiddleware(() => {
-	const { isTokenValid } = useToken();
+	const router = useRouter();
+	const refreshToken = useStatefulCookie("refreshToken");
+	const currentTime = new Date().toISOString();
 
-	if (isTokenValid.value) return navigateTo("/dashboard");
+	const refreshTokenIsExpired = computed(() => Date.parse(useStatefulCookie("refreshTokenExpires").value!) < Date.parse(currentTime));
+	const isRefreshTokenValid = computed(() => refreshToken.value && !refreshTokenIsExpired.value);
+
+	if (isRefreshTokenValid.value) router.push("/dashboard");
 });

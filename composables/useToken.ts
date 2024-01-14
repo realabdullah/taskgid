@@ -4,7 +4,6 @@ export const useToken = () => {
 		public: { apiUrl },
 	} = useRuntimeConfig();
 	const push = usePush();
-	const currentTime = new Date().toISOString();
 
 	const setToken = (access: Token, refresh: Token) => {
 		useStatefulCookie("accessToken").value = access.token;
@@ -31,6 +30,7 @@ export const useToken = () => {
 			if (!success) throw new Error("Failed to refresh token");
 			else setToken(accessToken, refreshToken);
 		} catch (error) {
+			clearToken();
 			navigateTo("/login");
 		}
 	};
@@ -49,10 +49,5 @@ export const useToken = () => {
 		}
 	};
 
-	const isTokenExpired = computed(() => Date.parse(currentTime) < Date.parse(useStatefulCookie("accessTokenExpires").value!));
-	const isRefreshTokenExpired = computed(() => Date.parse(currentTime) < Date.parse(useStatefulCookie("refreshTokenExpires").value!));
-	const isTokenValid = computed(() => useStatefulCookie("accessToken").value && !isTokenExpired.value);
-	const isRefreshTokenValid = computed(() => useStatefulCookie("refreshToken").value && !isRefreshTokenExpired.value);
-
-	return { setToken, clearToken, isTokenValid, isRefreshTokenValid, refreshAccessToken, logout };
+	return { setToken, clearToken, refreshAccessToken, logout };
 };
