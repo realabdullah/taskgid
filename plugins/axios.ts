@@ -2,8 +2,7 @@ import axios from "axios";
 
 export default defineNuxtPlugin(() => {
 	const bearerToken = useStatefulCookie("accessToken").value;
-	const config = useRuntimeConfig();
-	const baseURL = config.public.apiUrl;
+	const baseURL = import.meta.env.VITE_API_URL;
 	const instance = axios.create({
 		baseURL,
 		headers: {
