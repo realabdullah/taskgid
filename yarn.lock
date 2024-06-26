@@ -5836,7 +5836,7 @@ nuxi@^3.12.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-nuxt@^3.9.1:
+nuxt@^3.12.2:
   version "3.12.2"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-3.12.2.tgz#c2057bead1e342e4d19120d68b11843a17ad5e7c"
   integrity sha512-DkQvGbILEUwvXJ9TG2iTMvyO6D9ABLyA5bJ+ns8ZgWatfSXC7hXnL//PTYF7neYUzyYn0e5fLHcXgRLa/9YoLA==
