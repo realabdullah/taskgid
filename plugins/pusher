@@ -1,12 +1,11 @@
 import Pusher from "pusher-js";
 
 export default defineNuxtPlugin(() => {
-	const config = useRuntimeConfig();
 	const push = usePush();
 	const { userId, workspaces, teams } = storeToRefs(useStore());
 
-	const pusher = new Pusher(config.public.pusherKey, {
-		cluster: config.public.pusherCluster,
+	const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
+		cluster: import.meta.env.VITE_PUSHER_CLUSTER,
 	});
 
 	const userChannel = pusher.subscribe(`user-${userId.value}`);

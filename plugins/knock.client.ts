@@ -1,14 +1,13 @@
 import Knock from "@knocklabs/client";
 
 export default defineNuxtPlugin(async () => {
-	const config = useRuntimeConfig();
 	const { user, notifications } = storeToRefs(useStore());
 
 	try {
-		const knock = new Knock(config.public.knockKey);
+		const knock = new Knock(import.meta.env.VITE_KNOCK_API_KEY);
 		knock.authenticate(user.value.email);
 
-		const feedClient = knock.feeds.initialize(config.public.knockChannelId);
+		const feedClient = knock.feeds.initialize(import.meta.env.VITE_KNOCK_CHANNEL_ID);
 
 		feedClient.listenForUpdates();
 

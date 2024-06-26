@@ -22,22 +22,9 @@ export default defineNuxtConfig({
 	imports: {
 		dirs: ["store"],
 	},
-
 	devServer: {
 		port: 1234,
 	},
-
-	runtimeConfig: {
-		public: {
-			baseUrl: process.env.BASE_URL,
-			apiUrl: process.env.API_URL,
-			pusherKey: process.env.PUSHER_KEY,
-			pusherCluster: process.env.PUSHER_CLUSTER,
-			knockKey: process.env.KNOCK_API_KEY,
-			knockChannelId: process.env.KNOCK_CHANNEL_ID,
-		},
-	},
-
 	notivue: {
 		position: "top-right",
 	},

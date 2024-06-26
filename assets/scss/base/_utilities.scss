@@ -1,14 +1,6 @@
 $colors: (
-	"white": $col-white,
-	"blue": $col-blue,
-	"darkBlue": $col-darkBlue,
-	"whitishBlue": $col-whitishBlue,
-	"greyishBlue": $col-greyishBlue,
-	"grey": $col-grey,
-	"grey-2": $col-grey-2,
-	"grey-3": $col-grey-3,
-	"danger": $col-danger,
-	"black": $col-black,
+	"white": var(--white),
+	"black": var(--dark),
 	"transparent": transparent,
 ) !default;
 

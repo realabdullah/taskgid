@@ -98,7 +98,7 @@ await getWorkspaces();
 <style lang="scss" scoped>
 .dashboard {
 	height: 100dvh;
-	background: #f8f8f9;
+	background: var(--main-color);
 
 	&__left {
 		max-width: 30rem;
@@ -125,41 +125,41 @@ await getWorkspaces();
 
 			.logo {
 				@include font(3rem, 100%);
-				color: #171718;
+				color: var(--dark);
 				margin-bottom: -2rem;
 			}
 
 			&__nav {
 				@include gap(0.5rem);
 				padding-bottom: 3rem;
-				border-bottom: 1.5px solid #e2e2e8;
+				border-bottom: 1.5px solid var(--sec-border-color);
 
 				&-item {
 					@include gap(1.2rem);
 					@include font(1.6rem, 100%);
 					letter-spacing: 0.03rem;
-					color: #66656f;
+					color: var(--text-color);
 					padding: 1rem;
 					transition: all 0.3s ease-in-out;
 
 					&:hover {
-						color: #000000;
+						color: var(--dark);
 						font-weight: 700;
 					}
 
 					&.active {
-						background-color: #ffffff;
-						color: #000000;
+						background-color: var(--white);
+						color: var(--dark);
 						border-radius: 1.4rem;
-						border: 1.5px solid #e2e2e8;
+						border: 1.5px solid var(--sec-border-color);
 						font-weight: 700;
 					}
 				}
 			}
 
 			.calendar {
-				background-color: #ffffff;
-				border: 1.5px solid #e2e2e8;
+				background-color: var(--white);
+				border: 1.5px solid var(--sec-border-color);
 				border-radius: 1.4rem;
 				padding: 1.6rem;
 				margin-bottom: 2rem;
@@ -167,7 +167,7 @@ await getWorkspaces();
 		}
 
 		.user {
-			background: #f8f8f9;
+			background: var(--main-color);
 			bottom: 2rem;
 			left: 1rem;
 			right: 2rem;
@@ -179,20 +179,20 @@ await getWorkspaces();
 
 				h5 {
 					@include font(1.6rem, 100%);
-					color: #454447;
+					color: var(--text-color);
 				}
 
 				span {
 					@include font(1.4rem, 100%);
-					color: #66656f;
+					color: var(--text-color);
 				}
 			}
 
 			.copyright {
 				@include font(1.2rem, 100%);
-				color: #66656f;
+				color: var(--text-color);
 				padding-top: 2rem;
-				border-top: 1.5px solid #e2e2e8;
+				border-top: 1.5px solid var(--sec-border-color);
 			}
 		}
 	}
@@ -202,8 +202,7 @@ await getWorkspaces();
 		margin: 2rem;
 		margin-left: 0;
 		border-radius: 1.4rem;
-		border: 1.5px solid #e2e2e8;
-		box-shadow: #959da533 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 		z-index: 100;
 		overflow: hidden;
 
@@ -238,7 +237,7 @@ await getWorkspaces();
 		border-radius: 50%;
 		object-fit: cover;
 		padding: 0.5rem;
-		border: 1.5px solid #e2e2e8;
+		border: 1.5px solid var(--sec-border-color);
 	}
 }
 </style>

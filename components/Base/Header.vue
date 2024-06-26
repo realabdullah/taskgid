@@ -54,9 +54,10 @@ header {
 
 		input {
 			height: 5rem;
-			border: 1.5px solid #e2e2e8;
+			border: 1.5px solid var(--sec-border-color);
 			border-radius: 1.2rem;
 			padding: 1.6rem;
+			outline: none;
 		}
 
 		&-icon {
@@ -69,15 +70,14 @@ header {
 	.logout-popup {
 		top: 4rem;
 		right: 0;
-		border: 1.5px solid #e2e2e8;
 		border-radius: 1.4rem;
 		padding: 0.7rem 1.5rem;
-		box-shadow: #959da533 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 		transition: all 0.3s ease-in-out;
 
 		button {
 			@include font(1.4rem, 100%);
-			color: #454447;
+			color: var(--text-color);
 			padding: 0.5rem 0;
 			width: 100%;
 		}

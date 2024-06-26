@@ -24,21 +24,19 @@ defineProps<{
 	width: 40rem;
 	padding: 1.5rem;
 	border-radius: 1.4rem;
-	border: 1.5px solid #e2e2e8;
-	box-shadow: #959da533 0px 8px 24px;
+	box-shadow: var(--box-shadow);
 
 	p {
 		@include font(1.6rem, 130%);
-		color: #66656f;
+		color: var(--text-color);
 	}
 
 	a {
 		border-radius: 1.4rem;
-		border: 1.5px solid #e2e2e8;
 		padding: 0.7rem 1.5rem;
-		box-shadow: #959da533 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 		@include font(1.6rem, 130%);
-		color: #66656f;
+		color: var(--text-color);
 	}
 }
 </style>

@@ -76,12 +76,13 @@ const previewImage = async (e: Event) => {
 
 	h3 {
 		@include font(2.4rem, 3.2rem);
+		color: var(--text-color);
 	}
 
 	.profile-container {
 		height: 34rem;
 		border-radius: 2.4rem;
-		box-shadow: #110c2e26 0 4.8rem 10rem 0;
+		box-shadow: var(--box-shadow);
 
 		.uploaded {
 			bottom: -3rem;
@@ -91,7 +92,7 @@ const previewImage = async (e: Event) => {
 
 		img {
 			object-fit: cover;
-			border: 1.5px solid #e2e2e8;
+			border: 1.5px solid var(--sec-border-color);
 			border-radius: 2.4rem;
 		}
 
@@ -100,10 +101,11 @@ const previewImage = async (e: Event) => {
 			transform: translate(-50%, 0);
 			bottom: 2.2rem;
 			max-width: 18.9rem;
-			background: #87838361;
+			background: var(--sec-border-color);
 			border-radius: 1.2rem;
 			padding: 1.2rem;
 			@include font(1.6rem, 1.9rem);
+			color: var(--text-color);
 		}
 	}
 }

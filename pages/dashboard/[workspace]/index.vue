@@ -203,6 +203,7 @@ onUnmounted(() => {
 		}
 
 		&-title {
+			color: var(--text-color);
 			@include font(2.4rem, 130%);
 
 			&:last-child {
@@ -212,28 +213,28 @@ onUnmounted(() => {
 
 		&-button {
 			@include font(1.4rem, 100%);
-			border: 1.5px solid #e2e2e8;
+			color: var(--text-color);
+			border: 1.5px solid var(--sec-border-color);
 			border-radius: 1.4rem;
 			padding: 0.7rem 1.5rem;
 			transition: all 0.3s ease-in-out;
 
 			&:hover {
-				background-color: #e2e2e8;
+				background-color: var(--sec-border-color);
 			}
 
 			.popup {
 				width: 15rem;
 				top: 4rem;
 				right: 0;
-				border: 1.5px solid #e2e2e8;
 				border-radius: 1.4rem;
-				box-shadow: #959da533 0px 8px 24px;
+				box-shadow: var(--box-shadow);
 				transition: all 0.3s ease-in-out;
 				z-index: 9;
 
 				button {
 					@include font(1.4rem, 100%);
-					color: #454447;
+					color: var(--text-color);
 					width: 100%;
 					padding: 0.7rem 1.5rem;
 
@@ -250,11 +251,11 @@ onUnmounted(() => {
 					}
 
 					&:hover {
-						background-color: #e2e2e8;
+						background-color: var(--sec-border-color);
 					}
 
 					&.selected {
-						background-color: #e2e2e8;
+						background-color: var(--sec-border-color);
 					}
 				}
 			}
@@ -281,15 +282,14 @@ onUnmounted(() => {
 			width: 100%;
 			height: calc(100dvh - 25rem);
 			border-radius: 1.4rem;
-			border: 1.5px solid #e2e2e8;
-			box-shadow: #959da533 0px 8px 24px;
+			box-shadow: var(--box-shadow);
 
 			&-text {
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
 				@include font(1.8rem, 130%);
-				color: #66656f;
+				color: var(--text-color);
 			}
 		}
 	}

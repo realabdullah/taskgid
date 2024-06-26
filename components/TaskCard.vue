@@ -61,17 +61,16 @@ const onCardClick = () => {
 	padding: 1.6rem;
 	padding-top: 6rem;
 	border-radius: 1.4rem;
-	border: 1.5px solid #e2e2e8;
 	@include gap(1.2rem);
-	box-shadow: #959da533 0px 8px 24px;
+	box-shadow: var(--box-shadow);
 
 	&__title {
-		color: #454447;
+		color: var(--dark);
 		@include font(1.6rem, 130%);
 	}
 
 	&__action {
-		color: #e2e2e8;
+		color: var(--sec-border-color);
 		width: 2rem;
 		height: 2rem;
 	}
@@ -80,20 +79,19 @@ const onCardClick = () => {
 		width: 15rem;
 		top: 4rem;
 		right: 0;
-		border: 1.5px solid #e2e2e8;
 		border-radius: 1.4rem;
-		box-shadow: #959da533 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 		transition: all 0.3s ease-in-out;
 		z-index: 9;
 
 		button {
 			@include font(1.4rem, 100%);
-			color: #454447;
+			color: var(--dark);
 			padding: 1rem 2rem;
 			transition: all 0.3s ease-in-out;
 
 			&:hover {
-				background-color: #e2e2e8;
+				background-color: var(--sec-border-color);
 
 				&:first-child {
 					border-top-left-radius: 1.4rem;
@@ -111,7 +109,7 @@ const onCardClick = () => {
 	&__description {
 		max-width: 60rem;
 		margin-top: 1.5rem;
-		color: #66656f;
+		color: var(--text-color);
 		@include font(1.4rem, 100%);
 	}
 
@@ -120,14 +118,14 @@ const onCardClick = () => {
 		@include gap(1.2rem);
 
 		&-item {
-			color: #66656f;
+			color: var(--text-color);
 			@include font(1.4rem, 100%);
 		}
 
 		&-priority {
 			top: 1.5rem;
 			right: 1.5rem;
-			color: #66656f;
+			color: var(--text-color);
 			padding: 0.5rem 2rem 0.7rem;
 			border-radius: 1.4rem;
 			@include font(1.4rem, 100%);

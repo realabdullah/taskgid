@@ -86,7 +86,7 @@ await getWorkspaces();
 		<div class="workspaces">
 			<div class="flex items-center content-between">
 				<h2 class="weight-medium">{{ workspaceHeader }}</h2>
-				<button class="bg-transparent cursor-pointer col-grey-2" @click="(modalState = 'create'), (isModalOpen = true)">Create a workspace</button>
+				<button class="bg-transparent cursor-pointer" style="color: var(--text-color)" @click="(modalState = 'create'), (isModalOpen = true)">Create a workspace</button>
 			</div>
 
 			<ul class="workspace grid">
@@ -106,8 +106,8 @@ await getWorkspaces();
 					</div>
 					<span class="created-by">Created by {{ name.toLowerCase() === workspace.owner.toLowerCase() ? "you" : workspace.owner }}</span>
 					<div class="w-100 flex items-center content-between">
-						<nuxt-link :to="`/dashboard/${workspace.slug}`" class="col-grey-2">View</nuxt-link>
-						<button v-if="name.toLowerCase() === workspace.owner.toLowerCase()" class="contextmenu bg-transparent col-grey-2 cursor-pointer options" @click="openMenu(workspace.slug)">
+						<nuxt-link :to="`/dashboard/${workspace.slug}`" style="color: var(--text-color)">View</nuxt-link>
+						<button v-if="name.toLowerCase() === workspace.owner.toLowerCase()" class="contextmenu bg-transparent cursor-pointer options" @click="openMenu(workspace.slug)">
 							<IconsMore />
 						</button>
 					</div>
@@ -124,7 +124,7 @@ await getWorkspaces();
 		<CreateWorkspace v-if="['create', 'update'].includes(modalState)" :data="form" :usage="modalState" :slug="selectedWorkspaceSlug" @close="closeModal" />
 		<template v-else-if="modalState === 'delete'">
 			<div class="modal w-100 flex flex-column content-center items-center">
-				<p class="col-grey-2">Are you sure you want to delete this workspace? This action cannot be undone.</p>
+				<p style="color: var(--text-color)">Are you sure you want to delete this workspace? This action cannot be undone.</p>
 				<div class="flex items-center content-between w-100" style="gap: 1.5rem">
 					<BaseButton value="Cancel" type="outline" usage="button" @click="closeModal" />
 					<BaseButton value="Delete" type="danger" usage="button" @click="handleDeletion" />
@@ -144,6 +144,7 @@ await getWorkspaces();
 
 	header {
 		h1 {
+			color: var(--text-color);
 			@include font(4rem, 100%);
 
 			@media screen and (max-width: 600px) {
@@ -153,6 +154,7 @@ await getWorkspaces();
 	}
 
 	.welcome {
+		color: var(--text-color);
 		margin-top: 10rem;
 		@include font(3rem, 100%);
 
@@ -164,6 +166,10 @@ await getWorkspaces();
 
 	.workspaces {
 		margin-top: 3rem;
+
+		h2 {
+			color: var(--text-color);
+		}
 
 		.workspace {
 			margin-top: 5rem;
@@ -177,8 +183,7 @@ await getWorkspaces();
 			&__card {
 				padding: 2rem;
 				border-radius: 0.5rem;
-				border: 1px solid #d5d1d1c8;
-				box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+				box-shadow: var(--box-shadow);
 				@include gap(1.5rem);
 
 				img {
@@ -190,10 +195,12 @@ await getWorkspaces();
 				}
 
 				h3 {
+					color: var(--text-color);
 					@include font(2rem, 100%);
 				}
 
 				p {
+					color: var(--text-color);
 					@include font(1.5rem, 100%);
 				}
 
@@ -201,6 +208,7 @@ await getWorkspaces();
 					@include gap(1rem);
 
 					span {
+						color: var(--text-color);
 						@include font(1.5rem, 100%);
 					}
 
@@ -216,20 +224,21 @@ await getWorkspaces();
 				}
 
 				.created-by {
+					color: var(--text-color);
 					@include font(1rem, 100%);
 				}
 
 				.options {
 					width: 3rem;
 					height: 3rem;
+					color: var(--text-color);
 
 					&-popup {
 						bottom: -7rem;
 						right: 2rem;
 						width: 10rem;
 						border-radius: 0.5rem;
-						border: 1px solid #d5d1d1c8;
-						box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+						box-shadow: var(--box-shadow);
 						opacity: 0;
 						visibility: hidden;
 						transition: all 0.2s ease-in-out;
@@ -241,8 +250,9 @@ await getWorkspaces();
 
 						button {
 							padding: 1.3rem;
-							border-bottom: 1px solid #d5d1d1c8;
+							border-bottom: 1px solid var(--sec-border-color);
 							@include font(1.5rem, 100%);
+							color: var(--text-color);
 
 							&:last-child {
 								border-bottom: none;

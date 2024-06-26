@@ -25,7 +25,7 @@ const togglePassword = () => {
 
 <template>
 	<label :for="id" class="w-100 flex flex-column items-start content-center">
-		<span v-if="!!label" class="w-100 form-label col-grey weight-medium flex items-center content-between">
+		<span v-if="!!label" class="w-100 form-label weight-medium flex items-center content-between">
 			{{ label }}
 			<template v-if="errors && errors.length > 0">
 				<span v-for="error in errors" :key="error.$uid" class="error weight-regular">{{ error.$message }}</span>
@@ -61,12 +61,13 @@ label {
 	.form-label {
 		@include font(1.4rem, 140%);
 		margin-bottom: 0.6rem;
+		color: var(--text-color);
 	}
 
 	input {
-		color: #667085;
+		color: var(--text-color);
 		border-radius: 0.8rem;
-		border: 1.5px solid #e2e2e8;
+		border: 1.5px solid var(--sec-border-color);
 		padding: 0.8rem 1.2rem;
 		@include font(1.6rem, 150%);
 
@@ -80,7 +81,7 @@ label {
 
 		&:disabled {
 			cursor: not-allowed;
-			background-color: #f5f5f5;
+			background-color: var(--main-color);
 		}
 	}
 
@@ -91,7 +92,7 @@ label {
 }
 
 [type="date"] {
-	background: #fff url(@/assets/images/calendar.svg) 90% 50% no-repeat;
+	background: var(--white) url(@/assets/images/calendar.svg) 90% 50% no-repeat;
 }
 
 [type="date"]::-webkit-inner-spin-button {

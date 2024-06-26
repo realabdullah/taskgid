@@ -11,7 +11,7 @@ const handleError = () => {
 
 <template>
 	<div class="error position-relative h-full w-100 overflow-hidden" :class="{ 'not-found': error?.statusCode === 404 }">
-		<button class="position-absolute bg-transparent border-none cursor-pointer col-darkBlue" @click="handleError">Home 🏡</button>
+		<button class="position-absolute bg-transparent border-none cursor-pointer col-text" @click="handleError">Home 🏡</button>
 		<h3>{{ error?.statusMessage }}</h3>
 	</div>
 </template>
@@ -51,8 +51,8 @@ const handleError = () => {
 			right: 0;
 			border-top-color: transparent;
 			border-left-color: transparent;
-			border-bottom-color: $col-darkBlue;
-			border-right-color: $col-darkBlue;
+			border-bottom-color: var(--text-color);
+			border-right-color: var(--text-color);
 		}
 
 		&::before {
@@ -60,16 +60,16 @@ const handleError = () => {
 			left: 0;
 			border-bottom-color: transparent;
 			border-right-color: transparent;
-			border-top-color: $col-darkBlue;
-			border-left-color: $col-darkBlue;
+			border-top-color: var(--text-color);
+			border-left-color: var(--text-color);
 		}
 
 		&:hover::after,
 		&:hover::before {
-			border-bottom-color: $col-darkBlue;
-			border-right-color: $col-darkBlue;
-			border-top-color: $col-darkBlue;
-			border-left-color: $col-darkBlue;
+			border-bottom-color: var(--text-color);
+			border-right-color: var(--text-color);
+			border-top-color: var(--text-color);
+			border-left-color: var(--text-color);
 			width: 100%;
 			height: 100%;
 		}

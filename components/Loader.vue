@@ -7,10 +7,10 @@
 	width: 1.2rem;
 	height: 1.2rem;
 	border-radius: 50%;
-	background-color: #fff;
+	background-color: var(--white);
 	box-shadow:
-		24px 0 #fff,
-		-24px 0 #fff;
+		24px 0 var(--white),
+		-24px 0 var(--white);
 	position: relative;
 	animation: flash 0.5s ease-out infinite alternate;
 }
@@ -20,10 +20,10 @@
 		background-color: #fff2;
 		box-shadow:
 			24px 0 #fff2,
-			-24px 0 #fff;
+			-24px 0 var(--white);
 	}
 	50% {
-		background-color: #fff;
+		background-color: var(--white);
 		box-shadow:
 			24px 0 #fff2,
 			-24px 0 #fff2;
@@ -31,7 +31,7 @@
 	100% {
 		background-color: #fff2;
 		box-shadow:
-			24px 0 #fff,
+			24px 0 var(--white),
 			-24px 0 #fff2;
 	}
 }

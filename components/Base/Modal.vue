@@ -24,7 +24,7 @@ defineEmits(["close-modal"]);
 
 <style lang="scss" scoped>
 .modal {
-	border: 1.5px solid #e2e2e8;
+	border: 1.5px solid var(--sec-border-color);
 	border-radius: 2rem;
 	width: 90%;
 	max-height: 90vh;
@@ -32,7 +32,6 @@ defineEmits(["close-modal"]);
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	box-shadow: #64646f33 0 0.7rem 2.9rem 0;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 
@@ -43,7 +42,7 @@ defineEmits(["close-modal"]);
 	.close-modal {
 		width: 3rem;
 		height: 3rem;
-		border: 1.5px solid #e2e2e8;
+		border: 1.5px solid var(--sec-border-color);
 		border-radius: 50%;
 		right: 0.5rem;
 		top: 0.5rem;

@@ -15,8 +15,8 @@ const modelValue = defineModel<string>();
 
 <template>
 	<label :for="id" class="w-100 flex flex-column items-start position-relative">
-		<span v-if="!!label" class="form-label weight-regular col-darkBlue">{{ label }}</span>
-		<textarea :id="id" v-model="modelValue" :name="id" :required="required" class="w-100 weight-regular col-grey-2 bordered"></textarea>
+		<span v-if="!!label" class="form-label weight-regular col-text">{{ label }}</span>
+		<textarea :id="id" v-model="modelValue" :name="id" :required="required" class="w-100 weight-regular bordered"></textarea>
 	</label>
 </template>
 
@@ -33,6 +33,7 @@ label {
 		padding: 1.6rem;
 		font-family: "Amulya", sans-serif;
 		@include font(1.6rem, 1.9rem);
+		color: var(--text-color);
 		resize: none;
 	}
 }

@@ -198,6 +198,7 @@ onUnmounted(() => {
 	padding: 2rem;
 
 	&__header {
+		color: var(--text-color);
 		margin-bottom: 3rem;
 	}
 
@@ -222,16 +223,17 @@ onUnmounted(() => {
 
 	&__title {
 		@include font(2.4rem, 130%);
+		color: var(--text-color);
 	}
 
 	&__action {
-		border: 1.5px solid #e2e2e8;
 		border-radius: 1rem;
 		padding: 0.5rem 0.8rem;
-		box-shadow: #959da533 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 	}
 
 	&__description {
+		color: var(--text-color);
 		@include font(1.6rem, 130%);
 		margin-bottom: 3rem;
 		resize: none;
@@ -245,13 +247,14 @@ onUnmounted(() => {
 			@include gap(4rem);
 
 			&-title {
-				color: #64646f;
+				color: var(--dark);
 				@include font(1.6rem, 100%);
 				width: 7rem;
 			}
 
 			&-value {
 				@include font(1.6rem, 100%);
+				color: var(--text-color);
 			}
 		}
 	}
@@ -260,7 +263,7 @@ onUnmounted(() => {
 		left: 10rem;
 		width: 15rem;
 		height: auto;
-		border: 1.5px solid #e2e2e8;
+		border: 1.5px solid var(--sec-border-color);
 		border-radius: 1rem;
 		padding: 1rem;
 
@@ -278,10 +281,10 @@ onUnmounted(() => {
 
 		button {
 			@include font(1.4rem, 100%);
-			border: 1.5px solid #e2e2e8;
 			border-radius: 1rem;
 			padding: 0.8rem 1.6rem;
-			box-shadow: #959da533 0px 8px 24px;
+			color: var(--text-color);
+			box-shadow: var(--box-shadow);
 		}
 	}
 
@@ -289,8 +292,9 @@ onUnmounted(() => {
 		gap: 1rem;
 		@include font(1.6rem, 100%);
 		margin-top: 2rem;
-		border-bottom: 0.1rem solid #e2e2e8;
+		border-bottom: 0.1rem solid var(--sec-border-color);
 		padding-bottom: 1.5rem;
+		color: var(--text-color);
 	}
 
 	.comments {
@@ -302,7 +306,7 @@ onUnmounted(() => {
 			padding-bottom: 1.5rem;
 
 			&:not(:last-child) {
-				border-bottom: 0.1rem solid #e2e2e8;
+				border-bottom: 0.1rem solid var(--sec-border-color);
 			}
 
 			@media screen and (max-width: 600px) {
@@ -310,7 +314,7 @@ onUnmounted(() => {
 			}
 
 			&.box {
-				background: #f9f9f9;
+				background: var(--main-color);
 				border-radius: 0.7rem;
 				margin-bottom: 1rem;
 				padding-bottom: 0;
@@ -320,6 +324,7 @@ onUnmounted(() => {
 					border: none;
 					resize: none;
 					padding: 1rem;
+					color: var(--text-color);
 					outline: none;
 					@include font(1.6rem, 130%);
 				}
@@ -329,10 +334,16 @@ onUnmounted(() => {
 					padding: 0 1rem 1rem;
 
 					button {
-						border: 1.5px solid #e2e2e8;
 						border-radius: 1rem;
 						padding: 0.5rem 0.8rem;
-						box-shadow: #959da533 0px 8px 24px;
+						color: var(--text-color);
+						box-shadow: var(--box-shadow);
+						transition: all 0.2s ease-in-out;
+
+						&:disabled {
+							opacity: 0.5;
+							cursor: not-allowed;
+						}
 					}
 				}
 			}
@@ -342,7 +353,7 @@ onUnmounted(() => {
 			}
 
 			.date {
-				color: #64646f;
+				color: var(--dark);
 				@include font(1.3rem, 100%);
 				margin-right: 2rem;
 			}
@@ -351,18 +362,19 @@ onUnmounted(() => {
 				width: 3rem;
 				height: 3rem;
 				border-radius: 50%;
-				box-shadow: #959da533 0px 8px 24px;
+				box-shadow: var(--box-shadow);
 			}
 
 			.content {
 				gap: 0.5rem;
 
 				.user {
-					color: #64646f;
+					color: var(--dark);
 					@include font(1.3rem, 100%);
 				}
 
 				.message {
+					color: var(--text-color);
 					@include font(1.5rem, 130%);
 				}
 			}
@@ -372,6 +384,7 @@ onUnmounted(() => {
 	.empty {
 		margin-top: 2.5rem;
 		@include font(1.5rem, 130%);
+		color: var(--text-color);
 	}
 }
 

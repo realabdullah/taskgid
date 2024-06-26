@@ -16,8 +16,8 @@ const sendResetCode = () => {
 <template>
 	<div class="reset-page w-100 h-full">
 		<div class="forget__pasword w-100 m-auto h-100 flex flex-column content-center items-start position-fixed">
-			<h5 class="forget__pasword-header weight-semiBold col-black">Forgot Password?</h5>
-			<p class="forget__pasword-text weight-regular col-grey-3">We are sorry to hear that happen. Don’t be sad, let's help you get back to productivity in no time.</p>
+			<h5 class="forget__pasword-header weight-semiBold">Forgot Password?</h5>
+			<p class="forget__pasword-text weight-regular">We are sorry to hear that happen. Don’t be sad, let's help you get back to productivity in no time.</p>
 
 			<form class="w-100 flex flex-column content-center items-center" @submit.prevent="sendResetCode">
 				<BaseInput v-if="resetCodesent" id="otp" v-model="resetCode" type="number" label="Enter OTP" />
@@ -42,11 +42,13 @@ const sendResetCode = () => {
 		&-header {
 			@include font(2.4rem, 3.2rem);
 			margin-bottom: 1.2rem;
+			color: var(--dark);
 		}
 
 		&-text {
 			@include font(1.4rem, 2rem);
 			margin-bottom: 3.2rem;
+			color: var(--text-color);
 		}
 
 		form {

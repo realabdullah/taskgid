@@ -8,9 +8,6 @@ definePageMeta({
 	middleware: ["guest"],
 });
 
-const {
-	public: { apiUrl },
-} = useRuntimeConfig();
 const { isAuthnSupported, loginWithAuthn } = useAuthn();
 const { setToken } = useToken();
 const push = usePush();
@@ -34,7 +31,7 @@ const submitForm = async () => {
 		await v$.value.$validate();
 		if (v$.value.$error) return push.error("Please fill all the required fields.");
 		submitting.value = true;
-		const response = await $fetch<UserAPiResponse>(`${apiUrl}/auth/login`, {
+		const response = await $fetch<UserAPiResponse>(`${import.meta.env.VITE_API_URL}/auth/login`, {
 			method: "POST",
 			body: { ...form },
 		});
@@ -79,9 +76,9 @@ const authnLogin = async () => {
 				<div class="flex items-center content-between w-100">
 					<label v-if="isAuthnSupported" for="use-passkey" class="flex items-center cursor-pointer" style="gap: 0.5rem">
 						<input id="use-passkey" v-model="usePasskey" type="checkbox" class="mr-1" />
-						<span class="weight-regular col-grey">Login with pass key</span>
+						<span class="weight-regular" style="color: var(--text-color)">Login with pass key</span>
 					</label>
-					<NuxtLink to="/forget-password" class="cursor-pointer text-unset" style="color: #66656f">Forgot Password ?</NuxtLink>
+					<NuxtLink to="/forget-password" class="cursor-pointer text-unset" style="color: var(--text-color)">Forgot Password ?</NuxtLink>
 				</div>
 				<BaseButton :value="submitting ? 'loading' : 'Login'">
 					<svg v-if="usePasskey" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">

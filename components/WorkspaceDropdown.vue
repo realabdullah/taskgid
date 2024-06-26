@@ -42,18 +42,19 @@ const switchWorkspace = (workspace: string) => {
 
 <style lang="scss" scoped>
 .workspace__dropdown {
-	background-color: #ffffff;
-	border: 1.5px solid #e2e2e8;
+	background-color: var(--white);
+	border: 1.5px solid var(--sec-border-color);
 	border-radius: 1.4rem;
 
 	&.active {
 		border: none;
-		background-color: #ededef;
+		background-color: var(--sec-border-color);
 		transition: all 0.3s ease-in-out;
 	}
 
 	.current {
 		padding: 1rem;
+		border-radius: 1.4rem;
 
 		img {
 			width: 4.5rem;
@@ -66,10 +67,12 @@ const switchWorkspace = (workspace: string) => {
 			@include gap(0.4rem);
 
 			span {
+				color: var(--text-color);
 				@include font(1.2rem, 100%);
 			}
 
 			.title {
+				color: var(--text-color);
 				@include font(1.4rem, 130%);
 			}
 		}
@@ -78,7 +81,8 @@ const switchWorkspace = (workspace: string) => {
 	&-list {
 		padding: 1.6rem;
 		border-radius: 1.4rem;
-		border: 1.5px solid #e2e2e8;
+		background-color: var(--white);
+		border: 1.5px solid var(--sec-border-color);
 		@include gap(2rem);
 		animation: slide-down 0.3s ease-in-out;
 
@@ -93,25 +97,25 @@ const switchWorkspace = (workspace: string) => {
 			}
 
 			span {
-				color: #66656f;
+				color: var(--text-color);
 				@include font(1.6rem, 100%);
 				transition: color 0.3s ease-in-out;
 
 				&:hover {
-					color: #000000;
+					color: var(--dark);
 				}
 			}
 		}
 
 		button {
 			padding-top: 2rem;
-			border-top: 1.5px solid #f1f1f2;
-			color: #66656f;
+			border-top: 1.5px solid var(--sec-border-color);
+			color: var(--text-color);
 			@include font(1.6rem, 100%);
 			transition: color 0.3s ease-in-out;
 
 			&:hover {
-				color: #000000;
+				color: var(--dark);
 			}
 		}
 	}

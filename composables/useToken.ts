@@ -1,8 +1,5 @@
 export const useToken = () => {
 	const { $axios } = useNuxtApp();
-	const {
-		public: { apiUrl },
-	} = useRuntimeConfig();
 	const push = usePush();
 
 	const setToken = (access: Token, refresh: Token) => {
@@ -22,7 +19,7 @@ export const useToken = () => {
 
 	const refreshAccessToken = async () => {
 		try {
-			const { data } = await $axios.post(`${apiUrl}/auth/refresh`, {
+			const { data } = await $axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
 				method: "POST",
 				body: JSON.stringify({ refreshToken: useStatefulCookie("refreshToken").value }),
 			});
@@ -37,7 +34,7 @@ export const useToken = () => {
 
 	const logout = async () => {
 		try {
-			const { data } = await $axios.post(`${apiUrl}/auth/logout`, {
+			const { data } = await $axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {
 				method: "POST",
 			});
 			const { success } = data as { success: boolean };

@@ -2,9 +2,6 @@ import { browserSupportsWebAuthn, startRegistration, startAuthentication } from 
 
 export const useAuthn = () => {
 	const push = usePush();
-	const {
-		public: { apiUrl },
-	} = useRuntimeConfig();
 	const { savedDevices } = storeToRefs(useStore());
 	const { $axios } = useNuxtApp();
 	const isAuthnSupported = ref(false);
@@ -46,12 +43,12 @@ export const useAuthn = () => {
 	};
 
 	const loginWithAuthn = async (email: string) => {
-		const response = await $fetch<{ success: boolean; options: any }>(`${apiUrl}/auth/request-authn-login`, {
+		const response = await $fetch<{ success: boolean; options: any }>(`${import.meta.env.VITE_API_URL}/auth/request-authn-login`, {
 			method: "POST",
 			body: JSON.stringify({ email }),
 		});
 		const attResp = await startAuthentication(response.options);
-		const auth = await $fetch<TokenAPIResponse>(`${apiUrl}/auth/authn-login`, {
+		const auth = await $fetch<TokenAPIResponse>(`${import.meta.env.VITE_API_URL}/auth/authn-login`, {
 			method: "POST",
 			body: JSON.stringify({ email, attResp }),
 		});

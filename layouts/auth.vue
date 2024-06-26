@@ -42,8 +42,7 @@ const route = useRoute();
 		width: 18rem;
 		border-radius: 1.2rem;
 		padding: 1.5rem 3rem;
-		border: 1px solid #d5d1d1c8;
-		box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+		box-shadow: var(--box-shadow);
 		transition: all 0.2s ease-in-out;
 
 		&:hover {
