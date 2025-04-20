@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-definePageMeta({ layout: "auth", name: "login" });
+definePageMeta({ layout: "auth", name: "signup" });
 </script>
 
 <template>
@@ -10,25 +10,28 @@ definePageMeta({ layout: "auth", name: "login" });
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 			<div class="flex flex-col space-y-2 text-center">
 				<div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600">
-					<Icon name="hugeicons:checkmark-circle-03" :size="24" class="text-white" />
+                    <Icon name="hugeicons:checkmark-circle-03" :size="24" class="text-white" />
 				</div>
-				<h1 class="text-3xl font-bold">Welcome back</h1>
-				<p class="text-muted-foreground text-sm">Enter your credentials to access your account</p>
+				<h1 class="text-3xl font-bold">Create an account</h1>
+				<p class="text-muted-foreground text-sm">Enter your details to create your account</p>
 			</div>
 
 			<div class="grid gap-4">
+				<AuthFormField id="name" label="Full Name" placeholder="John Doe" required />
 				<AuthFormField id="email" label="Email" type="email" placeholder="name@example.com" required />
 				<AuthFormField id="password" label="Password" type="password" placeholder="••••••••" required />
+				<AuthFormField id="confirm-password" label="Confirm Password" type="password" placeholder="••••••••" required />
 
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-2">
-						<Checkbox id="remember" />
-						<label htmlFor="remember" class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"> Remember me </label>
-					</div>
-					<NuxtLink to="/reset-password" class="text-primary text-sm font-medium underline-offset-4 hover:underline"> Forgot password? </NuxtLink>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="terms" />
+					<label htmlFor="terms" class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						I agree to the
+						<NuxtLink to="#" class="text-primary font-medium underline-offset-4 hover:underline"> terms of service </NuxtLink> and
+						<NuxtLink to="#" class="text-primary font-medium underline-offset-4 hover:underline"> privacy policy </NuxtLink>
+					</label>
 				</div>
 
-				<Button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"> Sign In </Button>
+				<Button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"> Create Account </Button>
 
 				<div class="relative">
 					<div class="absolute inset-0 flex items-center">
@@ -45,8 +48,8 @@ definePageMeta({ layout: "auth", name: "login" });
 				</div>
 
 				<p class="text-muted-foreground px-8 text-center text-sm">
-					Don't have an account?
-					<NuxtLink to="/signup" class="text-primary pl-1 font-medium underline-offset-4 hover:underline"> Sign up </NuxtLink>
+					Already have an account?
+					<NuxtLink to="/login" class="text-primary pl-1 font-medium underline-offset-4 hover:underline"> Sign in </NuxtLink>
 				</p>
 			</div>
 		</div>
