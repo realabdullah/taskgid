@@ -10,7 +10,7 @@ definePageMeta({ layout: "auth", name: "signup" });
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 			<div class="flex flex-col space-y-2 text-center">
 				<div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600">
-                    <Icon name="hugeicons:checkmark-circle-03" :size="24" class="text-white" />
+					<Icon name="hugeicons:checkmark-circle-03" :size="24" class="text-white" />
 				</div>
 				<h1 class="text-3xl font-bold">Create an account</h1>
 				<p class="text-muted-foreground text-sm">Enter your details to create your account</p>
