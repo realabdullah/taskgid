@@ -12,13 +12,13 @@ interface AuthFormFieldProps {
 	error?: string;
 }
 
-const props = defineProps<AuthFormFieldProps>();
+defineProps<AuthFormFieldProps>();
 </script>
 
 <template>
 	<div class="space-y-2">
 		<div class="space-y-1">
-			<Label :htmlFor="id">
+			<Label :html-for="id">
 				{{ label }}
 				<span v-if="required" class="text-destructive"> *</span>
 			</Label>
