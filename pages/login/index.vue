@@ -1,24 +1,20 @@
 <script lang="ts" setup>
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
 definePageMeta({ layout: "auth", name: "login" });
 </script>
 
 <template>
 	<div class="grid gap-4">
-		<AuthFormField id="email" label="Email" type="email" placeholder="name@example.com" required />
-		<AuthFormField id="password" label="Password" type="password" placeholder="••••••••" required />
-
-		<div class="flex items-center justify-between">
-			<div class="flex items-center space-x-2">
-				<Checkbox id="remember" />
-				<label htmlFor="remember" class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"> Remember me </label>
+		<AuthLogin>
+			<div class="flex items-center justify-between">
+				<div class="flex items-center space-x-2">
+					<Checkbox id="remember" />
+					<label htmlFor="remember" class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"> Remember me </label>
+				</div>
+				<NuxtLink to="/reset-password" class="text-primary text-sm font-medium underline-offset-4 hover:underline"> Forgot password? </NuxtLink>
 			</div>
-			<NuxtLink to="/reset-password" class="text-primary text-sm font-medium underline-offset-4 hover:underline"> Forgot password? </NuxtLink>
-		</div>
 
-		<Button class="w-full"> Sign In </Button>
+			<Button type="submit" class="w-full"> Sign In </Button>
+		</AuthLogin>
 
 		<div class="relative">
 			<div class="absolute inset-0 flex items-center">

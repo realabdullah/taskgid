@@ -19,7 +19,7 @@ const user = ref<User>();
 			<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 				<div>
 					<h1 class="text-2xl font-bold">Welcome back, {{ user?.firstName }}</h1>
-					<p class="text-muted-foreground">{{ useDateFormat(user?.createdAt, "MMMM YYYY") }}</p>
+					<p class="text-muted-foreground">Member since {{ useDateFormat(user?.createdAt, "MMMM YYYY") }}</p>
 				</div>
 
 				<Button class="bg-black text-white hover:bg-black/90">

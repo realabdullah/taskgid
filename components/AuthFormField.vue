@@ -1,32 +1,25 @@
 <script lang="ts" setup>
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { FormMessage } from "@/components/ui/form";
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
 
 interface AuthFormFieldProps {
-	id: string;
+	name: string;
 	label: string;
 	type?: string;
 	placeholder?: string;
-	required?: boolean;
-	error?: string;
+	isFieldDirty?: boolean;
 }
 
 defineProps<AuthFormFieldProps>();
 </script>
 
 <template>
-	<div class="space-y-2">
-		<div class="space-y-1">
-			<Label :html-for="id">
-				{{ label }}
-				<span v-if="required" class="text-destructive"> *</span>
-			</Label>
-
-			<slot>
-				<Input :id="id" :type="type" :placeholder="placeholder" :required="required" :class="[error ? 'border-destructive' : '']" />
-			</slot>
-			<FormMessage v-if="error">{{ error }}</FormMessage>
-		</div>
-	</div>
+	<FormField v-slot="{ componentField }" :name="name" :validate-on-blur="isFieldDirty">
+		<FormItem v-auto-animate>
+			<FormLabel>{{ label }}</FormLabel>
+			<FormControl>
+				<Input :type="type" :placeholder="placeholder" v-bind="componentField" />
+			</FormControl>
+			<FormMessage />
+		</FormItem>
+	</FormField>
 </template>
