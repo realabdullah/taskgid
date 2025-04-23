@@ -62,3 +62,28 @@ export const ResetPasswordConfirmationSchema = z
 		path: ["confirmPassword"],
 		message: "Passwords do not match",
 	});
+
+export const WorkspaceFormSchema = z.object({
+	title: z
+		.string()
+		.min(2, {
+			message: "Title must be at least 2 characters.",
+		})
+		.max(50, {
+			message: "Title must not be longer than 50 characters.",
+		}),
+	description: z.string().min(10).max(200, {
+		message: "Description must not be longer than 200 characters.",
+	}),
+	slug: z
+		.string()
+		.min(3, {
+			message: "Slug must be at least 3 characters.",
+		})
+		.max(20, {
+			message: "Slug must not be longer than 20 characters.",
+		})
+		.regex(/^[a-zA-Z0-9-]+$/, {
+			message: "Slug can only contain letters, numbers, and hyphens.",
+		}),
+});

@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-	<Card class="overflow-hidden">
+	<Card class="overflow-hidden pb-0">
 		<CardHeader class="pb-3">
 			<div class="flex items-center justify-between">
 				<CardTitle>{{ workspace.title }}</CardTitle>
@@ -33,9 +33,9 @@ defineProps<{
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
 					<Icon name="hugeicons:user-multiple-02" :size="16" class="text-muted-foreground" />
-					<span class="text-sm">{{ workspace.memberCount }} members</span>
+					<span class="text-sm">{{ workspace.memberCount }} member{{ workspace.memberCount > 1 ? "s" : "" }}</span>
 				</div>
-				<Badge variant="outline" class="flex items-center gap-1">
+				<Badge variant="outline" class="flex items-center gap-1 capitalize">
 					<Icon v-if="workspace.userRole === 'creator'" name="hugeicons:crown" :size="12" />
 					{{ workspace.userRole }}
 				</Badge>

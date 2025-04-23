@@ -1,4 +1,17 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { toast } from "vue-sonner";
+
+const { user } = storeToRefs(useStore());
+
+const getInitials = (first?: string, second?: string): string => `${first?.[0]?.toUpperCase() || ""}${second?.[0]?.toUpperCase() || ""}`;
+
+const logout = async () => {
+	await useApiFetch("/auth/logout", { method: "POST" });
+	toast("Logged out successfully.");
+	useCookie("TG-AUTHTOKEN").value = undefined;
+	return navigateTo("/login");
+};
+</script>
 
 <template>
 	<header class="bg-background sticky top-0 z-10 flex h-16 items-center justify-between border-b px-4 md:px-6">
@@ -22,12 +35,11 @@
 				<DropdownMenuTrigger as-child>
 					<Button variant="ghost" class="gap-2">
 						<Avatar class="h-8 w-8">
-							<AvatarImage src="" />
-							<AvatarFallback>JD</AvatarFallback>
+							<AvatarImage :src="user?.profilePicture || ''" />
+							<AvatarFallback>{{ getInitials(user?.firstName, user?.lastName) }}</AvatarFallback>
 						</Avatar>
 						<div class="hidden text-left md:block">
-							<p class="text-sm font-medium">Jamie Doe</p>
-							<p class="text-muted-foreground text-xs">Product Manager</p>
+							<p class="text-sm font-medium">{{ `${user?.firstName} ${user?.lastName}` }}</p>
 						</div>
 						<Icon name="hugeicons:arrow-down-01" :size="16" class="opacity-50" />
 					</Button>
@@ -44,7 +56,7 @@
 						Settings
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>
+					<DropdownMenuItem @select="logout">
 						<Icon name="hugeicons:logout-03" :size="16" class="mr-2" />
 						Log out
 					</DropdownMenuItem>

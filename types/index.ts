@@ -1,3 +1,12 @@
+export interface Pagination {
+	page: number;
+	limit: number;
+	totalPages: number;
+	total: number;
+	hasNextPage: boolean;
+	hasPrevPage: boolean;
+}
+
 export interface User {
 	id: string;
 	email: string;
@@ -49,4 +58,9 @@ export interface SignupResponse {
 		token: string;
 		expiresIn: number;
 	};
+}
+
+export interface GetWorkspaces {
+	data: Workspace[];
+	pagination: Pagination;
 }

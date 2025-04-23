@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useDateFormat } from "@vueuse/core";
-import type { User } from "~/types";
 
 definePageMeta({
 	name: "app",
@@ -8,7 +7,10 @@ definePageMeta({
 	description: "TaskGid - Dashboard",
 });
 
-const user = ref<User>();
+const { user } = storeToRefs(useStore());
+const { getWorkspaces } = useWorkspaceStore();
+
+onMounted(async () => await getWorkspaces());
 </script>
 
 <template>
@@ -22,10 +24,7 @@ const user = ref<User>();
 					<p class="text-muted-foreground">Member since {{ useDateFormat(user?.createdAt, "MMMM YYYY") }}</p>
 				</div>
 
-				<Button class="bg-black text-white hover:bg-black/90">
-					<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
-					Create Workspace
-				</Button>
+				<DashboardWorkspaceCreate />
 			</div>
 
 			<DashboardPendingInvites />

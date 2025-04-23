@@ -2,10 +2,11 @@
 import type { Workspace } from "~/types";
 
 const props = defineProps<{
-	workspaces?: Workspace[];
 	invitedWorkspaces?: Workspace[];
 	createdWorkspaces?: Workspace[];
 }>();
+
+const { workspaces } = storeToRefs(useWorkspaceStore());
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
@@ -14,7 +15,7 @@ const tabs = [
 ];
 
 const data = computed<{ [key: string]: Workspace[] }>(() => ({
-	all: props?.workspaces || [],
+	all: workspaces.value,
 	owned: props?.createdWorkspaces || [],
 	invited: props?.invitedWorkspaces || [],
 }));

@@ -4,6 +4,7 @@ import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 import type { SignupResponse } from "~/types";
 
+const { user } = storeToRefs(useStore());
 const formSchema = toTypedSchema(SignupSchema);
 
 const { isFieldDirty, handleSubmit } = useForm({
@@ -20,6 +21,7 @@ const onSubmit = handleSubmit(async (values) => {
 		toast("Account created. Let's get you started!");
 		const token = useCookie("TG-AUTHTOKEN", { maxAge: res.accessToken.expiresIn });
 		token.value = res.accessToken.token;
+		user.value = { ...res.user };
 		setTimeout(() => {
 			navigateTo("/app");
 		}, 200);
