@@ -31,3 +31,22 @@ export interface Workspace {
 	memberCount: number;
 	userRole: string;
 }
+
+export interface LoginResponse {
+	user: User;
+	accessToken: {
+		token: string;
+		expires: number;
+	};
+	refreshToken: {
+		token: string;
+	};
+}
+
+export interface SignupResponse {
+	user: User;
+	accessToken: {
+		token: string;
+		expiresIn: number;
+	};
+}

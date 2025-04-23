@@ -17,8 +17,8 @@ const page = computed(() => pageMap[route.name as keyof typeof pageMap]);
 				<div class="bg-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
 					<Icon name="hugeicons:checkmark-circle-03" :size="24" class="text-white" />
 				</div>
-				<h1 class="text-3xl font-bold">{{ page.title }}</h1>
-				<p class="text-muted-foreground text-sm">{{ page.description }}</p>
+				<h1 class="text-3xl font-bold">{{ page?.title }}</h1>
+				<p class="text-muted-foreground text-sm">{{ page?.description }}</p>
 			</div>
 
 			<slot />
