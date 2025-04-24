@@ -8,9 +8,6 @@ definePageMeta({
 });
 
 const { user } = storeToRefs(useStore());
-const { getWorkspaces } = useWorkspaceStore();
-
-onMounted(async () => await getWorkspaces());
 </script>
 
 <template>

@@ -14,19 +14,27 @@ const tabs = [
 	{ value: "invited", label: "Shared With Me" },
 ];
 
+const activeTab = ref("all");
 const isViewWorkspaceModalOpen = ref(false);
+const isWorkspaceInviteModalOpen = ref(false);
 const isDeleteWorkspaceModalOpen = ref(false);
 const isUpdateWorkspaceModalOpen = ref(false);
 const selectedWorkspace = ref<Workspace | null>(null);
 
-const setSelectedWorkspace = (usage: "view" | "update", workspace: Workspace | null) => {
+const setSelectedWorkspace = (usage: "view" | "update" | "invite", workspace: Workspace | null) => {
 	selectedWorkspace.value = workspace;
 	if (usage === "view") {
 		isViewWorkspaceModalOpen.value = true;
 		isUpdateWorkspaceModalOpen.value = false;
-	} else {
+		isWorkspaceInviteModalOpen.value = false;
+	} else if (usage === "invite") {
+		isWorkspaceInviteModalOpen.value = true;
+		isViewWorkspaceModalOpen.value = false;
+		isUpdateWorkspaceModalOpen.value = false;
+	} else if (usage === "update") {
 		isUpdateWorkspaceModalOpen.value = true;
 		isViewWorkspaceModalOpen.value = false;
+		isWorkspaceInviteModalOpen.value = false;
 	}
 };
 
@@ -74,18 +82,19 @@ watch(
 </script>
 
 <template>
-	<Tabs default-value="all" class="mb-6">
+	<Tabs v-model="activeTab" class="mb-6">
 		<TabsList class="mb-4">
 			<TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">{{ tab.label }}</TabsTrigger>
 		</TabsList>
 
-		<TabsContent v-for="tab in tabs" :key="tab.value" :value="tab.value">
-			<div v-if="data[tab.value] && data[tab.value].length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<TabsContent :value="activeTab">
+			<div v-if="data[activeTab] && data[activeTab].length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				<DashboardWorkspaceCard
-					v-for="workspace in data[tab.value]"
+					v-for="workspace in data[activeTab]"
 					:key="workspace.id"
 					:workspace="workspace"
 					@view-workspace="setSelectedWorkspace('view', workspace)"
+					@invite="setSelectedWorkspace('invite', workspace)"
 					@update-workspace="setSelectedWorkspace('update', workspace)"
 					@delete-workspace="workspaceDeleteAction(workspace)"
 				/>
@@ -97,5 +106,6 @@ watch(
 		<DashboardWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
 		<DashboardWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
 		<DashboardWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
+		<DashboardWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
 	</Tabs>
 </template>

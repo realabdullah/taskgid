@@ -1,3 +1,5 @@
+import type { User } from "~/types";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const decodeJwtPayload = (token: string): Record<string, any> | null => {
 	try {
@@ -20,7 +22,7 @@ const decodeJwtPayload = (token: string): Record<string, any> | null => {
 	}
 };
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
 	const tokenCookie = useCookie<string | undefined>("TG-AUTHTOKEN");
 	const token = tokenCookie.value;
 
@@ -43,4 +45,20 @@ export default defineNuxtRouteMiddleware((to) => {
 
 	if (isAuthenticated && isAuthRoute) return navigateTo("/app");
 	else if (!isAuthenticated && isAppRoute) return navigateTo("/login");
+	if (isAuthenticated && isAppRoute) {
+		const userStore = useStore();
+
+		if (!userStore.user) {
+			try {
+				const { user: res } = await useApiFetch<{ user: User }>("/users/profile", { method: "GET" });
+				if (!res) throw new Error("Failed to get user profile");
+				userStore.user = { ...res };
+			} catch (error) {
+				throw createError({
+					statusMessage: String(error),
+					fatal: true,
+				});
+			}
+		}
+	}
 });

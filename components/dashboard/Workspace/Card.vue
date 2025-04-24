@@ -6,7 +6,7 @@ defineProps<{
 }>();
 
 const emits = defineEmits<{
-	(event: "update-workspace" | "delete-workspace" | "view-workspace"): void;
+	(event: "update-workspace" | "delete-workspace" | "view-workspace" | "invite"): void;
 }>();
 </script>
 
@@ -24,7 +24,7 @@ const emits = defineEmits<{
 					<DropdownMenuContent align="end">
 						<DropdownMenuItem @select="emits('view-workspace')">View Details</DropdownMenuItem>
 						<DropdownMenuItem v-if="workspace.userRole === 'creator'" @select="emits('update-workspace')">Edit Workspace</DropdownMenuItem>
-						<DropdownMenuItem v-if="workspace.userRole === 'creator'">Invite Members</DropdownMenuItem>
+						<DropdownMenuItem v-if="workspace.userRole === 'creator'" @select="emits('invite')">Invite Members</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem v-if="workspace.userRole === 'creator'" class="text-destructive" @select="emits('delete-workspace')">Delete Workspace</DropdownMenuItem>
 						<DropdownMenuItem v-else class="text-destructive">Leave Workspace</DropdownMenuItem>

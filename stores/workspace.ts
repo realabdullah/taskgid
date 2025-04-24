@@ -1,29 +1,25 @@
-import type { Pagination, GetWorkspaces, Workspace } from "~/types";
+import type { GetWorkspaces, Workspace } from "~/types";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
+	const { user } = storeToRefs(useStore());
+	const { pagination } = usePagination();
+
 	const workspaces = ref<Workspace[]>([]);
-	const workspacePagination = ref<Pagination>();
 
-	const mergeById = (incoming: Workspace[]) => {
-		const map = new Map();
-		for (const item of [...workspaces.value, ...incoming]) {
-			map.set(item.id, item);
+	const { refresh } = useAsyncData(
+		`${user.value?.id}-workspaces`,
+		async () => {
+			const data = await useApiFetch<GetWorkspaces>("/workspaces", { method: "GET" });
+			return { workspaces: data.data, pagination: data.pagination };
+		},
+		{
+			transform: ({ workspaces: data }) => {
+				workspaces.value = [...data];
+				return data;
+			},
+			watch: [user, pagination],
 		}
-		return Array.from(map.values());
-	};
+	);
 
-	const getWorkspaces = async () => {
-		try {
-			const { data, pagination } = await useApiFetch<GetWorkspaces>("/workspaces", { method: "GET" });
-			workspaces.value = mergeById(data);
-			workspacePagination.value = { ...pagination };
-		} catch (error) {
-			throw createError({
-				statusMessage: String(error),
-				fatal: true,
-			});
-		}
-	};
-
-	return { workspaces, workspacePagination, getWorkspaces };
+	return { workspaces, getWorkspaces: refresh };
 });

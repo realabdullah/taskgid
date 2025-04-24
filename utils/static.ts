@@ -15,3 +15,5 @@ export const resetConfirmationFields = [
 	{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
 	{ id: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "••••••••" },
 ];
+
+export const inviteFormFields = [{ id: "email", label: "Email Address", type: "email", placeholder: "colleague@example.com" }];
