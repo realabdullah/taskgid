@@ -8,25 +8,10 @@ defineEmits<(event: "edit", value: Workspace) => void>();
 const isOpen = defineModel<boolean>();
 
 const data = computed(() => [
-	{
-		title: "Slug",
-		value: props.workspace.slug,
-	},
-	{
-		title: "Created",
-		value: useDateFormat(props.workspace.createdAt, "Do MMM, YYYY"),
-		icon: "hugeicons:calendar-03",
-	},
-	{
-		title: "Members",
-		value: `${props.workspace.memberCount} member${props.workspace.memberCount > 1 ? "s" : ""}`,
-		icon: "hugeicons:user-multiple-02",
-	},
-	{
-		title: "Your Role",
-		value: props.workspace.userRole || "Member",
-		icon: props.workspace.userRole === "creator" ? "hugeicons:crown" : undefined,
-	},
+	{ title: "Slug", value: props.workspace.slug },
+	{ title: "Created", value: useDateFormat(props.workspace.createdAt, "Do MMM, YYYY"), icon: "hugeicons:calendar-03" },
+	{ title: "Members", value: `${props.workspace.memberCount} member${props.workspace.memberCount > 1 ? "s" : ""}`, icon: "hugeicons:user-multiple-02" },
+	{ title: "Your Role", value: props.workspace.userRole || "Member", icon: props.workspace.userRole === "creator" ? "hugeicons:crown" : undefined },
 ]);
 </script>
 
