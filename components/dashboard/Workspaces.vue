@@ -14,13 +14,20 @@ const tabs = [
 	{ value: "invited", label: "Shared With Me" },
 ];
 
+const isViewWorkspaceModalOpen = ref(false);
 const isDeleteWorkspaceModalOpen = ref(false);
 const isUpdateWorkspaceModalOpen = ref(false);
 const selectedWorkspace = ref<Workspace | null>(null);
 
-const setSelectedWorkspace = (workspace: Workspace | null) => {
+const setSelectedWorkspace = (usage: "view" | "update", workspace: Workspace | null) => {
 	selectedWorkspace.value = workspace;
-	isUpdateWorkspaceModalOpen.value = true;
+	if (usage === "view") {
+		isViewWorkspaceModalOpen.value = true;
+		isUpdateWorkspaceModalOpen.value = false;
+	} else {
+		isUpdateWorkspaceModalOpen.value = true;
+		isViewWorkspaceModalOpen.value = false;
+	}
 };
 
 const workspaceDeleteAction = (payload: Workspace | boolean | string) => {
@@ -78,14 +85,16 @@ watch(
 					v-for="workspace in data[tab.value]"
 					:key="workspace.id"
 					:workspace="workspace"
-					@update-workspace="setSelectedWorkspace"
-					@delete-workspace="workspaceDeleteAction"
+					@view-workspace="setSelectedWorkspace('view', workspace)"
+					@update-workspace="setSelectedWorkspace('update', workspace)"
+					@delete-workspace="workspaceDeleteAction(workspace)"
 				/>
 			</div>
 
 			<DashboardWorkspaceEmptyState v-else />
 		</TabsContent>
 
+		<DashboardWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
 		<DashboardWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
 		<DashboardWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
 	</Tabs>

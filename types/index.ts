@@ -39,6 +39,15 @@ export interface Workspace {
 	updatedAt: string;
 	memberCount: number;
 	userRole: string;
+	owner: string;
+	user: {
+		id: string;
+		email: string;
+		firstName: string;
+		lastName: string;
+		username: string;
+		profilePicture: string;
+	};
 }
 
 export interface LoginResponse {
