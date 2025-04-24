@@ -4,6 +4,10 @@ import type { Workspace } from "~/types";
 defineProps<{
 	workspace: Workspace;
 }>();
+
+const emits = defineEmits<{
+	(event: "update-workspace" | "delete-workspace", workspace: Workspace): void;
+}>();
 </script>
 
 <template>
@@ -19,10 +23,10 @@ defineProps<{
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuItem>View Details</DropdownMenuItem>
-						<DropdownMenuItem v-if="workspace.userRole === 'creator'">Edit Workspace</DropdownMenuItem>
-						<DropdownMenuItem>Invite Members</DropdownMenuItem>
+						<DropdownMenuItem v-if="workspace.userRole === 'creator'" @select="emits('update-workspace', workspace)">Edit Workspace</DropdownMenuItem>
+						<DropdownMenuItem v-if="workspace.userRole === 'creator'">Invite Members</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem v-if="workspace.userRole === 'creator'" class="text-destructive">Delete Workspace</DropdownMenuItem>
+						<DropdownMenuItem v-if="workspace.userRole === 'creator'" class="text-destructive" @select="emits('delete-workspace', workspace)">Delete Workspace</DropdownMenuItem>
 						<DropdownMenuItem v-else class="text-destructive">Leave Workspace</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

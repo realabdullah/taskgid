@@ -24,7 +24,7 @@ onMounted(async () => await getWorkspaces());
 					<p class="text-muted-foreground">Member since {{ useDateFormat(user?.createdAt, "MMMM YYYY") }}</p>
 				</div>
 
-				<DashboardWorkspaceCreate />
+				<DashboardWorkspaceCreateOrEdit is-creating />
 			</div>
 
 			<DashboardPendingInvites />
