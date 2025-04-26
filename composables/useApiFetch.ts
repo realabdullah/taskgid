@@ -30,15 +30,11 @@ export const useApiFetch = <T>(request: string | Request, opts: FetchOptions = {
 		onResponseError({ response }) {
 			console.error(`API Fetch Response Error (${response.status}):`, response.statusText, response._data);
 
+			const errors = response._data?.errors || response._data?.error || response._data?.message;
 			const structuredError = createError({
 				statusCode: response.status,
 				statusMessage: response.statusText,
-				message:
-					typeof response._data?.error === "string"
-						? response._data.error
-						: Array.isArray(response._data?.error)
-							? response._data.error.map((err: string) => err).join(", ")
-							: "An unexpected API error occurred",
+				message: typeof errors === "string" ? errors : Array.isArray(errors) ? errors.map((err: any) => err?.message || err).join(", ") : "An unexpected API error occurred",
 				fatal: false,
 			});
 

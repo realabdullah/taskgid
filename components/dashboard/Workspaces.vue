@@ -1,20 +1,14 @@
 <script lang="ts" setup>
 import type { Workspace } from "~/types";
 
-const props = defineProps<{
-	invitedWorkspaces?: Workspace[];
-	createdWorkspaces?: Workspace[];
-}>();
-
-const { workspaces } = storeToRefs(useWorkspaceStore());
+const { workspaceType, workspaces, pagination } = storeToRefs(useWorkspaceStore());
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
-	{ value: "owned", label: "My Workspaces" },
+	{ value: "created", label: "My Workspaces" },
 	{ value: "invited", label: "Shared With Me" },
 ];
 
-const activeTab = ref("all");
 const isViewWorkspaceModalOpen = ref(false);
 const isWorkspaceInviteModalOpen = ref(false);
 const isDeleteWorkspaceModalOpen = ref(false);
@@ -65,32 +59,22 @@ const updateWorkspaces = (workspace: Workspace) => {
 	}
 };
 
-const data = computed<{ [key: string]: Workspace[] }>(() => ({
-	all: workspaces.value,
-	owned: props?.createdWorkspaces || [],
-	invited: props?.invitedWorkspaces || [],
-}));
-
-watch(
-	() => isUpdateWorkspaceModalOpen.value,
-	(newValue) => {
-		if (!newValue) {
-			selectedWorkspace.value = null;
-		}
-	}
-);
+watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen, type], [_, oldType]) => {
+	if (!isUpdateWorkspaceModalOpen) selectedWorkspace.value = null;
+	if (type !== oldType) pagination.value = { page: 1, limit: 10 };
+});
 </script>
 
 <template>
-	<Tabs v-model="activeTab" class="mb-6">
+	<Tabs v-model="workspaceType" class="mb-6">
 		<TabsList class="mb-4">
 			<TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">{{ tab.label }}</TabsTrigger>
 		</TabsList>
 
-		<TabsContent :value="activeTab">
-			<div v-if="data[activeTab] && data[activeTab].length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<TabsContent :value="workspaceType">
+			<div v-if="workspaces && workspaces.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				<DashboardWorkspaceCard
-					v-for="workspace in data[activeTab]"
+					v-for="workspace in workspaces"
 					:key="workspace.id"
 					:workspace="workspace"
 					@view-workspace="setSelectedWorkspace('view', workspace)"

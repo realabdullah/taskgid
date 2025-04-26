@@ -1,11 +1,35 @@
 <script lang="ts" setup>
 import { formatTimeAgo } from "@vueuse/core";
+import { toast } from "vue-sonner";
 import type { Pagination, PendingInvitation } from "~/types";
+
+const { user } = storeToRefs(useStore());
 
 const { data } = useAsyncData("pending-invitations", async () => {
 	const data = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>("/invite/pending");
 	return { invitations: data.data, pagination: data.pagination };
 });
+
+const inProgressId = ref<string | null>(null);
+const isLoading = computed(() => inProgressId.value !== null);
+const acceptInvitation = async (invitation: PendingInvitation) => {
+	try {
+		inProgressId.value = invitation.invitationId;
+		const res = await useApiFetch<{ success: boolean; message: string; error?: string; isNewUser: boolean }>("/invite/accept", {
+			method: "POST",
+			body: { token: invitation.token },
+		});
+
+		if (!res || !res.success) throw new Error(res?.message || res?.error || "Something went wrong");
+
+		toast.success("Invitation accepted successfully");
+		await refreshNuxtData([`${user.value?.id}-workspaces`, "pending-invitations"]);
+		inProgressId.value = null;
+	} catch (error) {
+		toast(String(error));
+		inProgressId.value = null;
+	}
+};
 </script>
 
 <template>
@@ -29,8 +53,8 @@ const { data } = useAsyncData("pending-invitations", async () => {
 						</div>
 					</div>
 					<div class="flex gap-2">
-						<Button variant="outline" size="sm"> Decline </Button>
-						<Button size="sm" class="bg-black text-white hover:bg-black/90"> Accept </Button>
+						<Button variant="outline" size="sm" :disabled="isLoading"> Decline </Button>
+						<Button size="sm" class="bg-black text-white hover:bg-black/90" :disabled="isLoading" @click="acceptInvitation(invitation)"> Accept </Button>
 					</div>
 				</div>
 			</div>
