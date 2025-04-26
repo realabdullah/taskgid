@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { toast } from "vue-sonner";
 
-const { user } = storeToRefs(useStore());
+defineEmits<(event: "view-profile") => void>();
 
-const getInitials = (first?: string, second?: string): string => `${first?.[0]?.toUpperCase() || ""}${second?.[0]?.toUpperCase() || ""}`;
+const { user } = storeToRefs(useStore());
 
 const logout = async () => {
 	await useApiFetch("/auth/logout", { method: "POST" });
@@ -47,10 +47,11 @@ const logout = async () => {
 				<DropdownMenuContent align="end" class="w-56">
 					<DropdownMenuLabel>My Account</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>
+					<DropdownMenuItem @select="$emit('view-profile')">
 						<Icon name="hugeicons:user-03" :size="16" class="mr-2" />
 						Profile
 					</DropdownMenuItem>
+
 					<DropdownMenuItem>
 						<Icon name="hugeicons:setting-07" :size="16" class="mr-2" />
 						Settings

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
-import { formatTimeAgo } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import type { Pagination, PendingInvitation } from "~/types";
 
@@ -50,7 +49,7 @@ const acceptInvitation = async (invitation: PendingInvitation) => {
 							<span>•</span>
 							<Badge variant="outline">Admin</Badge>
 							<span>•</span>
-							<span class="text-muted-foreground">{{ formatTimeAgo(new Date(invitation.invitedAt)) }}</span>
+							<span class="text-muted-foreground">{{ getTimeAgo(new Date(invitation.invitedAt)) }}</span>
 						</div>
 					</div>
 					<div class="flex gap-2">
