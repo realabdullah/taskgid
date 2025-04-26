@@ -14,7 +14,9 @@ export interface User {
 	lastName: string;
 	username: string;
 	profilePicture: string;
-	isAdmin: boolean;
+	title: string | null;
+	about: string | null;
+	location: string | null;
 	createdAt: string;
 }
 

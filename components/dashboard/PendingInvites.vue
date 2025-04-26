@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import { formatTimeAgo } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import type { Pagination, PendingInvitation } from "~/types";
@@ -39,7 +40,7 @@ const acceptInvitation = async (invitation: PendingInvitation) => {
 			<CardDescription>You have workspace invitations waiting for your response</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<div class="space-y-4">
+			<div v-auto-animate class="space-y-4">
 				<div v-for="invitation in data.invitations" :key="invitation.invitationId" class="flex items-center justify-between rounded-lg border p-4">
 					<div>
 						<h3 class="font-medium">{{ invitation.workspaceTitle }}</h3>

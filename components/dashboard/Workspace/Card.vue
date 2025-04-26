@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Workspace } from "~/types";
+import { Card } from "@/components/ui/card";
 
 defineProps<{
 	workspace: Workspace;
@@ -11,7 +12,7 @@ const emits = defineEmits<{
 </script>
 
 <template>
-	<Card class="overflow-hidden pb-0">
+	<Card class="justify-between overflow-hidden pb-0">
 		<CardHeader class="pb-3">
 			<div class="flex items-center justify-between">
 				<CardTitle>{{ workspace.title }}</CardTitle>
