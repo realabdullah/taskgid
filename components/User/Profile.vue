@@ -7,10 +7,6 @@ const { user } = storeToRefs(useStore());
 
 <template>
 	<Dialog :open="isOpen" @update:open="isOpen = $event">
-		<DialogTrigger as-child>
-			<slot />
-		</DialogTrigger>
-
 		<DialogContent class="overflow-hidden bg-white p-0 sm:max-w-[500px]">
 			<div class="relative h-32 bg-black">
 				<div class="absolute -bottom-16 left-6">

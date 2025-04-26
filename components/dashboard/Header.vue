@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { toast } from "vue-sonner";
 
-defineEmits<(event: "view-profile") => void>();
+defineEmits<(event: "view-profile" | "edit-user") => void>();
 
 const { user } = storeToRefs(useStore());
 
@@ -9,6 +9,7 @@ const logout = async () => {
 	await useApiFetch("/auth/logout", { method: "POST" });
 	toast("Logged out successfully.");
 	useCookie("TG-AUTHTOKEN").value = undefined;
+	await refreshNuxtData();
 	return navigateTo("/login");
 };
 </script>
@@ -52,7 +53,7 @@ const logout = async () => {
 						Profile
 					</DropdownMenuItem>
 
-					<DropdownMenuItem>
+					<DropdownMenuItem @select="$emit('edit-user')">
 						<Icon name="hugeicons:setting-07" :size="16" class="mr-2" />
 						Settings
 					</DropdownMenuItem>

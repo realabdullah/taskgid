@@ -17,7 +17,8 @@ defineProps<AuthFormFieldProps>();
 		<FormItem v-auto-animate>
 			<FormLabel>{{ label }}</FormLabel>
 			<FormControl>
-				<Input :type="type" :placeholder="placeholder" v-bind="componentField" />
+				<Textarea v-if="type === 'textarea'" :placeholder="placeholder" v-bind="componentField" class="resize-none" />
+				<Input v-else :type="type" :placeholder="placeholder" v-bind="componentField" />
 			</FormControl>
 			<FormMessage />
 		</FormItem>

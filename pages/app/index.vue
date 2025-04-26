@@ -7,11 +7,17 @@ definePageMeta({
 
 const { user } = storeToRefs(useStore());
 const isUserProfileOpen = ref(false);
+const isUserSettingsOpen = ref(false);
+
+const setSettingsOpen = () => {
+	isUserSettingsOpen.value = true;
+	isUserProfileOpen.value = false;
+};
 </script>
 
 <template>
 	<div class="flex h-full flex-1 flex-col overflow-hidden">
-		<DashboardHeader @view-profile="isUserProfileOpen = true" />
+		<DashboardHeader @view-profile="isUserProfileOpen = true" @edit-user="setSettingsOpen" />
 
 		<main class="container mx-auto flex-1 overflow-auto p-6">
 			<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -26,7 +32,8 @@ const isUserProfileOpen = ref(false);
 			<DashboardPendingInvites />
 			<DashboardWorkspaces />
 
-			<UserProfile v-model="isUserProfileOpen" />
+			<UserProfile v-model="isUserProfileOpen" @edit="setSettingsOpen" />
+			<UserSettings v-model="isUserSettingsOpen" />
 		</main>
 	</div>
 </template>

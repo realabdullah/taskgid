@@ -18,7 +18,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 				workspaces.value = [...data];
 				return data;
 			},
-			watch: [user, workspaceType],
+			watch: [workspaceType],
 		}
 	);
 

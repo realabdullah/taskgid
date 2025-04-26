@@ -87,3 +87,40 @@ export const WorkspaceFormSchema = z.object({
 			message: "Slug can only contain letters, numbers, and hyphens.",
 		}),
 });
+
+export const updateProfileSchema = z.object({
+	firstName: z
+		.string()
+		.min(3, { message: "First name must be at least 3 characters" })
+		.max(50, { message: "First name must be less than 50 characters" })
+		.regex(/^[a-zA-Z]+$/, { message: "First name should only contain letters" }),
+
+	lastName: z
+		.string()
+		.min(3, { message: "Last name must be at least 3 characters" })
+		.max(50, { message: "Last name must be less than 50 characters" })
+		.regex(/^[a-zA-Z]+$/, { message: "Last name should only contain letters" }),
+
+	username: z
+		.string()
+		.min(3, { message: "Username is required" })
+		.max(30, { message: "Username must be less than 30 characters" })
+		.regex(/^[a-zA-Z0-9_]+$/, {
+			message: "Username must contain only letters, numbers, and underscores",
+		}),
+	profilePicture: z.string().optional(),
+	about: z.string().optional(),
+	location: z.string().optional(),
+	title: z.string().optional(),
+});
+
+export const updateAccountSchema = z
+	.object({
+		password: z.string().min(8, "Current Password must be at least 8 characters"),
+		newPassword: z.string().min(8, "New Password must be at least 8 characters"),
+		confirmPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
+	})
+	.refine((data) => data.newPassword === data.confirmPassword, {
+		path: ["confirmPassword"],
+		message: "Passwords do not match",
+	});
