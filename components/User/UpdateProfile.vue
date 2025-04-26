@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <!-- eslint-disable @typescript-eslint/ban-ts-comment -->
 <script lang="ts" setup>
 import { toTypedSchema } from "@vee-validate/zod";
@@ -33,6 +34,22 @@ const cancelChanges = () => {
 			setFieldValue(key as keyof typeof values, user.value?.[key as keyof User]);
 		}
 	}
+	fileDetails.value = null;
+	emits("close");
+};
+
+const uploadFile = async (file: File) => {
+	try {
+		const formData = new FormData();
+		formData.append("file", file);
+
+		const result = await $fetch<any>("/api/upload", { method: "POST", body: formData });
+
+		if (result && result.url) return result.url as string;
+		else throw new Error("Failed to upload file");
+	} catch {
+		throw new Error("API did not return a valid URL.");
+	}
 };
 
 const onSubmit = handleSubmit(async () => {
@@ -47,6 +64,14 @@ const onSubmit = handleSubmit(async () => {
 		if (Object.keys(payload).length === 0) {
 			toast("No changes detected");
 			return;
+		}
+
+		if (selectedFile.value) {
+			const fileUrl = await uploadFile(selectedFile.value);
+			payload.profilePicture = fileUrl;
+			setFieldValue("profilePicture", fileUrl);
+			selectedFile.value = null;
+			fileDetails.value = null;
 		}
 
 		const {
@@ -66,6 +91,43 @@ const onSubmit = handleSubmit(async () => {
 		toast(String(error));
 	}
 });
+
+const fileInput = ref<HTMLInputElement | null>(null);
+const selectedFile = ref<File | null>(null);
+const fileDetails = ref<{ name: string; size: string } | null>(null);
+
+const handleButtonClick = () => {
+	if (fileInput.value) fileInput.value.click();
+};
+
+const handleFileChange = async (event: Event) => {
+	const target = event.target as HTMLInputElement;
+	if (!target.files?.length) return;
+
+	const file = target.files[0];
+	if (!file) return;
+
+	if (file.size > 1024 * 1024) {
+		toast("Please upload a file smaller than 1MB.");
+		target.value = "";
+		return;
+	}
+
+	if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+		toast("Please upload a JPG, PNG or WEBP file.");
+		target.value = "";
+		return;
+	}
+
+	fileDetails.value = {
+		name: file.name,
+		size: formatFileSize(file.size),
+	};
+
+	selectedFile.value = file;
+	const objectUrl = URL.createObjectURL(file);
+	setFieldValue("profilePicture", objectUrl);
+};
 </script>
 
 <template>
@@ -76,11 +138,14 @@ const onSubmit = handleSubmit(async () => {
 				<AvatarFallback class="bg-zinc-800 text-xl text-white"> {{ getInitials(values?.firstName, values?.lastName) }} </AvatarFallback>
 			</Avatar>
 			<div>
-				<Button variant="outline" size="sm" class="flex items-center gap-2">
+				<Button type="button" variant="outline" size="sm" class="flex items-center gap-2" @click="handleButtonClick">
 					<Icon name="hugeicons:camera-01" :size="16" />
 					Change Avatar
 				</Button>
-				<p class="mt-2 text-xs text-gray-500">JPG, GIF or PNG. 1MB max.</p>
+				<p class="mt-2 text-xs text-gray-500">JPG or PNG. 1MB max.</p>
+				<span v-if="fileDetails" class="text-sm text-gray-500"> {{ fileDetails?.name }} ({{ fileDetails?.size }}) </span>
+
+				<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
 			</div>
 		</div>
 
