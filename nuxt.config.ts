@@ -1,31 +1,24 @@
+import tailwindcss from "@tailwindcss/vite";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	css: ["~/assets/scss/main.scss", "notivue/notifications.css", "notivue/animations.css"],
-	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt", "notivue/nuxt"],
-	vite: {
-		css: {
-			preprocessorOptions: {
-				scss: {
-					additionalData: `
-						@import "@/assets/scss/abstracts/_variables.scss"; 
-						@import "@/assets/scss/abstracts/_mixins.scss";
-					`,
-				},
-			},
-		},
-		vue: {
-			script: {
-				propsDestructure: true,
-			},
-		},
-	},
-	imports: {
-		dirs: ["store"],
-	},
-	devServer: {
-		port: 1234,
-	},
-	notivue: {
-		position: "top-right",
+	modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/image", "@nuxt/scripts", "shadcn-nuxt", "@vueuse/nuxt", "@formkit/auto-animate/nuxt", "@pinia/nuxt"],
+	ssr: false,
+	devtools: { enabled: true },
+	css: ["~/assets/css/tailwind.css"],
+	runtimeConfig: { public: { apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000" } },
+	compatibilityDate: "2024-11-01",
+	vite: { plugins: [tailwindcss()] },
+	eslint: { config: { stylistic: true }, checker: true },
+	shadcn: {
+		/**
+		 * Prefix for all the imported component
+		 */
+		prefix: "",
+		/**
+		 * Directory that the component lives in.
+		 * @default "./components/ui"
+		 */
+		componentDir: "./components/ui",
 	},
 });

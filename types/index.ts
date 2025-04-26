@@ -1,106 +1,77 @@
-export {};
+export interface Pagination {
+	page: number;
+	limit: number;
+	totalPages: number;
+	total: number;
+	hasNextPage: boolean;
+	hasPrevPage: boolean;
+}
 
-declare global {
-	interface Task {
-		_id: string;
-		title: string;
-		description: string;
-		priority: string;
-		dueDate: string;
-		status: string;
-		workspace: string;
-		user: {
-			username: string;
-			name: string;
-		};
-		assignee: string;
-		createdAt: string;
-	}
+export interface User {
+	id: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	username: string;
+	profilePicture: string;
+	title: string | null;
+	about: string | null;
+	location: string | null;
+	createdAt: string;
+}
 
-	interface Team {
-		name: string;
-		username: string;
+export interface PendingInvitation {
+	invitationId: string;
+	token: string;
+	workspaceTitle: string;
+	workspaceDescription: string;
+	workspaceSlug: string;
+	invitedBy: Omit<User, "createdAt">;
+	invitedAt: string;
+	expiresAt: string;
+}
+
+export interface Workspace {
+	id: string;
+	title: string;
+	description: string;
+	slug: string;
+	userId: string;
+	createdAt: string;
+	updatedAt: string;
+	memberCount: number;
+	userRole: string;
+	owner: string;
+	user: {
+		id: string;
 		email: string;
-		profile_picture: string;
-	}
-
-	interface Workspace {
-		title: string;
-		description: string;
-		slug: string;
-		avatar: string;
-		owner: string;
-		team: Team[];
-	}
-
-	interface User {
-		_id: string;
 		firstName: string;
 		lastName: string;
-		email: string;
 		username: string;
-		profile_picture: string;
-		workspaces: Workspace[];
-	}
+		profilePicture: string;
+	};
+}
 
-	interface Toast {
-		toastStyle: string;
-		type: string;
-		message: string;
-		description: string;
-	}
-
-	interface Notification {
-		id: string;
-		message: string;
-		date: string;
-		read: boolean;
-	}
-
-	interface Token {
+export interface LoginResponse {
+	user: User;
+	accessToken: {
 		token: string;
-		expires: string;
-	}
+		expires: number;
+	};
+	refreshToken: {
+		token: string;
+	};
+}
 
-	interface TokenAPIResponse {
-		success: boolean;
-		accessToken: Token;
-		refreshToken: Token;
-	}
+export interface SignupResponse {
+	user: User;
+	accessToken: {
+		token: string;
+		expiresIn: number;
+	};
+}
 
-	interface UserAPiResponse extends TokenAPIResponse {
-		user: User;
-	}
-
-	interface TaskAPIResponse {
-		success: boolean;
-		task: Task;
-	}
-
-	interface TasksAPIResponse {
-		success: boolean;
-		tasks: Task[];
-	}
-
-	interface TeamsAPIResponse {
-		success: boolean;
-		team: Team[];
-	}
-
-	interface Comment {
-		_id: string;
-		message: string;
-		user: User;
-		createdAt: string;
-	}
-
-	interface CommentsAPIResponse {
-		success: boolean;
-		comments: Comment[];
-	}
-
-	interface Authn {
-		_id: string;
-		device: string;
-	}
+export interface GetWorkspaces {
+	data: Workspace[];
+	pagination: Pagination;
 }
