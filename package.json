@@ -20,6 +20,7 @@
 		"@nuxt/image": "^1.10.0",
 		"@nuxt/scripts": "^0.11.6",
 		"@pinia/nuxt": "^0.11.0",
+		"@simplewebauthn/browser": "^13.1.0",
 		"@tailwindcss/vite": "^4.1.4",
 		"@unhead/vue": "^2.0.8",
 		"@vee-validate/zod": "^4.15.0",

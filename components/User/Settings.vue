@@ -2,10 +2,12 @@
 <script lang="ts" setup>
 import UpdateProfile from "./UpdateProfile.vue";
 import UpdateAccount from "./UpdateAccount.vue";
+import Passkeys from "./Passkeys.vue";
 
 const tabs = [
 	{ value: "profile", label: "Profile" },
-	{ value: "account", label: "Account" },
+	{ value: "password", label: "Password" },
+	{ value: "passkeys", label: "Passkeys" },
 ];
 
 const isOpen = defineModel<boolean>();
@@ -13,7 +15,8 @@ const activeTab = ref(tabs[0].value);
 
 const components: Record<string, any> = {
 	profile: UpdateProfile,
-	account: UpdateAccount,
+	password: UpdateAccount,
+	passkeys: Passkeys,
 };
 </script>
 

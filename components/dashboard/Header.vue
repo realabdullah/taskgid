@@ -9,7 +9,7 @@ const logout = async () => {
 	await useApiFetch("/auth/logout", { method: "POST" });
 	toast("Logged out successfully.");
 	useCookie("TG-AUTHTOKEN").value = undefined;
-	await refreshNuxtData();
+	clearNuxtData();
 	return navigateTo("/login");
 };
 </script>

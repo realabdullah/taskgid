@@ -75,3 +75,26 @@ export interface GetWorkspaces {
 	data: Workspace[];
 	pagination: Pagination;
 }
+
+export interface GetAuthnOptions {
+	challenge: string;
+	rp: { name: string; id: string };
+	user: { id: string; name: string; displayName: string };
+	pubKeyCredParams: [{ alg: number; type: string }, { alg: number; type: string }, { alg: number; type: string }];
+	timeout: number;
+	attestation: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	excludeCredentials: Array<any>;
+	authenticatorSelection: { userVerification: string; residentKey: string; requireResidentKey: boolean };
+	extensions: { credProps: boolean };
+}
+
+export interface Passkey {
+	id: string;
+	device: {
+		type: string;
+		model: string;
+		vendor: string;
+	};
+	createdAt: string;
+}

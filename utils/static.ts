@@ -11,6 +11,8 @@ export const loginFormFields = [
 	{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
 ];
 
+export const passkeyLoginFormFields = [{ id: "email", label: "Email", type: "email", placeholder: "name@example.com" }];
+
 export const resetConfirmationFields = [
 	{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
 	{ id: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "••••••••" },

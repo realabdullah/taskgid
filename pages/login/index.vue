@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 definePageMeta({ layout: "auth", name: "login" });
+
+const usingPasskeyLogin = ref(false);
 </script>
 
 <template>
 	<div class="grid gap-4">
-		<AuthLogin>
+		<AuthPasskeyLogin v-if="usingPasskeyLogin">
+			<Button type="submit" class="w-full">Login with passkey</Button>
+		</AuthPasskeyLogin>
+
+		<AuthLogin v-else>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center space-x-2">
 					<Checkbox id="remember" />
@@ -13,7 +19,7 @@ definePageMeta({ layout: "auth", name: "login" });
 				<NuxtLink to="/reset-password" class="text-primary text-sm font-medium underline-offset-4 hover:underline"> Forgot password? </NuxtLink>
 			</div>
 
-			<Button type="submit" class="w-full"> Sign In </Button>
+			<Button type="submit" class="w-full">Login</Button>
 		</AuthLogin>
 
 		<div class="relative">
@@ -26,8 +32,14 @@ definePageMeta({ layout: "auth", name: "login" });
 		</div>
 
 		<div class="grid grid-cols-2 gap-2">
-			<Button variant="outline">Google</Button>
-			<Button variant="outline">GitHub</Button>
+			<Button variant="outline">
+				<Icon name="hugeicons:google" :size="16" class="mr-2" />
+				Google
+			</Button>
+			<Button variant="outline" @click="usingPasskeyLogin = !usingPasskeyLogin">
+				<Icon v-if="!usingPasskeyLogin" name="hugeicons:finger-print" :size="16" class="mr-2" />
+				{{ usingPasskeyLogin ? "Login with password" : "Passkey" }}
+			</Button>
 		</div>
 
 		<p class="text-muted-foreground px-8 text-center text-sm">
