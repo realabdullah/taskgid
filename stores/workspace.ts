@@ -29,7 +29,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		if (newStatus === "pending") {
 			loadingTimer = setTimeout(() => {
 				isLoadingWorkspaces.value = true;
-			}, 1000);
+			}, 300);
 		} else {
 			if (loadingTimer) {
 				clearTimeout(loadingTimer);
