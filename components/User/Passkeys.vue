@@ -4,7 +4,7 @@ import type { Passkey } from "~/types";
 
 const { passkeys, addingPasskey, handleAddPasskey, handleRemovePasskey } = usePasskeys();
 
-useAsyncData(
+const { status } = useAsyncData(
 	"passkeys",
 	async () => {
 		const data = await useApiFetch<{ authns: Passkey[] }>("/users/authn", { method: "GET" });
@@ -32,7 +32,19 @@ useAsyncData(
 			</div>
 
 			<div class="mt-4 space-y-3">
-				<template v-if="passkeys && passkeys.length > 0">
+				<template v-if="status === 'pending'">
+					<div v-for="item in 2" :key="item" class="bg-muted flex items-center justify-between rounded-md p-3">
+						<div class="flex items-center gap-3">
+							<Skeleton class="h-5 w-5" />
+							<div class="w-[200px]">
+								<Skeleton class="h-6 w-full max-w-[138px]" />
+								<Skeleton class="mt-1 h-4 w-full max-w-[138px]" />
+							</div>
+						</div>
+						<Skeleton class="h-8 w-full max-w-[100px]" />
+					</div>
+				</template>
+				<template v-else-if="passkeys && passkeys.length > 0">
 					<div v-for="passkey in passkeys" :key="passkey.id" class="bg-muted flex items-center justify-between rounded-md p-3">
 						<div class="flex items-center gap-3">
 							<Icon :name="passkey.device.type === 'mobile' ? 'hugeicons:smart-phone-01' : 'hugeicons:computer'" :size="20" class="text-muted-foreground" />

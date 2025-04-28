@@ -3,11 +3,11 @@
 		<Card v-for="item in 3" :key="item" class="justify-between overflow-hidden pb-0">
 			<CardHeader class="pb-3">
 				<div class="flex items-center justify-between">
-					<Skeleton class="h-4 w-[120px]" />
+					<Skeleton class="h-4 w-full max-w-[120px]" />
 					<Skeleton class="h-4 w-4" />
 				</div>
-				<Skeleton class="h-4 w-[430px]" />
-				<Skeleton class="h-4 w-[430px]" />
+				<Skeleton class="h-4 w-full max-w-[430px]" />
+				<Skeleton class="h-4 w-full max-w-[430px]" />
 			</CardHeader>
 			<CardContent>
 				<div class="flex items-center justify-between">
