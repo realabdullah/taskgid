@@ -17,6 +17,7 @@ export interface User {
 	title: string | null;
 	about: string | null;
 	location: string | null;
+	workspaceCount: number;
 	createdAt: string;
 }
 
