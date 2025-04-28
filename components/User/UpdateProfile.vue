@@ -44,7 +44,6 @@ const uploadFile = async (file: File) => {
 		formData.append("file", file);
 
 		const result = await $fetch<any>("/api/upload", { method: "POST", body: formData });
-		toast("debugging", { description: JSON.stringify(result) });
 		if (result && result.url) return result.url as string;
 		else throw new Error("Failed to upload file");
 	} catch (error) {
