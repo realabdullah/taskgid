@@ -47,7 +47,6 @@ export default defineEventHandler(async (event) => {
 
 		return { url: uploadResult.secure_url };
 	} catch (error: any) {
-		console.log("server error: ", error);
 		if (error.statusCode) throw error;
 		throw createError({
 			statusCode: 500,
