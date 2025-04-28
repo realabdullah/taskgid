@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) => {
 		const fileBuffer = fileData.data;
 		const uploadOptions = { folder: "taskgid_uploads", resource_type: "auto" as const };
 		const uploadResult = await uploadToCloudinary(fileBuffer, uploadOptions);
+		console.log("Upload result:", uploadResult);
 
 		if (!uploadResult?.secure_url) {
 			throw createError({ statusCode: 500, statusMessage: "Server Error: Cloudinary did not return a secure URL." });

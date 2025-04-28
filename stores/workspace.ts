@@ -7,7 +7,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	const workspaceType = ref<"all" | "created" | "invited">("all");
 	const workspaces = ref<Workspace[]>([]);
 
-	const { refresh } = useAsyncData(
+	const { refresh, status } = useAsyncData(
 		`${user.value?.id}-workspaces`,
 		async () => {
 			const data = await useApiFetch<GetWorkspaces>("/workspaces", { method: "GET", params: { type: workspaceType.value, ...pagination.value } });
@@ -22,5 +22,22 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		}
 	);
 
-	return { workspaceType, workspaces, pagination, getWorkspaces: refresh };
+	const isLoadingWorkspaces = ref(false);
+	let loadingTimer: ReturnType<typeof setTimeout> | null = null;
+
+	watch(status, (newStatus) => {
+		if (newStatus === "pending") {
+			loadingTimer = setTimeout(() => {
+				isLoadingWorkspaces.value = true;
+			}, 1000);
+		} else {
+			if (loadingTimer) {
+				clearTimeout(loadingTimer);
+				loadingTimer = null;
+			}
+			isLoadingWorkspaces.value = false;
+		}
+	});
+
+	return { workspaceType, workspaces, pagination, isLoadingWorkspaces, getWorkspaces: refresh };
 });

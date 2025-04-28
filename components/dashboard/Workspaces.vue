@@ -2,7 +2,7 @@
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import type { Workspace } from "~/types";
 
-const { workspaceType, workspaces, pagination } = storeToRefs(useWorkspaceStore());
+const { isLoadingWorkspaces, workspaceType, workspaces, pagination } = storeToRefs(useWorkspaceStore());
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
@@ -73,7 +73,9 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 		</TabsList>
 
 		<TabsContent :value="workspaceType">
-			<div v-if="workspaces && workspaces.length" v-auto-animate class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<SkeletonWorkspace v-if="isLoadingWorkspaces" />
+
+			<div v-else-if="workspaces && workspaces.length" v-auto-animate class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				<DashboardWorkspaceCard
 					v-for="workspace in workspaces"
 					:key="workspace.id"
