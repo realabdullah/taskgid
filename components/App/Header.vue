@@ -1,17 +1,7 @@
 <script lang="ts" setup>
-import { toast } from "vue-sonner";
-
 defineEmits<(event: "view-profile" | "edit-user") => void>();
 
 const { user } = storeToRefs(useStore());
-
-const logout = async () => {
-	await useApiFetch("/auth/logout", { method: "POST" });
-	toast("Logged out successfully.");
-	useCookie("TG-AUTHTOKEN").value = undefined;
-	clearNuxtData();
-	return navigateTo("/login");
-};
 </script>
 
 <template>
@@ -58,7 +48,7 @@ const logout = async () => {
 						Settings
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem @select="logout">
+					<DropdownMenuItem @select="useAuth().logout">
 						<Icon name="hugeicons:logout-03" :size="16" class="mr-2" />
 						Log out
 					</DropdownMenuItem>

@@ -34,3 +34,12 @@ export const updateAccountFields = [
 	{ id: "newPassword", label: "New Password", type: "password", placeholder: "••••••••" },
 	{ id: "confirmPassword", label: "Confirm New Password", type: "password", placeholder: "••••••••" },
 ];
+
+export const TaskFormFields = [
+	{ id: "title", label: "Title", type: "text", placeholder: "Enter task title", extra: "A clear, concise title for your task." },
+	{ id: "description", label: "Description", type: "textarea", placeholder: "Enter task description", extra: "Provide details about what needs to be done." },
+	{ id: "dueDate", label: "Due Date", type: "date", placeholder: "Select task due date", extra: "When should this task be completed?" },
+	{ id: "priority", label: "Priority", type: "select", placeholder: "Select task priority", extra: "Set the importance level of this task." },
+	{ id: "assignees", label: "Assignees", type: "select", placeholder: "Assign task", extra: "Who should work on this task? Leave empty for unassigned.", isMultiple: true },
+	{ id: "status", label: "Status", type: "select", placeholder: "Select task status", extra: "Current state of the task." },
+];

@@ -7,7 +7,7 @@ import type { Workspace } from "~/types";
 const props = defineProps<{ isCreating?: boolean; workspace?: Workspace }>();
 const emits = defineEmits<(event: "update", value: Workspace) => void>();
 
-const { getWorkspaces } = useWorkspaceStore();
+const { getWorkspaces } = useWorkspacesStore();
 
 const isOpen = defineModel<boolean>();
 

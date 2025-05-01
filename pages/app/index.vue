@@ -17,7 +17,7 @@ const setSettingsOpen = () => {
 
 <template>
 	<div class="flex h-full flex-1 flex-col overflow-hidden">
-		<DashboardHeader @view-profile="isUserProfileOpen = true" @edit-user="setSettingsOpen" />
+		<AppHeader @view-profile="isUserProfileOpen = true" @edit-user="setSettingsOpen" />
 
 		<main class="container mx-auto flex-1 overflow-auto p-6">
 			<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -26,11 +26,11 @@ const setSettingsOpen = () => {
 					<p class="text-muted-foreground">Member since {{ formatDate(user?.createdAt) }}</p>
 				</div>
 
-				<DashboardWorkspaceCreateOrEdit is-creating />
+				<AppWorkspaceCreateOrEdit is-creating />
 			</div>
 
-			<DashboardPendingInvites />
-			<DashboardWorkspaces />
+			<AppPendingInvites />
+			<AppWorkspaces />
 
 			<UserProfile v-model="isUserProfileOpen" @edit="setSettingsOpen" />
 			<UserSettings v-model="isUserSettingsOpen" />

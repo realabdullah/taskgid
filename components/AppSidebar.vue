@@ -5,6 +5,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 	collapsible: "icon",
 });
 
+useWorkspaceStore();
 const { isMobile } = useSidebar();
 const route = useRoute();
 const data = computed(() => ({

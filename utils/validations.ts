@@ -128,3 +128,20 @@ export const updateAccountSchema = z
 		path: ["confirmPassword"],
 		message: "Passwords do not match",
 	});
+
+export const taskFormSchema = z.object({
+	title: z
+		.string()
+		.min(3, { message: "Title must be at least 3 characters" })
+		.max(50, { message: "Title must be less than 50 characters" })
+		.regex(/^[a-zA-Z0-9 ]+$/, { message: "Title should only contain letters and numbers" }),
+	description: z
+		.string()
+		.min(10, { message: "Description must be at least 10 characters" })
+		.max(200, { message: "Description must be less than 200 characters" })
+		.regex(/^[a-zA-Z0-9 ]+$/, { message: "Description should only contain letters and numbers" }),
+	dueDate: z.date().optional(),
+	priority: z.enum(["high", "medium", "low"]).optional(),
+	assignees: z.array(z.string()).optional(),
+	status: z.enum(["todo", "in_progress", "done"]).optional(),
+});

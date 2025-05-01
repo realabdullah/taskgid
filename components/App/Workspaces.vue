@@ -2,7 +2,7 @@
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import type { Workspace } from "~/types";
 
-const { isLoadingWorkspaces, workspaceType, workspaces, pagination } = storeToRefs(useWorkspaceStore());
+const { isLoadingWorkspaces, workspaceType, workspaces, pagination } = storeToRefs(useWorkspacesStore());
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
@@ -76,7 +76,7 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 			<SkeletonWorkspace v-if="isLoadingWorkspaces" />
 
 			<div v-else-if="workspaces && workspaces.length" v-auto-animate class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				<DashboardWorkspaceCard
+				<AppWorkspaceCard
 					v-for="workspace in workspaces"
 					:key="workspace.id"
 					:workspace="workspace"
@@ -87,12 +87,12 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 				/>
 			</div>
 
-			<DashboardWorkspaceEmptyState v-else />
+			<AppWorkspaceEmptyState v-else />
 		</TabsContent>
 
-		<DashboardWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
-		<DashboardWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
-		<DashboardWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
-		<DashboardWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
+		<AppWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
+		<AppWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
+		<AppWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
+		<AppWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
 	</Tabs>
 </template>

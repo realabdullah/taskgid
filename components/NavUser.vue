@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ChevronsUpDown, LogOut } from "lucide-vue-next";
 import { useSidebar } from "@/components/ui/sidebar";
 
 const { user } = storeToRefs(useStore());
@@ -20,7 +19,7 @@ const { isMobile } = useSidebar();
 							<span class="truncate font-medium">{{ user?.firstName }} {{ user?.lastName }}</span>
 							<span class="truncate text-xs">{{ user?.email }}</span>
 						</div>
-						<ChevronsUpDown class="ml-auto size-4" />
+						<Icon name="hugeicons:square-arrow-data-transfer-vertical" :size="16" class="ml-auto" />
 					</SidebarMenuButton>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg" :side="isMobile ? 'bottom' : 'right'" align="end" :side-offset="4">
@@ -37,8 +36,8 @@ const { isMobile } = useSidebar();
 						</div>
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>
-						<LogOut />
+					<DropdownMenuItem @select="useAuth().logout">
+						<Icon name="hugeicons:logout-03" :size="16" />
 						Log out
 					</DropdownMenuItem>
 				</DropdownMenuContent>

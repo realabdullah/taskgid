@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ChevronsUpDown, Plus } from "lucide-vue-next";
 import { useSidebar } from "@/components/ui/sidebar";
 
 const route = useRoute();
-const { workspaces } = storeToRefs(useWorkspaceStore());
+const { workspaces } = storeToRefs(useWorkspacesStore());
 const { isMobile } = useSidebar();
 
 const activeWorkspace = computed(() => {
-	return workspaces.value.find((workspace) => workspace.slug === route.params.slug);
+	return workspaces.value?.find((workspace) => workspace.slug === route.params.slug);
 });
 
 const switchWorkspace = (slug: string) => {
@@ -34,7 +33,7 @@ const switchWorkspace = (slug: string) => {
 							</span>
 							<span class="truncate text-xs">{{ activeWorkspace?.slug }}</span>
 						</div>
-						<ChevronsUpDown class="ml-auto" />
+						<Icon name="hugeicons:square-arrow-data-transfer-vertical" :size="16" class="ml-auto" />
 					</SidebarMenuButton>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" :side="isMobile ? 'bottom' : 'right'" :side-offset="4">
@@ -46,7 +45,7 @@ const switchWorkspace = (slug: string) => {
 					<DropdownMenuSeparator />
 					<DropdownMenuItem class="gap-2 p-2">
 						<div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
-							<Plus class="size-4" />
+							<Icon name="hugeicons:plus-sign-square" :size="16" />
 						</div>
 						<div class="text-muted-foreground font-medium">Add workspace</div>
 					</DropdownMenuItem>
