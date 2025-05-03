@@ -66,6 +66,7 @@ const statOverview = computed(() => [
 
 			<TabsContent :value="activeTab" class="space-y-4">
 				<AppTaskRecents v-if="activeTab === 'tasks'" />
+				<AppWorkspaceStat v-else-if="activeTab === 'stats'" :stats="stats" />
 			</TabsContent>
 		</Tabs>
 	</div>

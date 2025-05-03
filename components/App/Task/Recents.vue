@@ -42,6 +42,6 @@ const removeSelectedTask = () => {
 			@confirm="deleteTask(selectedTask?.id || '')"
 		/>
 
-		<AppTaskCreateOrEdit v-model="isTaskModalOpen" :is-creating="!selectedTask" :task="selectedTask" @close="removeSelectedTask" />
+		<AppTaskCreateOrEdit v-model="isTaskModalOpen" :task="selectedTask" @close="removeSelectedTask" />
 	</div>
 </template>

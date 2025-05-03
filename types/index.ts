@@ -174,3 +174,17 @@ export interface Team extends BaseUser {
 	email: string;
 	role: "member" | "creator";
 }
+
+export interface ActivityDetails {
+	id: string;
+	workspaceId: string;
+	userId: string;
+	action: string;
+	details: {
+		taskId: string;
+		taskTitle: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+	user: BaseUser;
+}
