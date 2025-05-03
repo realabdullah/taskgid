@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
-import type { Pagination, StatisticsResponse, Task } from "~/types";
+import type { StatisticsResponse } from "~/types";
 import { getWorkspaceTeams } from "~/utils/apis/workspace";
 
 definePageMeta({ name: "workspaces-slug", layout: "workspace" });
@@ -11,15 +11,6 @@ const { data: stats } = useQuery({
 		const { success, statistics } = await useApiFetch<StatisticsResponse>(`/workspaces/${useRoute().params.slug}/statistics`);
 		if (!statistics || !success) throw new Error("Failed to fetch workspace statistics");
 		return statistics;
-	},
-});
-
-const { data: recentTasks } = useQuery({
-	queryKey: ["workspace-recent-tasks", useRoute().params.slug],
-	queryFn: async () => {
-		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[]; pagination: Pagination }>(`/workspaces/${useRoute().params.slug}/tasks`);
-		if (!tasks || !success) throw new Error("Failed to fetch workspace tasks");
-		return tasks;
 	},
 });
 
@@ -74,9 +65,7 @@ const statOverview = computed(() => [
 			</TabsList>
 
 			<TabsContent :value="activeTab" class="space-y-4">
-				<div v-if="activeTab === 'tasks'" className="space-y-4">
-					<AppTaskCard v-for="task in recentTasks" :key="task.id" :task="task" />
-				</div>
+				<AppTaskRecents v-if="activeTab === 'tasks'" />
 			</TabsContent>
 		</Tabs>
 	</div>

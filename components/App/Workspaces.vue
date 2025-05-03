@@ -39,8 +39,8 @@ const workspaceDeleteAction = (payload: Workspace | boolean | string) => {
 		if (!payload) selectedWorkspace.value = null;
 		return;
 	} else if (typeof payload === "string") {
-		const index = workspaces.value.findIndex((w) => w.slug === payload);
-		if (index !== -1) workspaces.value.splice(index, 1);
+		const index = workspaces.value?.findIndex((w) => w.slug === payload) || -1;
+		if (index !== -1) workspaces.value?.splice(index, 1);
 		selectedWorkspace.value = null;
 		isDeleteWorkspaceModalOpen.value = false;
 	} else {
@@ -50,8 +50,8 @@ const workspaceDeleteAction = (payload: Workspace | boolean | string) => {
 };
 
 const updateWorkspaces = (workspace: Workspace) => {
-	const index = workspaces.value.findIndex((w) => w.id === workspace.id);
-	if (index !== -1) {
+	const index = workspaces.value?.findIndex((w) => w.id === workspace.id) || -1;
+	if (index !== -1 && workspaces.value) {
 		const existing = workspaces.value[index];
 		existing.title = workspace.title;
 		existing.description = workspace.description;
@@ -92,7 +92,7 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 
 		<AppWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
 		<AppWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
-		<AppWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
+		<AppWorkspaceDelete v-model="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
 		<AppWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
 	</Tabs>
 </template>

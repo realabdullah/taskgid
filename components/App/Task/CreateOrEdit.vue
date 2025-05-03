@@ -6,7 +6,7 @@ import { toast } from "vue-sonner";
 import type { Task, Team } from "~/types";
 
 const props = defineProps<{ isCreating?: boolean; task?: Task }>();
-// const emits = defineEmits<(event: "update", value: Task) => void>();
+const emits = defineEmits<(event: "close") => void>();
 
 const isOpen = defineModel<boolean>();
 
@@ -15,7 +15,7 @@ const setOpen = (open: boolean) => {
 };
 
 const formSchema = toTypedSchema(taskFormSchema);
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, setValues } = useForm({
 	validationSchema: formSchema,
 	initialValues: {
 		title: props.task?.title,
@@ -39,7 +39,8 @@ const taskKeyMap: { [key: string]: string } = {
 const client = useQueryClient();
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const url = `/workspaces/${useRoute().params.slug}/tasks`;
+		const baseurl = `/workspaces/${useRoute().params.slug}/tasks`;
+		const url = props.isCreating ? baseurl : `${baseurl}/${props.task?.id}`;
 		const payload = {
 			...values,
 			dueDate: values.dueDate ? values.dueDate.toISOString() : undefined,
@@ -54,6 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
 		setOpen(false);
 		client.invalidateQueries({ queryKey: ["workspace-recent-tasks"] });
 		toast(props.isCreating ? "Task created successfully" : "Task updated successfully.");
+		if (!props.isCreating) emits("close");
 	} catch (error) {
 		toast(String(error));
 	}
@@ -98,9 +100,28 @@ const fields = computed(() =>
 		placeholder?: string;
 		isFieldDirty?: boolean;
 		extra?: string;
+		fullWidth?: boolean;
+		isMultiple?: boolean;
 		options?: { label: string; value: string }[];
 	}[]
 >;
+
+watch(
+	() => props.task,
+	(task) => {
+		if (task) {
+			setValues({
+				title: task.title,
+				description: task.description,
+				dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+				priority: task.priority,
+				assignees: task.assignees.map((user) => user.username),
+				status: task.status,
+			});
+		}
+	}
+	// { once: true }
+);
 </script>
 
 <template>

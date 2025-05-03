@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-const props = defineProps<{ isOpen: boolean; slug?: string }>();
-const emits = defineEmits<{
-	(event: "delete-action", value: boolean | string): void;
-}>();
+const props = defineProps<{ slug?: string }>();
+const emits = defineEmits<(event: "delete-action", value: boolean | string) => void>();
+
+const isOpen = defineModel<boolean>();
 
 const deleteWorkspace = async () => {
 	const { success } = await useApiFetch<{ success: boolean }>(`/workspaces/${props.slug}`, { method: "DELETE" });
@@ -20,16 +19,11 @@ const deleteWorkspace = async () => {
 </script>
 
 <template>
-	<AlertDialog :open="isOpen">
-		<AlertDialogContent>
-			<AlertDialogHeader>
-				<AlertDialogTitle>Delete workspace?</AlertDialogTitle>
-				<AlertDialogDescription> This will remove everything in the workspace — tasks, settings, and members. This cannot be undone. </AlertDialogDescription>
-			</AlertDialogHeader>
-			<AlertDialogFooter>
-				<AlertDialogCancel @click="emits('delete-action', false)">Cancel</AlertDialogCancel>
-				<AlertDialogAction class="bg-red-500" @click="deleteWorkspace">Continue</AlertDialogAction>
-			</AlertDialogFooter>
-		</AlertDialogContent>
-	</AlertDialog>
+	<AppDeleteAction
+		v-model="isOpen"
+		title="Delete workspace?"
+		description="This will remove everything in the workspace — tasks, settings, and members. This cannot be undone."
+		@cancel="emits('delete-action', false)"
+		@confirm="deleteWorkspace"
+	/>
 </template>

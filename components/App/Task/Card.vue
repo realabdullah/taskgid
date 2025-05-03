@@ -4,9 +4,8 @@ import { Card } from "@/components/ui/card";
 import { AvatarGroup } from "~/components/ui/avatar";
 import type { Task } from "~/types";
 
-const props = defineProps<{
-	task: Task;
-}>();
+const props = defineProps<{ task: Task }>();
+const emits = defineEmits<(event: "edit" | "delete") => void>();
 
 const taskUrl = computed(() => {
 	return `/app/workspaces/${useRoute().params.slug}/tasks/${props.task.id}`;
@@ -33,10 +32,10 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuItem>Edit Task</DropdownMenuItem>
+							<DropdownMenuItem @select="emits('edit')">Edit Task</DropdownMenuItem>
 							<DropdownMenuItem>Assign Task</DropdownMenuItem>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem class="text-rose-500">Delete Task</DropdownMenuItem>
+							<DropdownMenuItem class="text-rose-500" @select="emits('delete')">Delete Task</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
