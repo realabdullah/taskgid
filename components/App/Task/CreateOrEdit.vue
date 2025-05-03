@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
-import type { Task } from "~/types";
+import type { Task, Team } from "~/types";
 
 const props = defineProps<{ isCreating?: boolean; task?: Task }>();
 // const emits = defineEmits<(event: "update", value: Task) => void>();
@@ -62,9 +62,13 @@ const onSubmit = handleSubmit(async (values) => {
 const fields = computed(() =>
 	TaskFormFields.map((field) => {
 		if (field.id === "assignees") {
+			const teams = client.getQueryData(["workspace-teams", useRoute().params.slug]) as Team[];
 			return {
 				...field,
-				options: props.task?.assignees.map((user) => user.username) || [],
+				options: teams.map((member) => ({
+					label: `${member.firstName} ${member.lastName}`,
+					value: member.username,
+				})),
 			};
 		} else if (field.id === "status")
 			return {
@@ -126,6 +130,7 @@ const fields = computed(() =>
 						:type="field.type"
 						:is-field-dirty="!isFieldDirty"
 						:options="field.options"
+						:is-multiple="field.isMultiple"
 					/>
 				</div>
 

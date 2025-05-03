@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
 import type { Pagination, StatisticsResponse, Task } from "~/types";
+import { getWorkspaceTeams } from "~/utils/apis/workspace";
 
 definePageMeta({ name: "workspaces-slug", layout: "workspace" });
 
@@ -21,6 +22,8 @@ const { data: recentTasks } = useQuery({
 		return tasks;
 	},
 });
+
+await getWorkspaceTeams(useRoute().params.slug as string);
 
 const activeTab = ref("tasks");
 const tabs = [

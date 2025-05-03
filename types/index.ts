@@ -169,3 +169,8 @@ export interface StatisticsResponse {
 		};
 	};
 }
+
+export interface Team extends BaseUser {
+	email: string;
+	role: "member" | "creator";
+}

@@ -10,6 +10,7 @@ interface AuthFormFieldProps {
 	extra?: string;
 	options?: { label: string; value: string }[];
 	className?: string;
+	isMultiple?: boolean;
 }
 
 defineProps<AuthFormFieldProps>();
@@ -22,7 +23,7 @@ defineProps<AuthFormFieldProps>();
 
 			<DateFormField v-if="type === 'date'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
 
-			<Select v-else-if="type === 'select'" v-bind="componentField">
+			<Select v-else-if="type === 'select'" v-bind="componentField" :multiple="isMultiple">
 				<FormControl>
 					<SelectTrigger class="w-full">
 						<SelectValue :placeholder="placeholder" />
