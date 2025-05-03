@@ -9,7 +9,7 @@ interface AuthFormFieldProps {
 	isFieldDirty?: boolean;
 	extra?: string;
 	options?: { label: string; value: string }[];
-	className?: string;
+	className?: string | string[];
 	isMultiple?: boolean;
 }
 

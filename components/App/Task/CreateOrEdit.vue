@@ -106,21 +106,24 @@ const fields = computed(() =>
 <template>
 	<Dialog :open="isOpen" @update:open="setOpen">
 		<DialogTrigger v-if="isCreating" as-child>
-			<Button class="bg-black text-white hover:bg-black/90">
+			<Button class="rounded-md bg-black px-4 py-2 text-white hover:bg-black/90">
 				<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
 				Create Task
 			</Button>
 		</DialogTrigger>
-		<DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
-			<DialogHeader>
-				<DialogTitle>{{ isCreating ? "Create New Task" : "Update task" }}</DialogTitle>
-				<DialogDescription>
+
+		<DialogContent class="max-h-[90vh] space-y-6 overflow-y-auto rounded-lg bg-white p-6 shadow-xl sm:max-w-[500px]">
+			<DialogHeader class="space-y-1">
+				<DialogTitle class="text-xl font-semibold text-gray-900">
+					{{ isCreating ? "Create New Task" : "Update Task" }}
+				</DialogTitle>
+				<DialogDescription class="text-sm text-gray-500">
 					{{ isCreating ? "Add a new task to your workspace. Fill out the details below." : "Edit your task details below to update it in your workspace." }}
 				</DialogDescription>
 			</DialogHeader>
 
-			<form class="" @submit="onSubmit">
-				<div class="grid gap-4 py-4">
+			<form class="space-y-6" @submit="onSubmit">
+				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<AuthFormField
 						v-for="field in fields"
 						:key="field.id"
@@ -131,12 +134,15 @@ const fields = computed(() =>
 						:is-field-dirty="!isFieldDirty"
 						:options="field.options"
 						:is-multiple="field.isMultiple"
+						:class-name="['w-full', field.type === 'textarea' || field.fullWidth ? 'sm:col-span-2' : '']"
 					/>
 				</div>
 
-				<DialogFooter>
-					<Button type="button" variant="outline" @click="setOpen(false)"> Cancel </Button>
-					<Button type="submit">{{ isCreating ? "Create Task" : "Update Task" }}</Button>
+				<DialogFooter class="flex justify-between pt-2">
+					<Button type="button" variant="outline" class="rounded-md border px-4 py-2 text-gray-700 hover:bg-gray-100" @click="setOpen(false)"> Cancel </Button>
+					<Button type="submit" class="rounded-md bg-black px-5 py-2 text-white hover:bg-black/90">
+						{{ isCreating ? "Create Task" : "Update Task" }}
+					</Button>
 				</DialogFooter>
 			</form>
 		</DialogContent>
