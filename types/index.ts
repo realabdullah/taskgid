@@ -188,3 +188,10 @@ export interface ActivityDetails {
 	updatedAt: string;
 	user: BaseUser;
 }
+
+export interface TaskFilter {
+	search: string;
+	status: string[];
+	priority: string[];
+	assignee: string[];
+}

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+defineProps<{ title: string; description: string; action?: string }>();
 defineEmits<(event: "create") => void>();
 </script>
 
@@ -8,13 +9,13 @@ defineEmits<(event: "create") => void>();
 			<Icon name="hugeicons:folder-02" :size="40" class="text-muted-foreground" />
 		</div>
 
-		<h3 class="mt-4 text-lg font-medium">No workspaces yet</h3>
+		<h3 class="mt-4 text-lg font-medium">{{ title }}</h3>
 
-		<p class="text-muted-foreground mt-2 max-w-sm text-sm">Create your first workspace to start organizing your tasks and collaborating with your team.</p>
+		<p class="text-muted-foreground mt-2 max-w-sm text-sm">{{ description }}</p>
 
-		<Button class="mt-4 bg-black text-white hover:bg-black/90" @click="$emit('create')">
+		<Button v-if="action" class="mt-4 bg-black text-white hover:bg-black/90" @click="$emit('create')">
 			<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
-			Create Workspace
+			{{ action }}
 		</Button>
 	</div>
 </template>

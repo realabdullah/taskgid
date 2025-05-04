@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
 import type { StatisticsResponse } from "~/types";
-import { getWorkspaceTeams } from "~/utils/apis/workspace";
 
 definePageMeta({ name: "workspaces-slug", layout: "workspace" });
 
@@ -14,13 +13,10 @@ const { data: stats } = useQuery({
 	},
 });
 
-await getWorkspaceTeams(useRoute().params.slug as string);
-
 const activeTab = ref("tasks");
 const tabs = [
 	{ value: "tasks", label: "Recent Tasks" },
 	{ value: "stats", label: "Workspace Stats" },
-	{ value: "team", label: "Team Members" },
 ];
 const statOverview = computed(() => [
 	{
