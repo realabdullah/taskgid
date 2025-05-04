@@ -39,7 +39,7 @@ const removeSelectedTask = () => {
 			title="Delete task?"
 			description="Are you sure you want to delete this task? This action cannot be undone."
 			@cancel="isDeleteModalOpen = false"
-			@confirm="deleteTask(selectedTask?.id || '')"
+			@confirm="deleteTask(selectedTask?.id || '', removeSelectedTask)"
 		/>
 
 		<AppTaskCreateOrEdit v-model="isTaskModalOpen" :task="selectedTask" @close="removeSelectedTask" />

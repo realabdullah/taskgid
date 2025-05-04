@@ -41,7 +41,7 @@ const tasksStats = computed(() => {
 	];
 });
 
-const { getLabel, secondaryText } = useActivityLabel();
+const { getLabel, getDescription } = useActivityLabel();
 const { data: activities } = useQuery({
 	queryKey: ["member-activity", props.stats?.memberActivity],
 	queryFn: async () => {
@@ -88,7 +88,7 @@ const { data: activities } = useQuery({
 								<div class="bg-primary mt-2 h-2 w-2 rounded-full" />
 								<div class="space-y-1">
 									<p class="text-sm font-medium">{{ getLabel(activity) }}</p>
-									<p class="text-muted-foreground text-sm">{{ secondaryText(activity) }}</p>
+									<p class="text-muted-foreground text-sm" v-html="getDescription(activity)"></p>
 									<p class="text-muted-foreground text-xs">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
 								</div>
 							</div>
