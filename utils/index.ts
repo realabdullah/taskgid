@@ -46,3 +46,14 @@ export const getPriorityColor = (priority: Task["priority"]) => {
 			return "";
 	}
 };
+
+export const getStatusColor = (status: Task["status"]) => {
+	switch (status) {
+		case "done":
+			return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
+		case "in_progress":
+			return "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20";
+		default:
+			return "bg-slate-500/10 text-slate-500 hover:bg-slate-500/20";
+	}
+};
