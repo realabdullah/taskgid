@@ -195,3 +195,38 @@ export interface TaskFilter {
 	priority: string[];
 	assignee: string[];
 }
+
+export interface Comment {
+	id: string;
+	content: string;
+	taskId: string;
+	userId: string;
+	parentId: string | null;
+	mentions: string[];
+	likeCount: number;
+	replyCount: number;
+	createdAt: string;
+	updatedAt: string;
+	user: BaseUser;
+}
+
+export interface Notification {
+	id: string;
+	userId: string;
+	type: string;
+	read: boolean;
+	taskId: string;
+	commentId: string;
+	actorId: string;
+	message: string;
+	createdAt: string;
+	updatedAt: string;
+	user: BaseUser;
+	task: {
+		id: string;
+		title: string;
+		status: "todo" | "in_progress" | "done";
+		priority: "low" | "medium" | "high";
+	};
+	comment: { id: string; content: string };
+}

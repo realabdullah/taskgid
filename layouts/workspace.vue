@@ -1,8 +1,5 @@
 <script lang="ts" setup>
-import { getWorkspaceTeams } from "~/utils/apis/workspace";
-
 const route = useRoute();
-await getWorkspaceTeams(useRoute().params.slug as string);
 </script>
 
 <template>

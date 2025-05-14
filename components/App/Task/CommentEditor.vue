@@ -1,10 +1,39 @@
 <script lang="ts" setup>
+import { useQueryClient } from "@tanstack/vue-query";
+import { toast } from "vue-sonner";
 import { cn } from "@/lib/utils";
+import type { Comment } from "@/types";
+
+const { parentId } = defineProps<{ parentId?: string }>();
+
+const route = useRoute();
+const client = useQueryClient();
+const { user } = storeToRefs(useStore());
 
 const comment = shallowRef("");
-const showMentionPopup = shallowRef(false);
 const isBold = shallowRef(false);
 const isItalic = shallowRef(false);
+
+const isAddingComment = ref(false);
+const addComment = async () => {
+	try {
+		isAddingComment.value = true;
+		const url = `/workspaces/${route.params.slug}/tasks/${route.params.id}/comments`;
+		const res = await useApiFetch<{ success: boolean; data: Comment }>(url, {
+			method: "POST",
+			body: { content: comment.value, parentId },
+		});
+		if (!res || !res.success) throw new Error("Failed to add comment");
+
+		await client.invalidateQueries({ queryKey: ["task-comments", route.params.id] });
+		comment.value = "";
+		toast.success("Comment added successfully");
+	} catch (error) {
+		toast.error(String(error));
+	} finally {
+		isAddingComment.value = false;
+	}
+};
 </script>
 
 <template>
@@ -12,8 +41,8 @@ const isItalic = shallowRef(false);
 		<div class="p-4">
 			<div class="flex items-start gap-3">
 				<Avatar class="mt-1">
-					<AvatarImage src="/placeholder.svg?height=40&width=40" alt="Current user" />
-					<AvatarFallback>CU</AvatarFallback>
+					<AvatarImage :src="user?.profilePicture || ''" :alt="user?.firstName || ''" />
+					<AvatarFallback>{{ getInitials(user?.firstName, user?.lastName) }}</AvatarFallback>
 				</Avatar>
 
 				<div class="flex-1">
@@ -27,14 +56,11 @@ const isItalic = shallowRef(false);
 					</div>
 
 					<div class="relative">
-						<Textarea
-							v-model="comment"
-							class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[100px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-						/>
+						<AppTaskMentionTextarea v-model="comment" />
 					</div>
 
 					<div class="mt-3 flex justify-end">
-						<Button type="button" :disabled="!comment.trim()" class-name="flex items-center gap-2">
+						<Button type="button" :disabled="!comment.trim() || isAddingComment" class-name="flex items-center gap-2" @click="addComment">
 							<Icon name="hugeicons:arrow-right-04" :size="16" />
 							<span>Submit</span>
 						</Button>
