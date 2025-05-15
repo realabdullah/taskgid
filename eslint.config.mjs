@@ -4,11 +4,15 @@ import prettier from "eslint-plugin-prettier";
 import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt(
-	// Your custom configs here
 	{
 		files: ["**/*.{js,mjs,cjs,ts,vue}"],
 		plugins: { prettier },
-		rules: { quotes: ["error", "double"], "prettier/prettier": ["error", { useTabs: true, tabWidth: 4, printWidth: 200 }], indent: ["error", "tab"] },
+		rules: {
+			"vue/no-v-html": "off",
+			"prettier/prettier": ["error", { useTabs: true, tabWidth: 4, printWidth: 200 }],
+			quotes: ["error", "double"],
+			indent: ["error", "tab"],
+		},
 	},
 	eslintConfigPrettier
 );
