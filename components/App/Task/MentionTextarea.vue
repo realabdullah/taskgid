@@ -89,9 +89,6 @@ const select = (i: number) => {
 						:class="['mention-item flex cursor-pointer items-center px-3 py-2 transition-colors duration-150', idx === index ? 'bg-gray-50' : 'hover:bg-gray-50']"
 						@mousedown.prevent="select(idx)"
 					>
-						<!-- <div class="mr-2 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs text-gray-600">
-							{{ user.firstName[0] }}
-						</div> -->
 						<Avatar class="mr-2 h-6 w-6">
 							<AvatarImage :src="user.profilePicture" :alt="user.firstName" />
 							<AvatarFallback>{{ getInitials(user.firstName, user.lastName) }}</AvatarFallback>

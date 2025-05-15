@@ -57,3 +57,7 @@ export const getStatusColor = (status: Task["status"]) => {
 			return "bg-slate-500/10 text-slate-500 hover:bg-slate-500/20";
 	}
 };
+
+export const highlightMentions = (text: string): string => {
+	return text.replace(/@(\w+)/g, "<span class='font-bold underline'>@$1</span>");
+};

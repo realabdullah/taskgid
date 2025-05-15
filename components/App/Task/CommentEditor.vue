@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import { cn } from "@/lib/utils";
 import type { Comment } from "@/types";
 
 const { parentId } = defineProps<{ parentId?: string }>();
@@ -11,10 +10,8 @@ const client = useQueryClient();
 const { user } = storeToRefs(useStore());
 
 const comment = shallowRef("");
-const isBold = shallowRef(false);
-const isItalic = shallowRef(false);
-
 const isAddingComment = ref(false);
+
 const addComment = async () => {
 	try {
 		isAddingComment.value = true;
@@ -37,24 +34,15 @@ const addComment = async () => {
 </script>
 
 <template>
-	<Card class="mt-10">
-		<div class="p-4">
+	<Card :class="[parentId ? 'mt-3 border-none p-0 shadow-none' : 'mt-10']">
+		<div :class="{ 'p-4': !parentId }">
 			<div class="flex items-start gap-3">
-				<Avatar class="mt-1">
+				<Avatar v-if="!parentId" class="mt-1">
 					<AvatarImage :src="user?.profilePicture || ''" :alt="user?.firstName || ''" />
 					<AvatarFallback>{{ getInitials(user?.firstName, user?.lastName) }}</AvatarFallback>
 				</Avatar>
 
 				<div class="flex-1">
-					<div class="mb-2 flex items-center gap-2">
-						<Button type="button" size="icon" variant="ghost" :class="cn('h-8 w-8', isBold && 'bg-muted')">
-							<Icon name="hugeicons:text-bold" :size="16" />
-						</Button>
-						<Button type="button" size="icon" variant="ghost" :class="cn('h-8 w-8', isItalic && 'bg-muted')">
-							<Icon name="hugeicons:text-italic" :size="16" />
-						</Button>
-					</div>
-
 					<div class="relative">
 						<AppTaskMentionTextarea v-model="comment" />
 					</div>
