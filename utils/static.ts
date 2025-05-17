@@ -43,3 +43,30 @@ export const TaskFormFields = [
 	{ id: "assignees", label: "Assignees", type: "select", placeholder: "Assign task", extra: "Who should work on this task? Leave empty for unassigned.", isMultiple: true, fullWidth: false },
 	{ id: "status", label: "Status", type: "select", placeholder: "Select task status", extra: "Current state of the task.", fullWidth: false },
 ];
+
+export const taskActions = [
+	{ label: "Change Status", value: "status", description: "Modify the current state of the task" },
+	{ label: "Change Priority", value: "priority", description: "Adjust how urgent or important the task is" },
+	{ label: "Assign to Someone Else", value: "assignees", description: "Reassign the task to a different team member" },
+	{ label: "Set Due Date", value: "dueDate", description: "Specify or update the task’s deadline" },
+] as const;
+
+export const taskActionsLabelMap = taskActions.reduce(
+	(map, action) => {
+		map[action.value] = { label: action.label, description: action.description };
+		return map;
+	},
+	{} as Record<string, { label: string; description: string }>
+);
+
+export const taskStatuses = [
+	{ label: "Todo", value: "todo", description: "Tasks that are queued up and waiting to be started." },
+	{ label: "In Progress", value: "in_progress", description: "Tasks currently being worked on." },
+	{ label: "Done", value: "done", description: "Tasks that have been completed." },
+];
+
+export const taskPriorities = [
+	{ label: "Low", value: "low", description: "Non-urgent task that can be handled in due course." },
+	{ label: "Medium", value: "medium", description: "Important task that should be completed soon." },
+	{ label: "High", value: "high", description: "Critical task requiring immediate attention." },
+];

@@ -27,6 +27,9 @@ export default defineNuxtConfig({
 	},
 	css: ["~/assets/css/tailwind.css"],
 	runtimeConfig: { public: { apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000" } },
+	build: {
+		transpile: ["@vuepic/vue-datepicker"],
+	},
 	compatibilityDate: "2025-04-26",
 	vite: { plugins: [tailwindcss()] },
 	eslint: { config: { stylistic: true }, checker: true },
