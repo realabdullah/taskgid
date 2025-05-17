@@ -112,15 +112,7 @@ useHead({
 					</CardContent>
 				</Card>
 
-				<Card>
-					<CardHeader>
-						<CardTitle class="text-lg">Comments</CardTitle>
-					</CardHeader>
-
-					<CardContent>
-						<AppTaskComments />
-					</CardContent>
-				</Card>
+				<AppTaskComments />
 			</div>
 
 			<div class="space-y-6">

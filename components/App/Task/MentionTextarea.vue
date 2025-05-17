@@ -73,7 +73,7 @@ const select = (i: number) => {
 		<textarea
 			ref="textarea"
 			v-model="comment"
-			class="border-input bg-background ring-offset-background placeholder:text-muted-foreground min-h-[100px] w-full rounded-md border px-3 py-2 text-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+			class="border-input bg-background ring-offset-background placeholder:text-muted-foreground min-h-[100px] w-full rounded-md border px-3 pt-4 pb-10 text-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			placeholder="Write a comment... (use @ to mention)"
 			@input="onInput"
 			@keydown="onKeydown"

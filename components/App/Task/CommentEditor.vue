@@ -7,7 +7,6 @@ const { parentId } = defineProps<{ parentId?: string }>();
 
 const route = useRoute();
 const client = useQueryClient();
-const { user } = storeToRefs(useStore());
 
 const comment = shallowRef("");
 const isAddingComment = ref(false);
@@ -34,27 +33,14 @@ const addComment = async () => {
 </script>
 
 <template>
-	<Card :class="[parentId ? 'mt-3 border-none p-0 shadow-none' : 'mt-10']">
-		<div :class="{ 'p-4': !parentId }">
-			<div class="flex items-start gap-3">
-				<Avatar v-if="!parentId" class="mt-1">
-					<AvatarImage :src="user?.profilePicture || ''" :alt="user?.firstName || ''" />
-					<AvatarFallback>{{ getInitials(user?.firstName, user?.lastName) }}</AvatarFallback>
-				</Avatar>
+	<div class="relative">
+		<AppTaskMentionTextarea v-model="comment" />
 
-				<div class="flex-1">
-					<div class="relative">
-						<AppTaskMentionTextarea v-model="comment" />
-					</div>
-
-					<div class="mt-3 flex justify-end">
-						<Button type="button" :disabled="!comment.trim() || isAddingComment" class-name="flex items-center gap-2" @click="addComment">
-							<Icon name="hugeicons:arrow-right-04" :size="16" />
-							<span>Submit</span>
-						</Button>
-					</div>
-				</div>
-			</div>
+		<div class="absolute right-4 bottom-4">
+			<Button type="button" :disabled="!comment.trim() || isAddingComment" class="flex items-center gap-2" @click="addComment">
+				<Icon name="hugeicons:arrow-right-04" :size="16" />
+				<span>Send</span>
+			</Button>
 		</div>
-	</Card>
+	</div>
 </template>
