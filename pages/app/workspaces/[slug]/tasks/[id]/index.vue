@@ -6,6 +6,7 @@ import type { ActivityDetails, Task } from "~/types";
 
 definePageMeta({ name: "task-id", layout: "workspace" });
 
+const { deleteTask } = useTasks();
 const { getLabel, getDescription } = useActivityLabel();
 const route = useRoute();
 const client = useQueryClient();
@@ -46,6 +47,7 @@ useHead({
 	meta: [{ name: "description", content: () => task.value?.description }],
 });
 
+const isDeleteModalOpen = ref(false);
 const isUpdatingTask = ref(false);
 const selectedAction = ref();
 const taskActionUpdate = shallowReactive<{ [key: string]: any }>({ status: "", priority: "", assignees: [], dueDate: "" });
@@ -80,6 +82,10 @@ const updateTaskProperties = async () => {
 	} finally {
 		isUpdatingTask.value = false;
 	}
+};
+
+const goToTasks = () => {
+	return navigateTo({ name: "tasks" });
 };
 </script>
 
@@ -237,7 +243,15 @@ const updateTaskProperties = async () => {
 									</div>
 								</DropdownMenuContent>
 							</DropdownMenu>
-							<Button variant="outline" class="w-full justify-start text-rose-500 hover:bg-rose-500/10 hover:text-rose-500"> Delete Task </Button>
+							<Button variant="outline" class="w-full justify-start text-rose-500 hover:bg-rose-500/10 hover:text-rose-500" @click="isDeleteModalOpen = true"> Delete Task </Button>
+
+							<AppDeleteAction
+								v-model="isDeleteModalOpen"
+								title="Delete task?"
+								description="Are you sure you want to delete this task? This action cannot be undone."
+								@cancel="isDeleteModalOpen = false"
+								@confirm="deleteTask(task?.id || '', goToTasks)"
+							/>
 						</div>
 					</CardContent>
 				</Card>
