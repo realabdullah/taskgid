@@ -12,6 +12,7 @@ export const useApiFetch = <T>(request: string | Request, opts: FetchOptions = {
 		retry: 1,
 		headers: {
 			Accept: "application/json",
+			"ngrok-skip-browser-warning": "ignore",
 			...(String(opts.method)?.toUpperCase() !== "GET" && { "Content-Type": "application/json" }),
 			...opts.headers,
 		},

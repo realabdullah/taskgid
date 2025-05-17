@@ -2,7 +2,7 @@
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import type { Workspace } from "~/types";
 
-const { workspaceType, workspaces, pagination } = storeToRefs(useWorkspaceStore());
+const { isLoadingWorkspaces, workspaceType, workspaces, pagination } = storeToRefs(useWorkspacesStore());
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
@@ -39,8 +39,8 @@ const workspaceDeleteAction = (payload: Workspace | boolean | string) => {
 		if (!payload) selectedWorkspace.value = null;
 		return;
 	} else if (typeof payload === "string") {
-		const index = workspaces.value.findIndex((w) => w.slug === payload);
-		if (index !== -1) workspaces.value.splice(index, 1);
+		const index = workspaces.value?.findIndex((w) => w.slug === payload) || -1;
+		if (index !== -1) workspaces.value?.splice(index, 1);
 		selectedWorkspace.value = null;
 		isDeleteWorkspaceModalOpen.value = false;
 	} else {
@@ -50,8 +50,8 @@ const workspaceDeleteAction = (payload: Workspace | boolean | string) => {
 };
 
 const updateWorkspaces = (workspace: Workspace) => {
-	const index = workspaces.value.findIndex((w) => w.id === workspace.id);
-	if (index !== -1) {
+	const index = workspaces.value?.findIndex((w) => w.id === workspace.id) || -1;
+	if (index !== -1 && workspaces.value) {
 		const existing = workspaces.value[index];
 		existing.title = workspace.title;
 		existing.description = workspace.description;
@@ -73,8 +73,10 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 		</TabsList>
 
 		<TabsContent :value="workspaceType">
-			<div v-if="workspaces && workspaces.length" v-auto-animate class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				<DashboardWorkspaceCard
+			<SkeletonWorkspace v-if="isLoadingWorkspaces" />
+
+			<div v-else-if="workspaces && workspaces.length" v-auto-animate class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<AppWorkspaceCard
 					v-for="workspace in workspaces"
 					:key="workspace.id"
 					:workspace="workspace"
@@ -85,12 +87,12 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 				/>
 			</div>
 
-			<DashboardWorkspaceEmptyState v-else />
+			<AppEmptyState v-else title="No workspaces yet" description="Create your first workspace to start organizing your tasks and collaborating with your team." action="Create Workspace" />
 		</TabsContent>
 
-		<DashboardWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
-		<DashboardWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
-		<DashboardWorkspaceDelete :is-open="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
-		<DashboardWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
+		<AppWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />
+		<AppWorkspaceCreateOrEdit v-if="selectedWorkspace" v-model="isUpdateWorkspaceModalOpen" :workspace="selectedWorkspace" @update="updateWorkspaces" />
+		<AppWorkspaceDelete v-model="isDeleteWorkspaceModalOpen" :slug="selectedWorkspace?.slug" @delete-action="workspaceDeleteAction" />
+		<AppWorkspaceInvite v-if="selectedWorkspace" v-model="isWorkspaceInviteModalOpen" :workspace="selectedWorkspace" />
 	</Tabs>
 </template>

@@ -45,7 +45,7 @@ const { user } = storeToRefs(useStore());
 					</div>
 					<div class="flex items-center gap-2 text-sm text-gray-600">
 						<Icon name="hugeicons:user-multiple-02" :size="16" />
-						<span>4 Workspaces</span>
+						<span>{{ user?.workspaceCount || 0 }} Workspaces</span>
 					</div>
 				</div>
 

@@ -9,6 +9,10 @@ defineProps<{
 const emits = defineEmits<{
 	(event: "update-workspace" | "delete-workspace" | "view-workspace" | "invite"): void;
 }>();
+
+const openWorkspace = (slug: string) => {
+	return navigateTo({ name: "workspaces-slug", params: { slug } });
+};
 </script>
 
 <template>
@@ -49,7 +53,7 @@ const emits = defineEmits<{
 		<CardFooter class="bg-muted/50 border-t px-6 py-3">
 			<div class="text-muted-foreground flex w-full items-center justify-between text-xs">
 				<span></span>
-				<Button variant="ghost" size="sm" class="h-7 gap-1 text-xs"> Open </Button>
+				<Button variant="ghost" size="sm" class="h-7 gap-1 text-xs" @click="openWorkspace(workspace.slug)"> Open </Button>
 			</div>
 		</CardFooter>
 	</Card>

@@ -1,26 +1,25 @@
-import type { GetWorkspaces, Workspace } from "~/types";
+import { useQuery } from "@tanstack/vue-query";
+import type { Pagination, Team, Workspace } from "~/types";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
-	const { user } = storeToRefs(useStore());
-	const { pagination } = usePagination();
+	const workspaceSlug = computed(() => useRoute().params.slug as string);
 
-	const workspaceType = ref<"all" | "created" | "invited">("all");
-	const workspaces = ref<Workspace[]>([]);
-
-	const { refresh } = useAsyncData(
-		`${user.value?.id}-workspaces`,
-		async () => {
-			const data = await useApiFetch<GetWorkspaces>("/workspaces", { method: "GET", params: { type: workspaceType.value, ...pagination.value } });
-			return { workspaces: data.data, pagination: data.pagination };
+	const { data: workspace } = useQuery({
+		queryKey: ["workspace", workspaceSlug],
+		queryFn: async () => {
+			return await useApiFetch<Workspace>(`/workspaces/${workspaceSlug.value}`, { method: "GET" });
 		},
-		{
-			transform: ({ workspaces: data }) => {
-				workspaces.value = [...data];
-				return data;
-			},
-			watch: [workspaceType],
-		}
-	);
+		enabled: () => !!workspaceSlug.value,
+	});
 
-	return { workspaceType, workspaces, pagination, getWorkspaces: refresh };
+	const { data: teams } = useQuery({
+		queryKey: ["workspace-teams", workspaceSlug],
+		queryFn: async () => {
+			const { success, data } = await useApiFetch<{ success: boolean; data: Team[]; pagination: Pagination }>(`/workspaces/${workspaceSlug.value}/team`);
+			if (!data || !success) throw new Error("Failed to fetch workspace teams");
+			return data;
+		},
+	});
+
+	return { workspace, teams };
 });
