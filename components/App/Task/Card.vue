@@ -32,8 +32,8 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
+							<DropdownMenuSeparator />
 							<DropdownMenuItem @select="emits('edit')">Edit Task</DropdownMenuItem>
-							<DropdownMenuItem>Assign Task</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem class="text-rose-500" @select="emits('delete')">Delete Task</DropdownMenuItem>
 						</DropdownMenuContent>
@@ -60,12 +60,12 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 								<AvatarGroup :users="task.assignees" :max-displayed="3" size="sm" class-name="border-background border-2 dark:border-gray-800" />
 							</div>
 
-							<Button v-else variant="outline" size="sm" class="h-7 text-xs">Assign</Button>
+							<Button v-else variant="outline" size="sm" class="h-7 text-xs">Not assigned yet</Button>
 						</div>
 
 						<div class="text-muted-foreground flex items-center text-sm">
 							<Icon name="hugeicons:comment-02" size="16" class="mr-1" />
-							{{ task.comments || 0 }} comment{{ task.comments !== 1 ? "s" : "" }}
+							{{ task.commentCount || 0 }} comment{{ task.commentCount !== 1 ? "s" : "" }}
 						</div>
 					</div>
 				</div>

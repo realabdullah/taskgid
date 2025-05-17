@@ -109,7 +109,7 @@ export interface Task {
 	updatedAt: string;
 	assignees: BaseUser[];
 	creator: BaseUser;
-	comments?: number;
+	commentCount: number;
 }
 
 interface TaskStatistics {
