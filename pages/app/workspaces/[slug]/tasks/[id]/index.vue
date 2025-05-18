@@ -111,7 +111,7 @@ const goToTasks = () => {
 								<CardTitle class="text-2xl">{{ task?.title }}</CardTitle>
 							</div>
 							<div class="flex flex-wrap gap-2">
-								<Badge variant="outline" :class="['capitalize', getStatusColor(task?.status || 'todo')]">{{ task?.status }}</Badge>
+								<Badge variant="outline" :class="['capitalize', getStatusColor(task?.status || 'todo')]">{{ task?.status.replace("_", " ") }}</Badge>
 								<Badge variant="outline" :class="['capitalize', getPriorityColor(task?.priority || 'low')]">{{ task?.priority }} Priority </Badge>
 							</div>
 						</div>
