@@ -47,7 +47,7 @@ const acceptInvitation = async (invitation: PendingInvitation) => {
 						<div class="mt-1 flex items-center gap-2 text-sm">
 							<span>Invited by {{ invitation.invitedBy.firstName }} {{ invitation.invitedBy.lastName }}</span>
 							<span>•</span>
-							<Badge variant="outline">Admin</Badge>
+							<Badge variant="outline">Creator</Badge>
 							<span>•</span>
 							<span class="text-muted-foreground">{{ getTimeAgo(new Date(invitation.invitedAt)) }}</span>
 						</div>

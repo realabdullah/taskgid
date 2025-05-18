@@ -5,7 +5,7 @@ import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 import type { Workspace } from "~/types";
 
-const props = defineProps<{ workspace: Workspace }>();
+const props = defineProps<{ workspace: Workspace; renderTrigger?: boolean }>();
 
 const isOpen = defineModel<boolean>();
 
@@ -34,7 +34,14 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-	<Dialog :open="isOpen" @update:open="isOpen = $event">
+	<Dialog v-model:open="isOpen">
+		<DialogTrigger v-if="renderTrigger" as-child>
+			<Button class="rounded-md bg-black px-4 py-2 text-white hover:bg-black/90">
+				<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
+				Add Team Member
+			</Button>
+		</DialogTrigger>
+
 		<DialogContent class="sm:max-w-[425px]">
 			<DialogHeader>
 				<DialogTitle>Invite Team Member</DialogTitle>

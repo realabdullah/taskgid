@@ -21,20 +21,23 @@ const switchWorkspace = (slug: string) => {
 		<SidebarMenuItem>
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>
-					<SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+					<div class="flex items-center gap-1">
 						<div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-							<div class="bg-primary flex h-8 w-8 items-center justify-center rounded-md">
+							<NuxtLink to="/app" class="bg-primary flex h-8 w-8 items-center justify-center rounded-md">
 								<Icon name="hugeicons:checkmark-circle-03" :size="16" class="text-primary-foreground" />
+							</NuxtLink>
+						</div>
+
+						<SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+							<div class="grid flex-1 text-left text-sm leading-tight">
+								<span class="truncate font-medium">
+									{{ activeWorkspace?.title }}
+								</span>
+								<span class="truncate text-xs">{{ activeWorkspace?.slug }}</span>
 							</div>
-						</div>
-						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-medium">
-								{{ activeWorkspace?.title }}
-							</span>
-							<span class="truncate text-xs">{{ activeWorkspace?.slug }}</span>
-						</div>
-						<Icon name="hugeicons:square-arrow-data-transfer-vertical" :size="16" class="ml-auto" />
-					</SidebarMenuButton>
+							<Icon name="hugeicons:square-arrow-data-transfer-vertical" :size="16" class="ml-auto" />
+						</SidebarMenuButton>
+					</div>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" :side="isMobile ? 'bottom' : 'right'" :side-offset="4">
 					<DropdownMenuLabel class="text-muted-foreground text-xs"> Workspaces </DropdownMenuLabel>

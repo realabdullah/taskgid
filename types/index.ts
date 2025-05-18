@@ -109,7 +109,7 @@ export interface Task {
 	updatedAt: string;
 	assignees: BaseUser[];
 	creator: BaseUser;
-	comments?: number;
+	commentCount: number;
 }
 
 interface TaskStatistics {
@@ -229,4 +229,53 @@ export interface Notification {
 		priority: "low" | "medium" | "high";
 	};
 	comment: { id: string; content: string };
+}
+
+export interface TeamMember extends User {
+	role: string;
+	dateJoined: string;
+	taskStats: {
+		assigned: number;
+		completed: number;
+	};
+}
+
+export interface UserBareTask {
+	id: string;
+	title: string;
+	dueDate: string;
+	status: "todo" | "in_progress" | "done";
+	priority: "low" | "medium" | "high";
+}
+
+export interface TeamPerformanceStat {
+	timePeriod: "day" | "week" | "month" | "year";
+	periodStart: string;
+	periodEnd: string;
+	overallStats: {
+		totalTasks: number;
+		completedTasks: number;
+		completionRate: number;
+		onTimeDeliveryRate: number;
+		teamUtilizationRate: number;
+		avgCompletionTimeHours: number;
+		taskDistributionEvenness: number;
+		avgPriorityLevel: number;
+	};
+	topPerformers: {
+		member: BaseUser;
+		taskCount: number;
+		completedTaskCount: number;
+		completionRate: number;
+		onTimeDeliveryRate: number;
+		avgCompletionTimeHours: number;
+	}[];
+	memberStats: {
+		member: BaseUser;
+		taskCount: number;
+		completedTaskCount: number;
+		completionRate: number;
+		onTimeDeliveryRate: number;
+		avgCompletionTimeHours: number;
+	}[];
 }

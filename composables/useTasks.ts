@@ -18,7 +18,6 @@ export const useTasks = () => {
 
 			throw new Error(message || "Failed to delete task");
 		} catch (error) {
-			console.error("Error deleting task:", error);
 			toast(String(error) || "Failed to delete task");
 		}
 	};
