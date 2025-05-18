@@ -32,7 +32,11 @@ const removeSelectedTask = () => {
 
 <template>
 	<div class="space-y-4">
-		<AppTaskCard v-for="task in recentTasks" :key="task.id" :task="task" @edit="setSelectedTask(task, 'update')" @delete="setSelectedTask(task, 'delete')" />
+		<template v-if="recentTasks?.length">
+			<AppTaskCard v-for="task in recentTasks" :key="task.id" :task="task" @edit="setSelectedTask(task, 'update')" @delete="setSelectedTask(task, 'delete')" />
+		</template>
+
+		<AppEmptyState v-else title="No tasks yet" description="Create your first task to start organizing work and moving things forward." />
 
 		<AppDeleteAction
 			v-model="isDeleteModalOpen"
