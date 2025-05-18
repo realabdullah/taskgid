@@ -70,3 +70,10 @@ export const taskPriorities = [
 	{ label: "Medium", value: "medium", description: "Important task that should be completed soon." },
 	{ label: "High", value: "high", description: "Critical task requiring immediate attention." },
 ];
+
+export const periods = [
+	{ label: "This Week", value: "week" },
+	{ label: "This Month", value: "month" },
+	{ label: "This Quarter", value: "quarter" },
+	{ label: "This Year", value: "year" },
+];
