@@ -12,7 +12,7 @@ const { workspace } = storeToRefs(useWorkspaceStore());
 				<p class="text-muted-foreground">Manage team members and their permissions</p>
 			</div>
 
-			<AppWorkspaceInvite v-if="workspace" :workspace="workspace" />
+			<AppWorkspaceInvite v-if="workspace" :workspace="workspace" render-trigger />
 		</div>
 
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

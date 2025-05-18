@@ -83,7 +83,7 @@ const { data: activities } = useQuery({
 
 					<div v-else-if="activeTab === 'activity'" class="mt-4 space-y-4">
 						<div class="text-sm font-medium">Recent Activity</div>
-						<div class="space-y-4">
+						<div v-if="activities?.length" class="space-y-4">
 							<div v-for="activity in activities" :key="activity.id" class="flex items-start gap-4">
 								<div class="bg-primary mt-2 h-2 w-2 rounded-full" />
 								<div class="space-y-1">
@@ -93,6 +93,8 @@ const { data: activities } = useQuery({
 								</div>
 							</div>
 						</div>
+
+						<AppEmptyState v-else title="No activities yet" description="No activity recorded yet. Once you start managing tasks, your team's progress will appear here." />
 					</div>
 
 					<div v-else-if="activeTab === 'members'" class="mt-4 space-y-4">
