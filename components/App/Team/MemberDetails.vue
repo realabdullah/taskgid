@@ -121,7 +121,9 @@ const { data: activities } = useQuery({
 			<div class="mt-6 flex justify-between">
 				<Button variant="outline" @click="isOpen = false"> Close </Button>
 				<div class="flex gap-2">
-					<Button variant="outline">Assign Task</Button>
+					<AppTaskAssign :member="member">
+						<Button variant="outline">Assign Task</Button>
+					</AppTaskAssign>
 					<Button>Edit Profile</Button>
 				</div>
 			</div>
