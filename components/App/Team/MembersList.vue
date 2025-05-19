@@ -28,13 +28,21 @@ const { data: members } = useQuery({
 	},
 });
 
+const isAssignTasksOpen = ref(false);
 const isMemberDetailsOpen = ref(false);
 const memberDetails = ref<TeamMember>();
 
-const setMember = (member: TeamMember) => {
+const setMember = (member: TeamMember, context: "view-details" | "assign-task") => {
 	memberDetails.value = { ...member };
-	isMemberDetailsOpen.value = true;
+	if (context === "view-details") isMemberDetailsOpen.value = true;
+	else if (context === "assign-task") isAssignTasksOpen.value = true;
 };
+
+// watch([isAssignTasksOpen, isMemberDetailsOpen], () => {
+// 	if (!isAssignTasksOpen.value || !isMemberDetailsOpen.value) {
+// 		memberDetails.value = undefined;
+// 	}
+// });
 </script>
 
 <template>
@@ -51,10 +59,6 @@ const setMember = (member: TeamMember) => {
 						<Input v-model="search" type="search" placeholder="Search members..." class="w-full pl-8 sm:w-[200px]" />
 					</div>
 					<AppTeamMembersListFilter v-model="filter" />
-					<!-- <Button variant="outline" size="icon">
-						<Icon name="hugeicons:filter" :size="16" />
-						<span class="sr-only">Filter</span>
-					</Button> -->
 				</div>
 			</CardHeader>
 			<CardContent>
@@ -101,8 +105,8 @@ const setMember = (member: TeamMember) => {
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
 										<DropdownMenuLabel>Actions</DropdownMenuLabel>
-										<DropdownMenuItem @click="setMember(member)">View Profile</DropdownMenuItem>
-										<DropdownMenuItem>Assign Tasks</DropdownMenuItem>
+										<DropdownMenuItem @click="setMember(member, 'view-details')">View Profile</DropdownMenuItem>
+										<DropdownMenuItem @click="setMember(member, 'assign-task')"> Assign Tasks </DropdownMenuItem>
 
 										<template v-if="['admin', 'creator'].includes(workspace?.userRole || '') && user?.id !== member?.id">
 											<DropdownMenuSeparator />
@@ -118,7 +122,10 @@ const setMember = (member: TeamMember) => {
 						</div>
 					</div>
 
-					<AppTeamMemberDetails v-if="memberDetails" v-model="isMemberDetailsOpen" :member="memberDetails" />
+					<template v-if="memberDetails">
+						<AppTeamMemberDetails v-model="isMemberDetailsOpen" :member="memberDetails" />
+						<AppTaskAssign v-model="isAssignTasksOpen" :member="memberDetails"> Assign Tasks </AppTaskAssign>
+					</template>
 				</div>
 
 				<div v-else class="py-10 text-center">
