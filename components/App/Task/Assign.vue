@@ -2,17 +2,60 @@
 import * as z from "zod";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
+import { toast } from "vue-sonner";
 import type { BaseUser } from "~/types";
 
-defineProps<{ member: BaseUser }>();
+interface AssignmentResponse {
+	success: true;
+	message: string;
+	data: { tasksAssigned: number; alreadyAssigned: number; invalidTasks: number };
+}
 
+const { member } = defineProps<{ member: BaseUser }>();
+const route = useRoute();
 const isOpen = defineModel<boolean>();
 const tasks = reactive([]);
+const isAssigningTasks = ref(false);
 
 const formSchema = toTypedSchema(z.object({ tasks: z.array(z.string().uuid({ message: "Invalid task ID" })) }));
 const { handleSubmit } = useForm({
 	validationSchema: formSchema,
 });
+
+const onSubmit = handleSubmit(async (values) => {
+	try {
+		isAssigningTasks.value = true;
+		const url = `/workspaces/${route.params.slug}/tasks/batch-assign`;
+		const body = { taskIds: { ...values }, assigneeId: member.id };
+		const res = await useApiFetch<AssignmentResponse>(url, {
+			method: "POST",
+			body,
+		});
+		if (!res || !res.data) throw new Error("Failed to assign tasks");
+		notify(res);
+	} catch (error) {
+		toast(String(error));
+	} finally {
+		isAssigningTasks.value = false;
+	}
+});
+
+const notify = (res: AssignmentResponse) => {
+	const { tasksAssigned, alreadyAssigned, invalidTasks } = res.data;
+	toast.success(res.message);
+
+	if (alreadyAssigned > 0) {
+		toast(`⚠️ ${alreadyAssigned} task${alreadyAssigned > 1 ? "s were" : " was"} already assigned.`);
+	}
+
+	if (invalidTasks > 0) {
+		toast.error(`❌ ${invalidTasks} invalid task ID${invalidTasks > 1 ? "s" : ""} were ignored.`);
+	}
+
+	if (tasksAssigned > 0 && alreadyAssigned === 0 && invalidTasks === 0) {
+		toast.success(`🎉 All ${tasksAssigned} new task${tasksAssigned > 1 ? "s" : ""} assigned!`);
+	}
+};
 </script>
 
 <template>
@@ -28,7 +71,7 @@ const { handleSubmit } = useForm({
 				</DialogDescription>
 			</DialogHeader>
 
-			<form class="space-y-6 pt-4">
+			<form class="space-y-6 pt-4" @submit="onSubmit">
 				<FormField name="tasks">
 					<FormItem>
 						<FormLabel>Select Tasks</FormLabel>
@@ -57,8 +100,11 @@ const { handleSubmit } = useForm({
 				</div>
 
 				<DialogFooter>
-					<Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
-					<Button type="submit"> Assign Tasks </Button>
+					<Button type="button" variant="outline" :disabled="isAssigningTasks" @click="isOpen = false"> Cancel </Button>
+					<Button type="submit" :disabled="isAssigningTasks">
+						<AppSpinner v-if="isAssigningTasks" border-color="border-gray-100" />
+						<template v-else> Assign Tasks </template>
+					</Button>
 				</DialogFooter>
 			</form>
 		</DialogContent>
