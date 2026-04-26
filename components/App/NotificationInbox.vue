@@ -368,7 +368,7 @@ onBeforeUnmount(() => {
 <template>
 	<Popover v-model:open="open">
 		<PopoverTrigger as-child>
-			<Button variant="ghost" size="icon" class="h-9 w-9 shrink-0" aria-label="Open notifications">
+			<Button variant="ghost" size="icon" class="relative h-9 w-9 shrink-0" aria-label="Open notifications">
 				<Icon name="hugeicons:notification-02" :size="18" />
 				<span v-if="unreadCount > 0 && unreadCount <= 9" class="bg-danger absolute top-2 right-2 h-2 w-2 rounded-full" />
 				<span v-else-if="unreadCount > 9" class="bg-danger text-2xs absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-medium text-white">

@@ -84,7 +84,7 @@ const uploadFile = async (file: File) => {
 		const config = useRuntimeConfig();
 		const authToken = useCookie<string | undefined>("TG-AUTHTOKEN");
 
-		const result = await $fetch<any>("/media/upload", {
+		const result = await $fetch<any>(API_ENDPOINTS.media.upload, {
 			baseURL: config.public.apiBaseUrl,
 			method: "POST",
 			body: formData,

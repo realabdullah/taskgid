@@ -1,4 +1,4 @@
-const toPath = (value: unknown) => encodeURIComponent(String(value ?? ""));
+const toPath = (value: unknown) => encodeURIComponent(String(value ?? ""))
 
 export const API_ENDPOINTS = {
 	auth: {
@@ -26,6 +26,9 @@ export const API_ENDPOINTS = {
 	notifications: {
 		byUser: (userId: unknown) => `/api/notifications/${toPath(userId)}`,
 	},
+	media: {
+		upload: "/media/upload",
+	},
 	workspaces: {
 		base: "/workspaces",
 		bySlug: (slug: unknown) => `/workspaces/${toPath(slug)}`,
@@ -43,4 +46,4 @@ export const API_ENDPOINTS = {
 		memberActivities: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/activities`,
 		batchAssignTasks: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/batch-assign`,
 	},
-} as const;
+} as const
