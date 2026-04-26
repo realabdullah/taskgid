@@ -9,21 +9,32 @@ const emits = defineEmits<{
 
 const formSchema = toTypedSchema(updateAccountSchema);
 
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, meta, resetForm } = useForm({
 	validationSchema: formSchema,
 });
 
+const isSaving = ref(false);
+
+const cancelChanges = () => {
+	resetForm();
+	emits("close");
+};
+
 const onSubmit = handleSubmit(async (values) => {
 	try {
+		isSaving.value = true;
 		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>("/users/profile", {
 			method: "PATCH",
 			body: { ...values },
 		});
 		if (!success || error) throw new Error(error || message || "Failed to update login information");
 		toast(message || "Login information updated successfully");
+		resetForm();
 		emits("close");
 	} catch (error) {
 		toast(String(error));
+	} finally {
+		isSaving.value = false;
 	}
 });
 </script>
@@ -46,7 +57,7 @@ const onSubmit = handleSubmit(async (values) => {
 				:is-field-dirty="!isFieldDirty"
 			/>
 
-			<slot />
+			<slot :cancel="cancelChanges" :is-dirty="meta.dirty" :is-saving="isSaving" />
 		</form>
 	</div>
 </template>

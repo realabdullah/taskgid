@@ -6,6 +6,17 @@ import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 import type { User } from "~/types";
 
+const props = withDefaults(
+	defineProps<{
+		closeOnSave?: boolean;
+		silentSuccess?: boolean;
+	}>(),
+	{
+		closeOnSave: true,
+		silentSuccess: false,
+	}
+);
+
 const emits = defineEmits<{
 	(e: "close"): void;
 }>();
@@ -14,27 +25,54 @@ const { user } = storeToRefs(useStore());
 
 const formSchema = toTypedSchema(updateProfileSchema);
 
-const { isFieldDirty, handleSubmit, values, setFieldValue } = useForm({
+const { isFieldDirty, handleSubmit, values, setFieldValue, meta, resetForm } = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		firstName: user.value?.firstName,
-		lastName: user.value?.lastName,
-		username: user.value?.username,
-		profilePicture: user.value?.profilePicture,
+		firstName: user.value?.firstName || "",
+		lastName: user.value?.lastName || "",
+		username: user.value?.username || "",
+		profilePicture: user.value?.profilePicture || "",
 		about: user.value?.about || "",
 		title: user.value?.title || "",
 		location: user.value?.location || "",
 	},
 });
 
-const cancelChanges = () => {
-	for (const key in values) {
-		if (user.value?.[key as keyof User]) {
-			// @ts-ignore
-			setFieldValue(key as keyof typeof values, user.value?.[key as keyof User]);
-		}
+const isSaving = ref(false);
+const justSaved = ref(false);
+let savedTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const markSaved = () => {
+	justSaved.value = true;
+	if (savedTimeout) {
+		clearTimeout(savedTimeout);
 	}
+	savedTimeout = setTimeout(() => {
+		justSaved.value = false;
+	}, 2000);
+};
+
+onBeforeUnmount(() => {
+	if (savedTimeout) {
+		clearTimeout(savedTimeout);
+	}
+});
+
+const cancelChanges = () => {
+	resetForm({
+		values: {
+			firstName: user.value?.firstName || "",
+			lastName: user.value?.lastName || "",
+			username: user.value?.username || "",
+			profilePicture: user.value?.profilePicture || "",
+			about: user.value?.about || "",
+			title: user.value?.title || "",
+			location: user.value?.location || "",
+		},
+	});
 	fileDetails.value = null;
+	selectedFile.value = null;
+	justSaved.value = false;
 	emits("close");
 };
 
@@ -53,15 +91,16 @@ const uploadFile = async (file: File) => {
 
 const onSubmit = handleSubmit(async () => {
 	try {
+		isSaving.value = true;
 		const payload = Object.keys(values).reduce((acc, key) => {
 			if (values[key as keyof typeof values] !== user.value?.[key as keyof User]) {
-				acc[key as keyof typeof acc] = values[key as keyof typeof values];
+				acc[key as keyof typeof acc] = values[key as keyof typeof values] as any;
 			}
 			return acc;
 		}, {} as Partial<User>);
 
 		if (Object.keys(payload).length === 0) {
-			toast("No changes detected");
+			isSaving.value = false;
 			return;
 		}
 
@@ -83,11 +122,31 @@ const onSubmit = handleSubmit(async () => {
 			body: { ...payload },
 		});
 		if (!success || !data) throw new Error(error || message || "Failed to update profile");
-		toast(message || "Profile updated successfully");
+		if (!props.silentSuccess) {
+			toast(message || "Profile updated successfully");
+		}
 		user.value = { ...data };
-		emits("close");
+		resetForm({
+			values: {
+				firstName: data.firstName,
+				lastName: data.lastName,
+				username: data.username,
+				profilePicture: data.profilePicture,
+				about: data.about || "",
+				title: data.title || "",
+				location: data.location || "",
+			},
+		});
+
+		if (props.closeOnSave) {
+			emits("close");
+		} else {
+			markSaved();
+		}
 	} catch (error) {
 		toast(String(error));
+	} finally {
+		isSaving.value = false;
 	}
 });
 
@@ -127,6 +186,27 @@ const handleFileChange = async (event: Event) => {
 	const objectUrl = URL.createObjectURL(file);
 	setFieldValue("profilePicture", objectUrl);
 };
+
+watch(
+	() => user.value,
+	(nextUser) => {
+		if (!nextUser) {
+			return;
+		}
+		resetForm({
+			values: {
+				firstName: nextUser.firstName || "",
+				lastName: nextUser.lastName || "",
+				username: nextUser.username || "",
+				profilePicture: nextUser.profilePicture || "",
+				about: nextUser.about || "",
+				title: nextUser.title || "",
+				location: nextUser.location || "",
+			},
+		});
+	},
+	{ immediate: true }
+);
 </script>
 
 <template>
@@ -160,6 +240,6 @@ const handleFileChange = async (event: Event) => {
 			/>
 		</div>
 
-		<slot :cancel="cancelChanges" />
+		<slot :cancel="cancelChanges" :is-dirty="meta.dirty || !!selectedFile" :is-saving="isSaving" :just-saved="justSaved" />
 	</form>
 </template>

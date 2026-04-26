@@ -37,7 +37,7 @@ const onSubmit = handleSubmit(async (values) => {
 	<Dialog v-model:open="isOpen">
 		<DialogTrigger v-if="renderTrigger" as-child>
 			<Button class="rounded-md bg-black px-4 py-2 text-white hover:bg-black/90">
-				<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
+				<Icon name="hugeicons:plus-sign" :size="16" />
 				Add Team Member
 			</Button>
 		</DialogTrigger>

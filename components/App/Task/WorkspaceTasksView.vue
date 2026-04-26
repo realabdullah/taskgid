@@ -1,0 +1,830 @@
+<script lang="ts" setup>
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { refDebounced } from "@vueuse/core";
+import type { Task, TaskFilter } from "~/types";
+import { useApiFetch } from "~/composables/useApiFetch";
+import { useWorkspaceStore } from "~/stores/workspace";
+import { formatDate } from "~/utils";
+
+type ViewMode = "list" | "board";
+type GroupBy = "none" | "status" | "priority" | "assignee";
+type DueDateFilter = "all" | "today" | "overdue" | "this-week" | "no-due-date";
+
+const route = useRoute();
+const queryClient = useQueryClient();
+const workspaceSlug = computed(() => {
+	const slug = route.params.slug;
+	return typeof slug === "string" ? slug : "";
+});
+const hasWorkspaceContext = computed(() => Boolean(workspaceSlug.value));
+const triggerCreateWorkspace = () => {
+	if (!import.meta.client) {
+		return;
+	}
+	globalThis.window.dispatchEvent(new globalThis.CustomEvent("taskgid:add-workspace-intent"));
+};
+const activeTaskId = computed(() => (typeof route.params.id === "string" ? route.params.id : null));
+const isTaskDrawerOpen = computed(() => Boolean(activeTaskId.value));
+
+const isTaskModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const viewMode = ref<ViewMode>("list");
+const groupBy = ref<GroupBy>("none");
+
+const selectedTask = ref<Task>();
+const selectedTaskIds = ref<string[]>([]);
+const focusedTaskIndex = ref(0);
+
+const editingTaskId = ref<string | null>(null);
+const editingTitle = ref("");
+
+const searchInput = ref("");
+const debouncedSearch = refDebounced(searchInput, 240, { maxWait: 600 });
+
+const filter = reactive<TaskFilter>({
+	search: "",
+	status: [],
+	priority: [],
+	assignee: [],
+});
+const dueDateFilter = ref<DueDateFilter>("all");
+
+const { teams } = storeToRefs(useWorkspaceStore());
+
+watch(debouncedSearch, (value) => {
+	filter.search = value;
+});
+
+const clearSearch = () => {
+	searchInput.value = "";
+	filter.search = "";
+};
+
+const isFilterActive = computed(() => {
+	return Boolean(filter.search) || filter.status.length > 0 || filter.priority.length > 0 || filter.assignee.length > 0 || dueDateFilter.value !== "all";
+});
+
+const emptyStateCopy = computed(() => {
+	if (isFilterActive.value) {
+		return {
+			heading: "No tasks match your filters.",
+			body: "Try changing filters or clear them to see more tasks.",
+			actionLabel: "Clear filters",
+		};
+	} else {
+		return {
+			heading: "No tasks yet",
+			body: "Create your first one to start moving work forward.",
+			actionLabel: "New task",
+		};
+	}
+});
+
+const {
+	data: tasks,
+	isFetching,
+	isError: isTasksError,
+	error: tasksError,
+	refetch: refetchTasks,
+} = useQuery({
+	queryKey: computed(() => ["workspace-tasks", workspaceSlug.value, { ...filter }]),
+	queryFn: async () => {
+		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[] }>(`/workspaces/${workspaceSlug.value}/tasks`, {
+			query: filter,
+		});
+		if (!tasks || !success) throw new Error("Failed to fetch workspace tasks");
+		return tasks;
+	},
+	enabled: computed(() => hasWorkspaceContext.value),
+});
+
+const taskRows = computed(() => tasks.value ?? []);
+
+const STATUS_ORDER: Array<Task["status"]> = ["todo", "in_progress", "done"];
+const PRIORITY_ORDER: Array<Task["priority"]> = ["high", "medium", "low"];
+
+const dueDateOptions: Array<{ value: DueDateFilter; label: string }> = [
+	{ value: "all", label: "Any due date" },
+	{ value: "today", label: "Due today" },
+	{ value: "overdue", label: "Overdue" },
+	{ value: "this-week", label: "Due this week" },
+	{ value: "no-due-date", label: "No due date" },
+];
+
+const statusLabelMap: Record<Task["status"], string> = {
+	todo: "To do",
+	in_progress: "In progress",
+	done: "Done",
+};
+
+const priorityLabelMap: Record<Task["priority"], string> = {
+	high: "High",
+	medium: "Medium",
+	low: "Low",
+};
+
+const assigneeOptions = computed(() => {
+	return (teams.value ?? []).map((member) => ({
+		label: `${member.firstName} ${member.lastName}`,
+		value: member.username,
+	}));
+});
+
+const getDueDateState = (date: string | null) => {
+	if (!date) {
+		return "none" as const;
+	}
+
+	const now = new Date();
+	const due = new Date(date);
+
+	const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+	const nextWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+
+	if (due >= todayStart && due < tomorrowStart) {
+		return "today" as const;
+	}
+	if (due < todayStart) {
+		return "overdue" as const;
+	}
+	if (due <= nextWeek) {
+		return "this-week" as const;
+	}
+
+	return "future" as const;
+};
+
+const filteredTasks = computed(() => {
+	const source = taskRows.value;
+
+	if (dueDateFilter.value === "all") {
+		return source;
+	}
+
+	return source.filter((task) => {
+		const dueState = getDueDateState(task.dueDate);
+		if (dueDateFilter.value === "today") return dueState === "today";
+		if (dueDateFilter.value === "overdue") return dueState === "overdue";
+		if (dueDateFilter.value === "this-week") return dueState === "today" || dueState === "this-week";
+		return dueState === "none";
+	});
+});
+
+const sortedTasks = computed(() => {
+	return [...filteredTasks.value].sort((a, b) => {
+		if (!a.dueDate && !b.dueDate) return 0;
+		if (!a.dueDate) return 1;
+		if (!b.dueDate) return -1;
+		return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+	});
+});
+
+const groupedTasks = computed(() => {
+	if (groupBy.value === "none") {
+		return [{ key: "all", label: "All tasks", tasks: sortedTasks.value }];
+	}
+
+	if (groupBy.value === "status") {
+		return STATUS_ORDER.map((status) => ({
+			key: status,
+			label: statusLabelMap[status],
+			tasks: sortedTasks.value.filter((task) => task.status === status),
+		})).filter((group) => group.tasks.length > 0);
+	}
+
+	if (groupBy.value === "priority") {
+		return PRIORITY_ORDER.map((priority) => ({
+			key: priority,
+			label: `${priorityLabelMap[priority]} priority`,
+			tasks: sortedTasks.value.filter((task) => task.priority === priority),
+		})).filter((group) => group.tasks.length > 0);
+	}
+
+	const map = new Map<string, Task[]>();
+	for (const task of sortedTasks.value) {
+		const firstAssignee = task.assignees[0];
+		const key = firstAssignee?.username ?? "unassigned";
+		const existing = map.get(key) ?? [];
+		existing.push(task);
+		map.set(key, existing);
+	}
+
+	return [...map.entries()].map(([key, value]) => ({
+		key,
+		label: key === "unassigned" ? "Unassigned" : value[0]?.assignees[0] ? `${value[0].assignees[0].firstName} ${value[0].assignees[0].lastName}` : key,
+		tasks: value,
+	}));
+});
+
+const statusColumns = computed(() => {
+	return STATUS_ORDER.map((status) => ({
+		key: status,
+		label: statusLabelMap[status],
+		tasks: sortedTasks.value.filter((task) => task.status === status),
+	}));
+});
+
+const visibleTaskList = computed(() => groupedTasks.value.flatMap((group) => group.tasks));
+
+watch(
+	() => visibleTaskList.value.length,
+	(length) => {
+		if (length === 0) {
+			focusedTaskIndex.value = 0;
+			return;
+		}
+		if (focusedTaskIndex.value >= length) {
+			focusedTaskIndex.value = length - 1;
+		}
+	}
+);
+
+watch(
+	() => sortedTasks.value.map((task) => task.id),
+	(ids) => {
+		selectedTaskIds.value = selectedTaskIds.value.filter((id) => ids.includes(id));
+	}
+);
+
+const focusedTask = computed(() => visibleTaskList.value[focusedTaskIndex.value]);
+
+const dueDateDisplay = (date: string | null) => {
+	if (!date) return "No date";
+	const state = getDueDateState(date);
+	if (state === "today") return "Due today";
+	if (state === "overdue") return "Overdue";
+	return formatDate(date, "MMM D");
+};
+
+const dueDateClass = (date: string | null) => {
+	const state = getDueDateState(date);
+	if (state === "overdue") return "text-danger";
+	if (state === "today") return "text-warning";
+	return "text-text-tertiary";
+};
+
+const priorityIconClass = (priority: Task["priority"]) => {
+	if (priority === "high") return "text-priority-high";
+	if (priority === "medium") return "text-priority-medium";
+	return "text-priority-low";
+};
+
+const toggleTaskSelection = (taskId: string, selected: boolean) => {
+	if (selected) {
+		if (!selectedTaskIds.value.includes(taskId)) selectedTaskIds.value = [...selectedTaskIds.value, taskId];
+		return;
+	}
+	selectedTaskIds.value = selectedTaskIds.value.filter((id) => id !== taskId);
+};
+
+const isTaskSelected = (taskId: string) => selectedTaskIds.value.includes(taskId);
+
+const clearSelection = () => {
+	selectedTaskIds.value = [];
+};
+
+const setSelectedTask = (task: Task, action: "update" | "delete") => {
+	selectedTask.value = task;
+	if (action === "delete") isDeleteModalOpen.value = true;
+	else if (action === "update") isTaskModalOpen.value = true;
+};
+
+const removeSelectedTask = () => {
+	isTaskModalOpen.value = false;
+	isDeleteModalOpen.value = false;
+	selectedTask.value = undefined;
+};
+
+const openCreateTaskModal = () => {
+	if (!hasWorkspaceContext.value) {
+		triggerCreateWorkspace();
+		return;
+	}
+	selectedTask.value = undefined;
+	isTaskModalOpen.value = true;
+};
+
+const startInlineEdit = (task: Task) => {
+	editingTaskId.value = task.id;
+	editingTitle.value = task.title;
+};
+
+const cancelInlineEdit = () => {
+	editingTaskId.value = null;
+	editingTitle.value = "";
+};
+
+const saveInlineEdit = async (task: Task) => {
+	const nextTitle = editingTitle.value.trim();
+	if (!nextTitle || nextTitle === task.title) {
+		cancelInlineEdit();
+		return;
+	}
+
+	try {
+		await useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${task.id}`, {
+			method: "PATCH",
+			body: { title: nextTitle },
+		});
+		queryClient.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+	} finally {
+		cancelInlineEdit();
+	}
+};
+
+const openTaskDetails = async (task: Task) => {
+	cancelInlineEdit();
+	await navigateTo(`/app/workspaces/${workspaceSlug.value}/tasks/${task.id}`);
+};
+
+const closeTaskDrawer = async () => {
+	await navigateTo(`/app/workspaces/${workspaceSlug.value}/tasks`);
+};
+
+const onTaskDeletedFromDrawer = async (deletedTaskId: string) => {
+	selectedTaskIds.value = selectedTaskIds.value.filter((id) => id !== deletedTaskId);
+	await closeTaskDrawer();
+	queryClient.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+};
+
+const deleteSelectedTask = async () => {
+	if (!selectedTask.value) return;
+
+	await useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${selectedTask.value.id}`, {
+		method: "DELETE",
+	});
+
+	selectedTaskIds.value = selectedTaskIds.value.filter((id) => id !== selectedTask.value?.id);
+	removeSelectedTask();
+	queryClient.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+};
+
+const bulkPatch = async (payload: Partial<Pick<Task, "status" | "priority">> & { assignees?: string[] }) => {
+	if (selectedTaskIds.value.length === 0) return;
+
+	await Promise.all(
+		selectedTaskIds.value.map((taskId) =>
+			useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${taskId}`, {
+				method: "PATCH",
+				body: payload,
+			})
+		)
+	);
+
+	queryClient.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+};
+
+const bulkDelete = async () => {
+	if (selectedTaskIds.value.length === 0) return;
+
+	await Promise.all(
+		selectedTaskIds.value.map((taskId) =>
+			useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${taskId}`, {
+				method: "DELETE",
+			})
+		)
+	);
+
+	clearSelection();
+	queryClient.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+};
+
+const emptyStateAction = () => {
+	if (isFilterActive.value) {
+		searchInput.value = "";
+		filter.search = "";
+		filter.status = [];
+		filter.priority = [];
+		filter.assignee = [];
+		dueDateFilter.value = "all";
+		return;
+	}
+
+	openCreateTaskModal();
+};
+
+const onTaskRowNav = (event: Event) => {
+	if (viewMode.value !== "list") return;
+	const customEvent = event as CustomEvent<{ direction: "j" | "k" }>;
+	if (!visibleTaskList.value.length) return;
+
+	if (customEvent.detail.direction === "j") {
+		focusedTaskIndex.value = (focusedTaskIndex.value + 1) % visibleTaskList.value.length;
+		return;
+	}
+
+	focusedTaskIndex.value = (focusedTaskIndex.value - 1 + visibleTaskList.value.length) % visibleTaskList.value.length;
+};
+
+const onOpenFocusedTask = async () => {
+	if (!focusedTask.value || viewMode.value !== "list") return;
+	await openTaskDetails(focusedTask.value);
+};
+
+const onCreateTaskIntent = () => {
+	openCreateTaskModal();
+};
+
+onMounted(() => {
+	window.addEventListener("taskgid:task-row-nav", onTaskRowNav as EventListener);
+	window.addEventListener("taskgid:open-focused-task-intent", onOpenFocusedTask as EventListener);
+	window.addEventListener("taskgid:new-task-intent", onCreateTaskIntent as EventListener);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("taskgid:task-row-nav", onTaskRowNav as EventListener);
+	window.removeEventListener("taskgid:open-focused-task-intent", onOpenFocusedTask as EventListener);
+	window.removeEventListener("taskgid:new-task-intent", onCreateTaskIntent as EventListener);
+});
+</script>
+
+<template>
+	<div class="space-y-6">
+		<div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+			<div>
+				<p class="text-2xs text-text-tertiary mb-2 font-semibold tracking-[0.12em] uppercase">Workspace queue</p>
+				<h1 class="linear-title text-xl font-semibold">Tasks</h1>
+				<p class="text-text-secondary text-sm">Manage and triage work without losing context.</p>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<div class="border-border bg-surface-0 inline-flex h-9 items-center rounded-md border p-1">
+					<button
+						type="button"
+						class="interactive rounded-md px-3 py-1 text-sm"
+						:class="viewMode === 'list' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						@click="viewMode = 'list'"
+					>
+						List
+					</button>
+					<button
+						type="button"
+						class="interactive rounded-md px-3 py-1 text-sm"
+						:class="viewMode === 'board' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						@click="viewMode = 'board'"
+					>
+						Board
+					</button>
+				</div>
+
+				<Button class="h-9 shadow-sm" @click="openCreateTaskModal">
+					<Icon name="lucide:plus" :size="16" />
+					New task
+				</Button>
+				<AppTaskCreateOrEdit v-model="isTaskModalOpen" :is-creating="!selectedTask" :task="selectedTask" hide-trigger @close="removeSelectedTask" />
+			</div>
+		</div>
+
+		<div class="linear-shell space-y-3 rounded-lg p-3">
+			<div class="flex flex-wrap items-center gap-2">
+				<div class="relative w-52 transition-all focus-within:w-72">
+					<Icon name="lucide:search" :size="16" class="text-text-tertiary pointer-events-none absolute top-1/2 left-3 -translate-y-1/2" />
+					<Input v-model="searchInput" class="h-9 rounded-full pr-8 pl-9" placeholder="Search tasks..." />
+					<button
+						v-if="searchInput.length > 0"
+						type="button"
+						class="interactive text-text-tertiary hover:bg-surface-2 hover:text-text-primary absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1"
+						aria-label="Clear search"
+						@click="clearSearch"
+					>
+						<Icon name="lucide:x" :size="14" />
+					</button>
+				</div>
+
+				<Popover>
+					<PopoverTrigger as-child>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Status</button>
+					</PopoverTrigger>
+					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+						<div class="space-y-1">
+							<label v-for="status in STATUS_ORDER" :key="status" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+								<Checkbox
+									:model-value="filter.status.includes(status)"
+									@update:model-value="
+										(value) => {
+											if (value) filter.status = [...filter.status, status];
+											else filter.status = filter.status.filter((item) => item !== status);
+										}
+									"
+								/>
+								<span>{{ statusLabelMap[status] }}</span>
+							</label>
+						</div>
+					</PopoverContent>
+				</Popover>
+
+				<Popover>
+					<PopoverTrigger as-child>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Priority</button>
+					</PopoverTrigger>
+					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+						<div class="space-y-1">
+							<label v-for="priority in PRIORITY_ORDER" :key="priority" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+								<Checkbox
+									:model-value="filter.priority.includes(priority)"
+									@update:model-value="
+										(value) => {
+											if (value) filter.priority = [...filter.priority, priority];
+											else filter.priority = filter.priority.filter((item) => item !== priority);
+										}
+									"
+								/>
+								<span>{{ priorityLabelMap[priority] }}</span>
+							</label>
+						</div>
+					</PopoverContent>
+				</Popover>
+
+				<Popover>
+					<PopoverTrigger as-child>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Assignee</button>
+					</PopoverTrigger>
+					<PopoverContent class="border-border bg-surface-0 w-56 border p-2">
+						<div class="space-y-1">
+							<label v-for="assignee in assigneeOptions" :key="assignee.value" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+								<Checkbox
+									:model-value="filter.assignee.includes(assignee.value)"
+									@update:model-value="
+										(value) => {
+											if (value) filter.assignee = [...filter.assignee, assignee.value];
+											else filter.assignee = filter.assignee.filter((item) => item !== assignee.value);
+										}
+									"
+								/>
+								<span>{{ assignee.label }}</span>
+							</label>
+						</div>
+					</PopoverContent>
+				</Popover>
+
+				<Popover>
+					<PopoverTrigger as-child>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Due date</button>
+					</PopoverTrigger>
+					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+						<div class="space-y-1">
+							<button
+								v-for="option in dueDateOptions"
+								:key="option.value"
+								type="button"
+								class="interactive hover:bg-surface-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm"
+								@click="dueDateFilter = option.value"
+							>
+								<span>{{ option.label }}</span>
+								<Icon v-if="dueDateFilter === option.value" name="lucide:check" :size="14" class="text-primary" />
+							</button>
+						</div>
+					</PopoverContent>
+				</Popover>
+
+				<div class="ml-auto flex items-center gap-2">
+					<label class="text-text-secondary text-sm">Group by</label>
+					<Select v-model="groupBy">
+						<SelectTrigger class="h-8 w-44">
+							<SelectValue placeholder="None" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="none">None</SelectItem>
+							<SelectItem value="status">Status</SelectItem>
+							<SelectItem value="priority">Priority</SelectItem>
+							<SelectItem value="assignee">Assignee</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
+
+			<div v-if="isFilterActive" class="border-border flex flex-wrap gap-2 border-t pt-2">
+				<button
+					v-for="status in filter.status"
+					:key="`status-${status}`"
+					type="button"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					@click="filter.status = filter.status.filter((item) => item !== status)"
+				>
+					Status: {{ statusLabelMap[status as Task["status"]] }}
+					<Icon name="lucide:x" :size="12" />
+				</button>
+				<button
+					v-for="priority in filter.priority"
+					:key="`priority-${priority}`"
+					type="button"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					@click="filter.priority = filter.priority.filter((item) => item !== priority)"
+				>
+					Priority: {{ priorityLabelMap[priority as Task["priority"]] }}
+					<Icon name="lucide:x" :size="12" />
+				</button>
+				<button
+					v-for="assignee in filter.assignee"
+					:key="`assignee-${assignee}`"
+					type="button"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					@click="filter.assignee = filter.assignee.filter((item) => item !== assignee)"
+				>
+					Assignee: {{ assignee }}
+					<Icon name="lucide:x" :size="12" />
+				</button>
+				<button
+					v-if="dueDateFilter !== 'all'"
+					type="button"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					@click="dueDateFilter = 'all'"
+				>
+					Due: {{ dueDateOptions.find((item) => item.value === dueDateFilter)?.label }}
+					<Icon name="lucide:x" :size="12" />
+				</button>
+				<button type="button" class="text-text-secondary text-xs underline-offset-2 hover:underline" @click="emptyStateAction">Clear filters</button>
+			</div>
+		</div>
+
+		<AppEmptyState
+			v-if="!hasWorkspaceContext"
+			heading="Create a workspace first"
+			body="Workspace features are available after you create your first workspace."
+			icon="lucide:folder-plus"
+			:action="{ label: 'Create workspace', onClick: triggerCreateWorkspace }"
+		/>
+
+		<div v-else-if="isFetching" class="space-y-2">
+			<Skeleton class="h-11 w-full" />
+			<Skeleton class="h-11 w-full" />
+			<Skeleton class="h-11 w-full" />
+		</div>
+
+		<AppEmptyState
+			v-else-if="isTasksError"
+			heading="Could not load tasks"
+			:body="String(tasksError || 'Try again in a moment.')"
+			icon="lucide:alert-circle"
+			:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
+		/>
+
+		<div v-else-if="sortedTasks.length">
+			<div v-if="viewMode === 'list'" class="space-y-5">
+				<div v-for="group in groupedTasks" :key="group.key" class="space-y-2">
+					<div v-if="groupBy !== 'none'" class="text-text-tertiary text-xs font-semibold tracking-widest uppercase">{{ group.label }}</div>
+
+					<div class="border-border bg-surface-0 rounded-lg border">
+						<div
+							v-for="task in group.tasks"
+							:key="task.id"
+							class="group border-border grid h-11 grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] items-center gap-2 border-b px-3 last:border-b-0 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px]"
+							:class="{ 'bg-surface-2/60': focusedTask?.id === task.id }"
+						>
+							<div :class="isTaskSelected(task.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'" class="interactive">
+								<Checkbox :model-value="isTaskSelected(task.id)" @update:model-value="(value) => toggleTaskSelection(task.id, Boolean(value))" />
+							</div>
+
+							<BadgeStatus :status="task.status" />
+
+							<div class="flex min-w-0 items-center gap-1">
+								<input
+									v-if="editingTaskId === task.id"
+									v-model="editingTitle"
+									class="border-border bg-surface-0 focus-visible:ring-accent h-8 w-full rounded-md border px-2 text-sm focus-visible:ring-2"
+									@keydown.enter.prevent="saveInlineEdit(task)"
+									@keydown.esc.prevent="cancelInlineEdit"
+									@blur="saveInlineEdit(task)"
+								/>
+								<button
+									v-else
+									type="button"
+									class="text-text-primary truncate text-left text-base"
+									:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
+									@click="startInlineEdit(task)"
+								>
+									{{ task.title }}
+								</button>
+
+								<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-7 w-7" aria-label="Open task" @click="openTaskDetails(task)">
+									<Icon name="lucide:arrow-right" :size="14" />
+								</Button>
+							</div>
+
+							<Icon name="lucide:triangle" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+
+							<div class="hidden md:flex">
+								<Avatar v-if="task.assignees.length" class="h-6 w-6">
+									<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
+									<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(task.assignees[0].firstName, task.assignees[0].lastName) }}</AvatarFallback>
+								</Avatar>
+							</div>
+
+							<p class="hidden text-xs md:block" :class="dueDateClass(task.dueDate)">{{ dueDateDisplay(task.dueDate) }}</p>
+
+							<DropdownMenu>
+								<DropdownMenuTrigger as-child>
+									<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Task actions">
+										<Icon name="lucide:ellipsis" :size="16" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" class="border-border bg-surface-0 border">
+									<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
+									<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div v-else class="overflow-x-auto pb-2">
+				<div class="flex min-w-[760px] snap-x snap-mandatory gap-4">
+					<section v-for="column in statusColumns" :key="column.key" class="border-border bg-surface-0 w-full min-w-[240px] snap-start rounded-lg border p-3">
+						<div class="mb-3 flex items-center justify-between">
+							<p class="text-text-primary text-sm font-medium">{{ column.label }}</p>
+							<span class="border-border text-2xs text-text-tertiary rounded-full border px-2 py-0.5">{{ column.tasks.length }}</span>
+						</div>
+
+						<div class="max-h-112 space-y-2 overflow-y-auto">
+							<article
+								v-for="task in column.tasks"
+								:key="task.id"
+								class="interactive border-border bg-surface-0 hover:bg-surface-1 cursor-pointer rounded-lg border p-3"
+								@click="openTaskDetails(task)"
+							>
+								<p class="text-text-primary line-clamp-2 text-sm">{{ task.title }}</p>
+								<div class="mt-3 flex items-center justify-between">
+									<div class="flex items-center gap-2">
+										<Icon name="lucide:triangle" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+										<Avatar v-if="task.assignees.length" class="h-6 w-6">
+											<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
+											<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{
+												getInitials(task.assignees[0].firstName, task.assignees[0].lastName)
+											}}</AvatarFallback>
+										</Avatar>
+									</div>
+									<span class="text-2xs" :class="dueDateClass(task.dueDate)">{{ dueDateDisplay(task.dueDate) }}</span>
+								</div>
+							</article>
+						</div>
+
+						<Button variant="ghost" size="sm" class="mt-3 h-8 w-full" @click="openCreateTaskModal">Add task</Button>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<AppEmptyState
+			v-else
+			:heading="emptyStateCopy.heading"
+			:body="emptyStateCopy.body"
+			icon="lucide:list-checks"
+			:action="{ label: emptyStateCopy.actionLabel, onClick: emptyStateAction, variant: isFilterActive ? 'secondary' : 'primary' }"
+		/>
+
+		<AppDeleteAction
+			v-model="isDeleteModalOpen"
+			title="Delete task?"
+			description="Are you sure you want to delete this task? This action cannot be undone."
+			@cancel="isDeleteModalOpen = false"
+			@confirm="deleteSelectedTask"
+		/>
+
+		<AppTaskDrawer :open="isTaskDrawerOpen" :task-id="activeTaskId" @close="closeTaskDrawer" @deleted="onTaskDeletedFromDrawer" />
+
+		<div v-if="selectedTaskIds.length > 0" class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+			<div class="bg-text-primary text-surface-0 flex h-12 items-center gap-3 rounded-full px-5 text-sm font-medium shadow-xl">
+				<button type="button" class="interactive rounded-full p-1 hover:bg-white/15" aria-label="Clear selection" @click="clearSelection">
+					<Icon name="lucide:x" :size="14" />
+				</button>
+				<span>{{ selectedTaskIds.length }} selected</span>
+				<div class="h-5 w-px bg-white/25" />
+
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Assign</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
+						<DropdownMenuItem v-for="assignee in assigneeOptions" :key="assignee.value" @select="bulkPatch({ assignees: [assignee.value] })">
+							{{ assignee.label }}
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Set status</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
+						<DropdownMenuItem v-for="status in STATUS_ORDER" :key="status" @select="bulkPatch({ status })">{{ statusLabelMap[status] }}</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Set priority</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
+						<DropdownMenuItem v-for="priority in PRIORITY_ORDER" :key="priority" @select="bulkPatch({ priority })">{{ priorityLabelMap[priority] }}</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+
+				<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15" @click="bulkDelete">Delete</Button>
+			</div>
+		</div>
+	</div>
+</template>

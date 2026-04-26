@@ -87,7 +87,7 @@ watch([isUpdateWorkspaceModalOpen, workspaceType], ([isUpdateWorkspaceModalOpen,
 				/>
 			</div>
 
-			<AppEmptyState v-else title="No workspaces yet" description="Create your first workspace to start organizing your tasks and collaborating with your team." action="Create Workspace" />
+			<AppEmptyState v-else heading="No workspaces yet" body="Create your first workspace to start organizing your tasks and collaborating with your team." />
 		</TabsContent>
 
 		<AppWorkspaceDetails v-if="selectedWorkspace" v-model="isViewWorkspaceModalOpen" :workspace="selectedWorkspace" @edit="setSelectedWorkspace('update', $event)" />

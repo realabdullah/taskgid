@@ -16,7 +16,7 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 
 <template>
 	<NuxtLink :to="taskUrl" class="block">
-		<Card class="overflow-hidden transition-shadow hover:shadow-md">
+		<Card class="overflow-hidden transition-shadow hover:shadow-sm">
 			<CardHeader class="p-4 pb-0">
 				<div class="flex items-start justify-between">
 					<div class="space-y-1">
@@ -27,7 +27,7 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 						<DropdownMenuTrigger as-child>
 							<Button variant="ghost" size="icon" class="h-8 w-8">
 								<Icon name="hugeicons:more-horizontal-circle-01" size="16" />
-								<span className="sr-only">Task menu</span>
+								<span class="sr-only">Task menu</span>
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
@@ -44,14 +44,14 @@ const taskIcon = computed(() => getStatusIcon(props.task.status));
 			<CardContent class="p-4">
 				<div class="flex flex-col space-y-4">
 					<div class="flex flex-wrap items-center gap-2 text-sm">
-						<div className="flex items-center">
+						<div class="flex items-center gap-1">
 							<Icon :name="taskIcon.icon" :size="16" :class="taskIcon.class" />
-							<span className="ml-1 capitalize">{{ task.status.replace("_", " ") }}</span>
+							<span class="capitalize">{{ task.status.replace("_", " ") }}</span>
 						</div>
-						<div className="text-muted-foreground">•</div>
+						<div class="text-muted-foreground">•</div>
 						<Badge variant="outline" :class="[getPriorityColor(task.priority)]"> {{ task.priority }} priority </Badge>
-						<div className="text-muted-foreground">•</div>
-						<div className="text-muted-foreground">Due {{ getTimeAgo(new Date(task.dueDate || "")) }}</div>
+						<div class="text-muted-foreground">•</div>
+						<div class="text-muted-foreground">Due {{ getTimeAgo(new Date(task.dueDate || "")) }}</div>
 					</div>
 
 					<div class="flex items-center justify-between">

@@ -1,75 +1,55 @@
-# Nuxt Minimal Starter
+# TaskGid
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A collaborative task management app built with Nuxt 3.
+
+## Tech Stack
+
+- **Framework**: Nuxt 3 (SPA, `ssr: false`)
+- **Language**: TypeScript
+- **UI**: shadcn-nuxt, Reka UI, Tailwind CSS v4
+- **State**: Pinia + TanStack Vue Query
+- **Forms**: vee-validate + Zod
+- **Auth**: JWT cookie + WebAuthn (passkeys)
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- A running TaskGid backend API
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Copy the example env file and fill in the values:
 
 ```bash
-# npm
-npm run dev
+cp .env.example .env
+```
 
-# pnpm
+### Environment Variables
+
+| Variable | Description |
+|---|---|
+| `API_BASE_URL` | Backend base URL (default: `http://localhost:8000`) |
+
+## Development
+
+```bash
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Open [http://localhost:3000](http://localhost:3000).
 
-Build the application for production:
+## Scripts
 
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm preview` | Preview production build |
+| `pnpm lint` | Run ESLint |
+| `pnpm lint:fix` | Auto-fix lint issues |
+| `pnpm format` | Run Prettier |

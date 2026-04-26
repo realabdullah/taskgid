@@ -1,63 +1,129 @@
 <script lang="ts" setup>
-import { vAutoAnimate } from "@formkit/auto-animate/vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import type { Pagination, PendingInvitation } from "~/types";
+import { useApiFetch } from "../../composables/useApiFetch";
 
-const { user } = storeToRefs(useStore());
+const queryClient = useQueryClient();
+const isReviewOpen = ref(false);
 
-const { data } = useAsyncData("pending-invitations", async () => {
-	const data = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>("/invite/pending");
-	return { invitations: data.data, pagination: data.pagination };
+const {
+	data: pendingInvites,
+	isFetching,
+	isError: isInvitesError,
+	error: invitesError,
+	refetch: refetchInvites,
+} = useQuery({
+	queryKey: ["pending-invitations"],
+	queryFn: async () => {
+		const data = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>("/invite/pending");
+		if (!data?.data) {
+			throw new Error("Failed to fetch pending invitations");
+		}
+		return data.data;
+	},
 });
 
-const inProgressId = ref<string | null>(null);
-const isLoading = computed(() => inProgressId.value !== null);
-const acceptInvitation = async (invitation: PendingInvitation) => {
-	try {
-		inProgressId.value = invitation.invitationId;
-		const res = await useApiFetch<{ success: boolean; message: string; error?: string; isNewUser: boolean }>("/invite/accept", {
+const inviteCount = computed(() => pendingInvites.value?.length ?? 0);
+
+type MutationContext = {
+	previousInvites: PendingInvitation[];
+};
+
+const invitationActionMutation = useMutation({
+	mutationFn: async ({ endpoint, invitation }: { endpoint: "/invite/accept" | "/invite/decline"; invitation: PendingInvitation }) => {
+		const response = await useApiFetch<{ success: boolean; message?: string; error?: string }>(endpoint, {
 			method: "POST",
 			body: { token: invitation.token },
 		});
 
-		if (!res || !res.success) throw new Error(res?.message || res?.error || "Something went wrong");
+		if (!response?.success) {
+			throw new Error(response?.error || "Invitation action failed");
+		}
 
-		toast.success("Invitation accepted successfully");
-		await refreshNuxtData([`${user.value?.id}-workspaces`, "pending-invitations"]);
-		inProgressId.value = null;
-	} catch (error) {
-		toast(String(error));
-		inProgressId.value = null;
-	}
+		return response;
+	},
+	onMutate: async ({ invitation }): Promise<MutationContext> => {
+		await queryClient.cancelQueries({ queryKey: ["pending-invitations"] });
+		const previousInvites = queryClient.getQueryData<PendingInvitation[]>(["pending-invitations"]) ?? [];
+
+		queryClient.setQueryData<PendingInvitation[]>(["pending-invitations"], (current = []) => current.filter((item) => item.invitationId !== invitation.invitationId));
+
+		return { previousInvites };
+	},
+	onError: (error, _, context) => {
+		if (context?.previousInvites) {
+			queryClient.setQueryData(["pending-invitations"], context.previousInvites);
+		}
+		toast.error(String(error));
+	},
+	onSuccess: (_, variables) => {
+		if (variables.endpoint === "/invite/accept") {
+			toast.success("Invitation accepted successfully");
+		} else {
+			toast.success("Invitation declined");
+		}
+	},
+	onSettled: () => {
+		queryClient.invalidateQueries({ queryKey: ["pending-invitations"] });
+		queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+	},
+});
+
+const acceptInvitation = (invitation: PendingInvitation) => {
+	invitationActionMutation.mutate({ endpoint: "/invite/accept", invitation });
+};
+
+const declineInvitation = (invitation: PendingInvitation) => {
+	invitationActionMutation.mutate({ endpoint: "/invite/decline", invitation });
 };
 </script>
 
 <template>
-	<Card v-if="data?.invitations && data?.invitations?.length" class="mb-6 border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
-		<CardHeader>
-			<CardTitle class="text-lg">Pending Invitations</CardTitle>
-			<CardDescription>You have workspace invitations waiting for your response</CardDescription>
-		</CardHeader>
-		<CardContent>
-			<div v-auto-animate class="space-y-4">
-				<div v-for="invitation in data.invitations" :key="invitation.invitationId" class="flex items-center justify-between rounded-lg border p-4">
-					<div>
-						<h3 class="font-medium">{{ invitation.workspaceTitle }}</h3>
-						<p class="text-muted-foreground text-sm">{{ invitation.workspaceDescription }}</p>
-						<div class="mt-1 flex items-center gap-2 text-sm">
-							<span>Invited by {{ invitation.invitedBy.firstName }} {{ invitation.invitedBy.lastName }}</span>
-							<span>•</span>
-							<Badge variant="outline">Creator</Badge>
-							<span>•</span>
-							<span class="text-muted-foreground">{{ getTimeAgo(new Date(invitation.invitedAt)) }}</span>
-						</div>
-					</div>
-					<div class="flex gap-2">
-						<Button variant="outline" size="sm" :disabled="isLoading"> Decline </Button>
-						<Button size="sm" class="bg-black text-white hover:bg-black/90" :disabled="isLoading" @click="acceptInvitation(invitation)"> Accept </Button>
-					</div>
+	<section v-if="inviteCount > 0" class="mb-6 space-y-3">
+		<div class="border-accent/20 bg-accent-subtle flex items-center justify-between rounded-lg border px-5 py-3">
+			<div class="text-accent-text flex items-center gap-2 text-sm">
+				<Icon name="hugeicons:inbox" :size="18" />
+				<p>
+					You have <span class="font-semibold">{{ inviteCount }}</span> pending workspace invitation{{ inviteCount > 1 ? "s" : "" }}.
+				</p>
+			</div>
+			<Button variant="secondary" size="sm" class="h-8" @click="isReviewOpen = !isReviewOpen">
+				{{ isReviewOpen ? "Hide invites" : "Review invites" }}
+			</Button>
+		</div>
+
+		<div v-if="isReviewOpen" class="border-border bg-surface-0 space-y-3 rounded-lg border p-4">
+			<div v-if="isFetching" class="space-y-2">
+				<Skeleton class="h-16 w-full" />
+				<Skeleton class="h-16 w-full" />
+			</div>
+
+			<AppEmptyState
+				v-else-if="isInvitesError"
+				heading="Could not load invitations"
+				:body="String(invitesError || 'Please try again.')"
+				icon="lucide:alert-circle"
+				:action="{ label: 'Retry', onClick: () => refetchInvites(), variant: 'secondary' }"
+			/>
+
+			<div
+				v-for="invitation in pendingInvites"
+				v-else
+				:key="invitation.invitationId"
+				class="border-border bg-surface-0 flex flex-col justify-between gap-3 rounded-lg border px-4 py-3 md:flex-row md:items-center"
+			>
+				<div class="space-y-1">
+					<p class="text-text-primary text-sm font-semibold">{{ invitation.workspaceTitle }}</p>
+					<p class="text-text-secondary text-sm">{{ invitation.workspaceDescription }}</p>
+					<p class="text-text-tertiary text-xs">Invited by {{ invitation.invitedBy.firstName }} {{ invitation.invitedBy.lastName }} · {{ getTimeAgo(new Date(invitation.invitedAt)) }}</p>
+				</div>
+
+				<div class="flex items-center gap-2">
+					<Button variant="destructive" size="sm" class="h-8" :disabled="Boolean(invitationActionMutation.isPending)" @click="declineInvitation(invitation)"> Decline </Button>
+					<Button size="sm" class="h-8" :disabled="Boolean(invitationActionMutation.isPending)" @click="acceptInvitation(invitation)"> Accept </Button>
 				</div>
 			</div>
-		</CardContent>
-	</Card>
+		</div>
+	</section>
 </template>

@@ -4,7 +4,7 @@ import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 import type { Workspace } from "~/types";
 
-const props = defineProps<{ isCreating?: boolean; workspace?: Workspace }>();
+const props = defineProps<{ isCreating?: boolean; workspace?: Workspace; hideTrigger?: boolean }>();
 const emits = defineEmits<(event: "update", value: Workspace) => void>();
 
 const { getWorkspaces } = useWorkspacesStore();
@@ -47,7 +47,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
 	<Dialog :open="isOpen" @update:open="setOpen">
-		<DialogTrigger v-if="isCreating" as-child>
+		<DialogTrigger v-if="isCreating && !hideTrigger" as-child>
 			<Button class="bg-black text-white hover:bg-black/90">
 				<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
 				Create Workspace

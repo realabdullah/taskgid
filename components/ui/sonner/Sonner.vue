@@ -8,10 +8,15 @@ const props = defineProps<ToasterProps>();
 	<Sonner
 		class="toaster group"
 		v-bind="props"
+		position="bottom-right"
+		offset="24px"
+		:toast-options="{ duration: 4000 }"
 		:style="{
-			'--normal-bg': 'var(--popover)',
-			'--normal-text': 'var(--popover-foreground)',
-			'--normal-border': 'var(--border)',
+			'--normal-bg': 'var(--color-surface-0)',
+			'--normal-text': 'var(--color-text-primary)',
+			'--normal-border': 'var(--color-border)',
+			'--toast-border-radius': 'var(--radius-lg)',
+			'z-index': '9999',
 		}"
 	/>
 </template>

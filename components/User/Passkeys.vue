@@ -1,8 +1,9 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
+import { toast } from "vue-sonner";
 import type { Passkey } from "~/types";
 
-const { passkeys, addingPasskey, handleAddPasskey, handleRemovePasskey } = usePasskeys();
+const { passkeys, addingPasskey, handleAddPasskey } = usePasskeys();
 
 const { status } = useAsyncData(
 	"passkeys",
@@ -16,10 +17,22 @@ const { status } = useAsyncData(
 		},
 	}
 );
+
+const removeCandidate = ref<Passkey | null>(null);
+
+const requestRemove = (passkey: Passkey) => {
+	removeCandidate.value = passkey;
+};
+
+const confirmRemove = () => {
+	if (!removeCandidate.value) return;
+	toast.info("Passkey removal is coming soon.");
+	removeCandidate.value = null;
+};
 </script>
 
 <template>
-	<div class="space-y-4 pb-6">
+	<div class="space-y-4 pb-4">
 		<h3 class="flex items-center gap-2 text-lg font-medium">
 			<Icon name="hugeicons:finger-print" :size="20" />
 			Passkeys (WebAuthn)
@@ -45,7 +58,7 @@ const { status } = useAsyncData(
 					</div>
 				</template>
 				<template v-else-if="passkeys && passkeys.length > 0">
-					<div v-for="passkey in passkeys" :key="passkey.id" class="bg-muted flex items-center justify-between rounded-md p-3">
+					<div v-for="passkey in passkeys" :key="passkey.id" class="bg-muted border-border flex items-center justify-between rounded-md border p-3">
 						<div class="flex items-center gap-3">
 							<Icon :name="passkey.device.type === 'mobile' ? 'hugeicons:smart-phone-01' : 'hugeicons:computer'" :size="20" class="text-muted-foreground" />
 							<div>
@@ -53,10 +66,22 @@ const { status } = useAsyncData(
 								<p class="text-muted-foreground text-xs">Added on {{ formatDate(passkey.createdAt, "Do MMM, YYYY") }}</p>
 							</div>
 						</div>
-						<Button variant="ghost" size="sm" class="cursor-pointer text-red-500 hover:bg-red-100 hover:text-red-600" @click="handleRemovePasskey(passkey)">
-							<Icon name="hugeicons:waste" :size="16" class="mr-1" />
-							Remove
-						</Button>
+
+						<Popover>
+							<PopoverTrigger as-child>
+								<Button variant="ghost" size="icon" class="text-text-tertiary hover:text-danger h-8 w-8" aria-label="Remove passkey" @click="requestRemove(passkey)">
+									<Icon name="hugeicons:waste" :size="16" />
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent align="end" class="border-border bg-surface-0 w-64 border p-3">
+								<p class="text-text-primary text-sm font-medium">Remove this passkey?</p>
+								<p class="text-text-tertiary mt-1 text-xs">This action is not available yet and will be added in a future update.</p>
+								<div class="mt-3 flex justify-end gap-2">
+									<Button variant="secondary" size="sm" @click="removeCandidate = null">Cancel</Button>
+									<Button variant="destructive" size="sm" @click="confirmRemove">Remove</Button>
+								</div>
+							</PopoverContent>
+						</Popover>
 					</div>
 				</template>
 
@@ -65,11 +90,8 @@ const { status } = useAsyncData(
 				</div>
 			</div>
 
-			<Button class="bg-black text-white hover:bg-black/90" :disabled="addingPasskey" @click="handleAddPasskey">
-				<template v-if="addingPasskey">
-					<span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-					Registering...
-				</template>
+			<Button :loading="addingPasskey" loading-label="Registering passkey" class="min-w-[170px]" :disabled="addingPasskey" @click="handleAddPasskey">
+				<template v-if="addingPasskey"> Registering... </template>
 				<template v-else>
 					<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
 					Add New Passkey

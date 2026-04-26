@@ -6,127 +6,158 @@ const isOpen = defineModel<boolean>();
 const { member } = defineProps<{ member: TeamMember }>();
 const route = useRoute();
 const { getLabel, getDescription } = useActivityLabel();
+const isAssignTasksOpen = ref(false);
 
-const { data: tasks } = useQuery({
+const {
+	data: tasks,
+	isPending: isTasksLoading,
+	isError: isTasksError,
+	error: tasksError,
+	refetch: refetchTasks,
+} = useQuery({
 	queryKey: ["user-tasks", member.id],
 	queryFn: async () => {
 		const { success, data } = await useApiFetch<{ success: boolean; data: UserBareTask[] }>(`/workspaces/${route.params.slug}/members/${member.id}/tasks`);
-		if (!data || !success) return [];
+		if (!data || !success) throw new Error("Failed to fetch member tasks");
 		return data;
 	},
 	enabled: () => !!member && isOpen.value,
 });
 
-const { data: activities } = useQuery({
+const {
+	data: activities,
+	isPending: isActivitiesLoading,
+	isError: isActivitiesError,
+	error: activitiesError,
+	refetch: refetchActivities,
+} = useQuery({
 	queryKey: ["user-activities", member.id],
 	queryFn: async () => {
 		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(`/workspaces/${route.params.slug}/members/${member.id}/activities`);
-		if (!data || !success) return [];
+		if (!data || !success) throw new Error("Failed to fetch member activity");
 		return data;
 	},
 	enabled: () => !!member && isOpen.value,
 });
+
+const completionRate = computed(() => {
+	if (!member.taskStats.assigned) return 0;
+	return Math.round((member.taskStats.completed / member.taskStats.assigned) * 100);
+});
+
+const closeSheet = () => {
+	isOpen.value = false;
+};
+
+const viewAllTasks = () => {
+	navigateTo(`/app/workspaces/${route.params.slug}/tasks`);
+};
 </script>
 
 <template>
-	<Dialog v-model:open="isOpen">
-		<DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
-			<DialogHeader>
-				<DialogTitle>Team Member Details</DialogTitle>
-				<DialogDescription>View and manage team member information</DialogDescription>
-			</DialogHeader>
-
-			<div class="flex flex-col items-center pt-4 text-center">
-				<div class="relative">
-					<Avatar class="h-20 w-20">
-						<AvatarImage :src="member.profilePicture" :alt="member.firstName" />
-						<AvatarFallback>{{ getInitials(member.firstName, member.lastName) }}</AvatarFallback>
-					</Avatar>
-				</div>
-				<h2 class="mt-4 text-xl font-semibold">{{ member.firstName }} {{ member.lastName }}</h2>
-				<p class="text-muted-foreground text-sm">{{ member.title }}</p>
-				<div class="mt-1 flex items-center gap-2">
-					<Badge variant="outline" class="capitalize">{{ member.role }}</Badge>
-				</div>
-			</div>
-
-			<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-				<div class="flex items-center gap-2">
-					<Icon name="hugeicons:mail-02" :size="16" class="text-muted-foreground" />
-					<span class="text-sm">{{ member.email }}</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<Icon name="hugeicons:location-03" :size="16" class="text-muted-foreground" />
-					<span class="text-sm">{{ member.location }}</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<Icon name="hugeicons:calendar-03" :size="16" class="text-muted-foreground" />
-					<span class="text-sm">Joined {{ formatDate(member.dateJoined, "DD/MM/YYYY") }}</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<Icon name="hugeicons:checkmark-square-03" :size="16" class="text-muted-foreground" />
-					<span class="text-sm"> {{ member.taskStats.completed }} of {{ member.taskStats.assigned }} tasks completed </span>
-				</div>
-			</div>
-
-			<Tabs default-value="tasks" class="mt-6">
-				<TabsList class="grid w-full grid-cols-2">
-					<TabsTrigger value="tasks">Tasks</TabsTrigger>
-					<TabsTrigger value="activity">Recent Activity</TabsTrigger>
-				</TabsList>
-				<TabsContent value="tasks" class="mt-4 space-y-4">
-					<template v-if="tasks && tasks.length">
-						<Card v-for="task in tasks" :key="task.id">
-							<CardContent class="p-4">
-								<div class="flex items-center justify-between">
-									<div class="flex items-center gap-2">
-										<Icon :name="getStatusIcon(task.status).icon" :class="getStatusIcon(task.status).class" />
-										<span class="font-medium">{{ task.title }}</span>
-									</div>
-									<Badge variant="outline" :class="getPriorityColor(task.priority)"> {{ task.priority }} </Badge>
-								</div>
-								<div class="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
-									<Icon name="hugeicons:calendar-03" :size="16" />
-									<span>Due {{ formatDate(task.dueDate, "Do, MMM YYYY") }}</span>
-								</div>
-							</CardContent>
-						</Card>
-					</template>
-
-					<div v-else class="py-8 text-center">
-						<p class="text-muted-foreground">No tasks assigned</p>
-					</div>
-					<Button variant="outline" class="w-full" @click="navigateTo({ name: 'tasks' })"> View All Tasks </Button>
-				</TabsContent>
-
-				<TabsContent value="activity" class="mt-4 space-y-4">
-					<template v-if="activities && activities.length">
-						<div v-for="activity in activities" :key="activity.id" class="flex items-start gap-3 py-2">
-							<div class="bg-primary mt-2 h-2 w-2 rounded-full" />
-							<div class="space-y-1">
-								<p class="text-sm font-medium">{{ getLabel(activity) }}</p>
-								<p class="text-muted-foreground text-sm" v-html="getDescription(activity)"></p>
-								<p class="text-muted-foreground text-xs">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
+	<Sheet :open="isOpen" @update:open="(value) => (isOpen = value)">
+		<SheetContent side="right" class="border-border bg-surface-0 w-full border-l p-0 sm:max-w-[420px]">
+			<div class="flex h-full flex-col overflow-hidden">
+				<header class="border-border border-b px-5 py-4">
+					<div class="flex items-start justify-between gap-3">
+						<div class="flex items-center gap-3">
+							<Avatar class="h-10 w-10">
+								<AvatarImage :src="member.profilePicture" :alt="member.firstName" />
+								<AvatarFallback class="bg-accent-subtle text-accent-text">{{ getInitials(member.firstName, member.lastName) }}</AvatarFallback>
+							</Avatar>
+							<div>
+								<p class="text-text-primary text-sm font-semibold">{{ member.firstName }} {{ member.lastName }}</p>
+								<p class="text-text-tertiary text-xs">{{ member.title || "Team member" }}</p>
 							</div>
 						</div>
-					</template>
-
-					<div v-else class="py-8 text-center">
-						<p class="text-muted-foreground">No recent activity</p>
+						<Badge variant="outline" class="capitalize">{{ member.role }}</Badge>
 					</div>
-					<Button variant="outline" class="w-full"> View All Activity </Button>
-				</TabsContent>
-			</Tabs>
+				</header>
 
-			<div class="mt-6 flex justify-between">
-				<Button variant="outline" @click="isOpen = false"> Close </Button>
-				<div class="flex gap-2">
-					<AppTaskAssign :member="member">
-						<Button variant="outline">Assign Task</Button>
-					</AppTaskAssign>
-					<Button>Edit Profile</Button>
+				<div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
+					<div class="grid grid-cols-3 gap-2">
+						<div class="border-border bg-surface-1 rounded-md border p-2">
+							<p class="text-2xs text-text-tertiary">Assigned</p>
+							<p class="text-text-primary mt-1 text-sm font-semibold">{{ member.taskStats.assigned }}</p>
+						</div>
+						<div class="border-border bg-surface-1 rounded-md border p-2">
+							<p class="text-2xs text-text-tertiary">Completed</p>
+							<p class="text-text-primary mt-1 text-sm font-semibold">{{ member.taskStats.completed }}</p>
+						</div>
+						<div class="border-border bg-surface-1 rounded-md border p-2">
+							<p class="text-2xs text-text-tertiary">Completion</p>
+							<p class="text-text-primary mt-1 text-sm font-semibold">{{ completionRate }}%</p>
+						</div>
+					</div>
+
+					<div class="text-text-secondary space-y-1 text-sm">
+						<p>{{ member.email }}</p>
+						<p v-if="member.location">{{ member.location }}</p>
+						<p>Joined {{ formatDate(member.dateJoined, "MMM D, YYYY") }}</p>
+					</div>
+
+					<section class="space-y-2">
+						<p class="text-2xs text-text-tertiary font-semibold tracking-widest uppercase">Tasks</p>
+						<div v-if="isTasksLoading" class="space-y-2">
+							<Skeleton class="h-16 w-full" />
+							<Skeleton class="h-16 w-full" />
+						</div>
+						<AppEmptyState
+							v-else-if="isTasksError"
+							heading="Could not load member tasks"
+							:body="String(tasksError || 'Try again in a moment.')"
+							icon="lucide:alert-circle"
+							:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
+						/>
+						<div v-else-if="tasks?.length" class="space-y-2">
+							<div v-for="task in tasks" :key="task.id" class="border-border bg-surface-1 rounded-md border p-3">
+								<div class="flex items-start justify-between gap-2">
+									<p class="text-text-primary line-clamp-2 text-sm font-medium">{{ task.title }}</p>
+									<BadgePriority :priority="task.priority" />
+								</div>
+								<div class="text-2xs text-text-tertiary mt-2 flex items-center justify-between">
+									<BadgeStatus :status="task.status" />
+									<span>{{ task.dueDate ? `Due ${formatDate(task.dueDate, "MMM D")}` : "No due date" }}</span>
+								</div>
+							</div>
+						</div>
+						<p v-else class="text-text-tertiary text-sm">No tasks assigned.</p>
+					</section>
+
+					<section class="space-y-2">
+						<p class="text-2xs text-text-tertiary font-semibold tracking-widest uppercase">Recent activity</p>
+						<div v-if="isActivitiesLoading" class="space-y-2">
+							<Skeleton class="h-16 w-full" />
+							<Skeleton class="h-16 w-full" />
+						</div>
+						<AppEmptyState
+							v-else-if="isActivitiesError"
+							heading="Could not load activity"
+							:body="String(activitiesError || 'Please retry.')"
+							icon="lucide:alert-circle"
+							:action="{ label: 'Retry', onClick: () => refetchActivities(), variant: 'secondary' }"
+						/>
+						<div v-else-if="activities?.length" class="space-y-2">
+							<div v-for="activity in activities" :key="activity.id" class="border-border bg-surface-1 rounded-md border p-3">
+								<p class="text-text-primary text-sm font-medium">{{ getLabel(activity) }}</p>
+								<p class="text-text-secondary mt-1 text-sm" v-html="getDescription(activity)"></p>
+								<p class="text-2xs text-text-tertiary mt-1">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
+							</div>
+						</div>
+						<p v-else class="text-text-tertiary text-sm">No recent activity.</p>
+					</section>
 				</div>
+
+				<footer class="border-border flex items-center gap-2 border-t px-5 py-3">
+					<Button variant="secondary" class="flex-1" @click="viewAllTasks">View all tasks</Button>
+					<AppTaskAssign v-model="isAssignTasksOpen" :member="member">
+						<Button class="flex-1">Manage assignments</Button>
+					</AppTaskAssign>
+					<Button variant="ghost" size="icon" aria-label="Close" @click="closeSheet">
+						<Icon name="lucide:x" :size="16" />
+					</Button>
+				</footer>
 			</div>
-		</DialogContent>
-	</Dialog>
+		</SheetContent>
+	</Sheet>
 </template>

@@ -4,14 +4,12 @@ import { computed, type HTMLAttributes } from "vue";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-const props = withDefaults(defineProps<CalendarCellTriggerProps & { class?: HTMLAttributes["class"] }>(), {
-	as: "button",
-});
+const { as = "button", ...props } = defineProps<CalendarCellTriggerProps & { class?: HTMLAttributes["class"] }>();
 
 const delegatedProps = computed(() => {
 	const { class: _, ...delegated } = props;
 
-	return delegated;
+	return { ...delegated, as };
 });
 
 const forwardedProps = useForwardProps(delegatedProps);

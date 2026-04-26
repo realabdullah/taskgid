@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
-import { Primitive, type PrimitiveProps } from "reka-ui";
-import { type ButtonVariants, buttonVariants } from ".";
 import { cn } from "@/lib/utils";
+import { Primitive, type PrimitiveProps } from "reka-ui";
+import type { HTMLAttributes } from "vue";
+import { type ButtonVariants, buttonVariants } from ".";
 
 interface Props extends PrimitiveProps {
 	variant?: ButtonVariants["variant"];
 	size?: ButtonVariants["size"];
+	loading?: boolean;
+	loadingLabel?: string;
+	minWidth?: string;
 	class?: HTMLAttributes["class"];
+	disabled?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-	as: "button",
-});
+const { as = "button", loading = false, loadingLabel = "Loading", ...props } = defineProps<Props>();
 </script>
 
 <template>
-	<Primitive data-slot="button" :as="as" :as-child="asChild" :class="cn(buttonVariants({ variant, size }), props.class)">
-		<slot />
+	<Primitive
+		data-slot="button"
+		:as="as"
+		:as-child="props.asChild"
+		:disabled="loading || props.disabled"
+		:aria-busy="loading"
+		:class="cn(buttonVariants({ variant, size }), props.class)"
+		:style="loading && props.minWidth ? { '--btn-min-w': props.minWidth, minWidth: 'var(--btn-min-w)' } : undefined"
+	>
+		<Icon v-if="loading" name="lucide:loader-circle" class="h-4 w-4 animate-spin" />
+		<span :class="['inline-flex items-center justify-center gap-2', loading ? 'opacity-0' : '']"><slot /></span>
+		<span v-if="loading" class="sr-only">{{ loadingLabel }}</span>
 	</Primitive>
 </template>

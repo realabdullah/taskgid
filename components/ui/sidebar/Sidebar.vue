@@ -11,11 +11,7 @@ defineOptions({
 	inheritAttrs: false,
 });
 
-const props = withDefaults(defineProps<SidebarProps>(), {
-	side: "left",
-	variant: "sidebar",
-	collapsible: "offcanvas",
-});
+const { side = "left", variant = "sidebar", collapsible = "offcanvas", ...props } = defineProps<SidebarProps>();
 
 const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 </script>

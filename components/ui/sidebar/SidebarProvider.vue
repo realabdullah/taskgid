@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEventListener, useMediaQuery, useVModel } from "@vueuse/core";
 import { TooltipProvider } from "reka-ui";
-import { computed, type HTMLAttributes, type Ref, ref } from "vue";
+import { computed, type HTMLAttributes, onMounted, type Ref, ref } from "vue";
 import { provideSidebarContext, SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_KEYBOARD_SHORTCUT, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from "./utils";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +34,7 @@ function setOpen(value: boolean) {
 
 	// This sets the cookie to keep the sidebar state.
 	document.cookie = `${SIDEBAR_COOKIE_NAME}=${open.value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+	localStorage.setItem(SIDEBAR_COOKIE_NAME, String(open.value));
 }
 
 function setOpenMobile(value: boolean) {
@@ -55,6 +56,13 @@ useEventListener("keydown", (event: KeyboardEvent) => {
 // We add a state so that we can do data-state="expanded" or "collapsed".
 // This makes it easier to style the sidebar with Tailwind classes.
 const state = computed(() => (open.value ? "expanded" : "collapsed"));
+
+onMounted(() => {
+	const storedValue = localStorage.getItem(SIDEBAR_COOKIE_NAME);
+	if (storedValue === "true" || storedValue === "false") {
+		setOpen(storedValue === "true");
+	}
+});
 
 provideSidebarContext({
 	state,

@@ -2,17 +2,18 @@
 import type { ListboxRootEmits, ListboxRootProps } from "reka-ui";
 import { reactiveOmit } from "@vueuse/core";
 import { ListboxRoot, useFilter, useForwardPropsEmits } from "reka-ui";
-import { type HTMLAttributes, reactive, ref, watch } from "vue";
+import { computed, type HTMLAttributes, reactive, ref, watch } from "vue";
 import { provideCommandContext } from ".";
 import { cn } from "@/lib/utils";
 
-const props = withDefaults(defineProps<ListboxRootProps & { class?: HTMLAttributes["class"] }>(), {
-	modelValue: "",
-});
+const { modelValue = "", ...props } = defineProps<ListboxRootProps & { class?: HTMLAttributes["class"] }>();
 
 const emits = defineEmits<ListboxRootEmits>();
 
-const delegatedProps = reactiveOmit(props, "class");
+const delegatedProps = computed(() => ({
+	...reactiveOmit(props, "class"),
+	modelValue,
+}));
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 
@@ -63,10 +64,6 @@ function filterItems() {
 	filterState.filtered.count = itemCount;
 }
 
-function handleSelect() {
-	filterState.search = "";
-}
-
 watch(
 	() => filterState.search,
 	() => {
@@ -82,7 +79,11 @@ provideCommandContext({
 </script>
 
 <template>
-	<ListboxRoot data-slot="command" v-bind="forwarded" :class="cn('bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md', props.class)">
+	<ListboxRoot
+		data-slot="command"
+		v-bind="forwarded"
+		:class="cn('bg-popover text-popover-foreground border-border flex h-full w-full flex-col overflow-hidden rounded-md border shadow-sm', props.class)"
+	>
 		<slot />
 	</ListboxRoot>
 </template>

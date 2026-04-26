@@ -5,7 +5,13 @@ import type { Comment, Pagination } from "@/types";
 
 const route = useRoute();
 
-const { data } = useQuery({
+const {
+	data,
+	isPending: isCommentsLoading,
+	isError: isCommentsError,
+	error: commentsError,
+	refetch: refetchComments,
+} = useQuery({
 	queryKey: ["task-comments", route.params.id],
 	queryFn: async () => {
 		const { success, data, pagination } = await useApiFetch<{
@@ -26,10 +32,27 @@ const { data } = useQuery({
 		</CardHeader>
 
 		<CardContent>
-			<div class="space-y-4">
+			<div v-if="isCommentsLoading" class="space-y-2">
+				<Skeleton class="h-9 w-full" />
+				<Skeleton class="h-18 w-full" />
+				<Skeleton class="h-18 w-full" />
+			</div>
+
+			<AppEmptyState
+				v-else-if="isCommentsError"
+				heading="Could not load comments"
+				:body="String(commentsError || 'Please try again in a moment.')"
+				icon="lucide:alert-circle"
+				:action="{ label: 'Retry', onClick: () => refetchComments(), variant: 'secondary' }"
+			/>
+
+			<div v-else class="space-y-4">
 				<AppTaskCommentEditor />
 				<Separator />
-				<AppTaskComment v-for="comment in data?.comments" :key="comment.id" :comment="comment" />
+				<template v-if="data?.comments.length">
+					<AppTaskComment v-for="comment in data?.comments" :key="comment.id" :comment="comment" />
+				</template>
+				<p v-else class="text-text-tertiary text-sm">No comments yet. Start the discussion.</p>
 			</div>
 		</CardContent>
 	</Card>

@@ -7,16 +7,13 @@ defineOptions({
 	inheritAttrs: false,
 });
 
-const props = withDefaults(defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>(), {
-	align: "center",
-	sideOffset: 4,
-});
+const { align = "center", sideOffset = 4, ...props } = defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>();
 const emits = defineEmits<PopoverContentEmits>();
 
 const delegatedProps = computed(() => {
 	const { class: _, ...delegated } = props;
 
-	return delegated;
+	return { ...delegated, align, sideOffset };
 });
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);

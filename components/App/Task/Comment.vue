@@ -7,14 +7,20 @@ const { comment, isNested } = defineProps<{ comment: Comment; isNested?: boolean
 const showCommentReplies = ref(false);
 const route = useRoute();
 
-const { data: replies, isFetching } = useQuery({
+const {
+	data: replies,
+	isFetching,
+	isError: isRepliesError,
+	error: repliesError,
+	refetch: refetchReplies,
+} = useQuery({
 	queryKey: ["task-replies", comment.id],
 	queryFn: async () => {
 		const { success, data } = await useApiFetch<{
 			success: boolean;
 			data: Comment[];
 		}>(`/workspaces/${route.params.slug}/tasks/${route.params.id}/comments/${comment.id}/replies`);
-		if (!data || !success) return [];
+		if (!data || !success) throw new Error("Failed to fetch replies");
 		return data;
 	},
 	enabled: () => showCommentReplies.value && comment.replyCount > 0,
@@ -31,7 +37,7 @@ const { data: replies, isFetching } = useQuery({
 		<div class="flex-1 space-y-1">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<span class="text-sm font-medium">{{ comment.user.firstName }} {{ comment.user.firstName }}</span>
+					<span class="text-sm font-medium">{{ comment.user.firstName }} {{ comment.user.lastName }}</span>
 					<span class="text-muted-foreground text-xs">{{ formatDate(comment.updatedAt, "MMM, Do YYYY hh:mmA") }}</span>
 				</div>
 			</div>
@@ -56,9 +62,16 @@ const { data: replies, isFetching } = useQuery({
 							<span class="text-muted-foreground text-sm">Loading...</span>
 						</div>
 					</template>
-					<template v-else>
+					<template v-else-if="isRepliesError">
+						<div class="border-border bg-surface-1 rounded-md border p-3">
+							<p class="text-danger text-sm">{{ String(repliesError || "Could not load replies.") }}</p>
+							<Button variant="secondary" size="sm" class="mt-2 h-7" @click="refetchReplies">Retry</Button>
+						</div>
+					</template>
+					<template v-else-if="replies?.length">
 						<AppTaskComment v-for="reply in replies" :key="reply.id" :comment="reply" is-nested />
 					</template>
+					<p v-else class="text-text-tertiary text-xs">No replies yet.</p>
 				</div>
 
 				<AppTaskCommentEditor :parent-id="comment.id" />

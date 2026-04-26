@@ -8,15 +8,13 @@ defineOptions({
 	inheritAttrs: false,
 });
 
-const props = withDefaults(defineProps<SelectContentProps & { class?: HTMLAttributes["class"] }>(), {
-	position: "popper",
-});
+const { position = "popper", ...props } = defineProps<SelectContentProps & { class?: HTMLAttributes["class"] }>();
 const emits = defineEmits<SelectContentEmits>();
 
 const delegatedProps = computed(() => {
 	const { class: _, ...delegated } = props;
 
-	return delegated;
+	return { ...delegated, position };
 });
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);

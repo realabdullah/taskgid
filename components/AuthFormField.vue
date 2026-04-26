@@ -23,6 +23,8 @@ defineProps<AuthFormFieldProps>();
 
 			<DateFormField v-if="type === 'date'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
 
+			<UiTiptapTipTapEditor v-else-if="type === 'wysiwyg'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
+
 			<Select v-else-if="type === 'select'" v-bind="componentField" :multiple="isMultiple">
 				<FormControl>
 					<SelectTrigger class="w-full">

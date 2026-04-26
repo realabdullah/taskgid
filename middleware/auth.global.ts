@@ -40,11 +40,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		} else tokenCookie.value = undefined;
 	}
 
-	const isAuthRoute = to.meta.layout === "auth" || ["/login", "/signup", "/reset-password"].includes(to.path);
+	const isAuthRoute = to.meta.layout === "auth" || ["/", "/reset-password", "/reset-confirmation"].includes(to.path);
 	const isAppRoute = to.path.startsWith("/app");
 
 	if (isAuthenticated && isAuthRoute) return navigateTo("/app");
-	else if (!isAuthenticated && isAppRoute) return navigateTo("/login");
+	else if (!isAuthenticated && isAppRoute) return navigateTo("/");
 	if (isAuthenticated && isAppRoute) {
 		const userStore = useStore();
 

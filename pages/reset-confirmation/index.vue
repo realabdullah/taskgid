@@ -34,7 +34,7 @@ const onSubmit = handleSubmit((values) => {
 
 		<p class="text-muted-foreground px-8 text-center text-sm">
 			Remember your password?
-			<NuxtLink to="/login" class="text-primary font-medium underline-offset-4 hover:underline"> Back to login </NuxtLink>
+			<NuxtLink to="/" class="text-primary font-medium underline-offset-4 hover:underline"> Back to sign in </NuxtLink>
 		</p>
 	</div>
 </template>

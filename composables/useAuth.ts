@@ -6,7 +6,7 @@ export const useAuth = () => {
 		toast("Logged out successfully.");
 		useCookie("TG-AUTHTOKEN").value = undefined;
 		clearNuxtData();
-		return navigateTo("/login");
+		return navigateTo("/");
 	};
 
 	return { logout };

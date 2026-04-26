@@ -5,14 +5,29 @@ const route = useRoute();
 const { workspaces } = storeToRefs(useWorkspacesStore());
 const { isMobile } = useSidebar();
 
+const swatchPool = ["#4f46e5", "#7c3aed", "#0f766e", "#b45309", "#e11d48", "#0284c7"];
+
+const getWorkspaceSwatch = (seed: string) => {
+	let hash = 0;
+	for (let index = 0; index < seed.length; index += 1) {
+		hash = (hash << 5) - hash + seed.charCodeAt(index);
+		hash |= 0;
+	}
+	return swatchPool[Math.abs(hash) % swatchPool.length];
+};
+
 const activeWorkspace = computed(() => {
 	return workspaces.value?.find((workspace) => workspace.slug === route.params.slug);
 });
 
 const switchWorkspace = (slug: string) => {
 	if (slug !== activeWorkspace.value?.slug) {
-		navigateTo(`/app/workspaces/${slug}`);
+		navigateTo(`/app/workspaces/${slug}/tasks`);
 	}
+};
+
+const openAddWorkspace = () => {
+	window.dispatchEvent(new CustomEvent("taskgid:add-workspace-intent"));
 };
 </script>
 
@@ -21,36 +36,46 @@ const switchWorkspace = (slug: string) => {
 		<SidebarMenuItem>
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>
-					<div class="flex items-center gap-1">
-						<div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-							<NuxtLink to="/app" class="bg-primary flex h-8 w-8 items-center justify-center rounded-md">
-								<Icon name="hugeicons:checkmark-circle-03" :size="16" class="text-primary-foreground" />
-							</NuxtLink>
+					<SidebarMenuButton size="lg" class="linear-shell hover:bg-surface-2 data-[state=open]:bg-surface-2 h-10 gap-2 rounded-md px-2">
+						<div
+							class="text-accent-strong flex h-8 w-8 items-center justify-center rounded-md text-sm font-semibold"
+							:style="{ backgroundColor: `${getWorkspaceSwatch(activeWorkspace?.slug || 'default')}22`, color: getWorkspaceSwatch(activeWorkspace?.slug || 'default') }"
+						>
+							{{ (activeWorkspace?.title || "WS").slice(0, 2).toUpperCase() }}
 						</div>
-
-						<SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-							<div class="grid flex-1 text-left text-sm leading-tight">
-								<span class="truncate font-medium">
-									{{ activeWorkspace?.title }}
-								</span>
-								<span class="truncate text-xs">{{ activeWorkspace?.slug }}</span>
-							</div>
-							<Icon name="hugeicons:square-arrow-data-transfer-vertical" :size="16" class="ml-auto" />
-						</SidebarMenuButton>
-					</div>
+						<div class="grid flex-1 text-left leading-tight">
+							<span class="text-text-primary truncate text-sm font-medium">{{ activeWorkspace?.title || "Select workspace" }}</span>
+							<span class="text-2xs text-text-tertiary truncate">{{ activeWorkspace?.slug }}</span>
+						</div>
+						<Icon name="lucide:chevrons-up-down" :size="14" class="text-text-tertiary" />
+					</SidebarMenuButton>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" :side="isMobile ? 'bottom' : 'right'" :side-offset="4">
-					<DropdownMenuLabel class="text-muted-foreground text-xs"> Workspaces </DropdownMenuLabel>
-					<DropdownMenuItem v-for="(workspace, index) in workspaces" :key="workspace.title" class="gap-2 p-2" @click="switchWorkspace(workspace.slug)">
-						{{ workspace.title }}
-						<DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem class="gap-2 p-2">
-						<div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
-							<Icon name="hugeicons:plus-sign-square" :size="16" />
+				<DropdownMenuContent
+					class="border-border bg-surface-0 w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg border p-1"
+					align="start"
+					:side="isMobile ? 'bottom' : 'right'"
+					:side-offset="4"
+				>
+					<DropdownMenuLabel class="text-2xs text-text-tertiary px-2 py-1 font-semibold tracking-widest uppercase">Workspaces</DropdownMenuLabel>
+					<DropdownMenuItem
+						v-for="workspace in workspaces"
+						:key="workspace.title"
+						class="text-text-secondary hover:bg-surface-2 hover:text-text-primary h-8 gap-2 rounded-md px-2 text-sm"
+						@click="switchWorkspace(workspace.slug)"
+					>
+						<div
+							class="text-2xs flex h-5 w-5 items-center justify-center rounded font-semibold"
+							:style="{ backgroundColor: `${getWorkspaceSwatch(workspace.slug)}22`, color: getWorkspaceSwatch(workspace.slug) }"
+						>
+							{{ workspace.title.slice(0, 2).toUpperCase() }}
 						</div>
-						<div class="text-muted-foreground font-medium">Add workspace</div>
+						<span class="flex-1 truncate">{{ workspace.title }}</span>
+						<Icon v-if="workspace.slug === activeWorkspace?.slug" name="lucide:check" :size="14" class="text-primary" />
+					</DropdownMenuItem>
+					<DropdownMenuSeparator class="border-border my-1" />
+					<DropdownMenuItem class="text-primary hover:bg-accent-subtle h-8 gap-2 rounded-md px-2" @click="openAddWorkspace">
+						<Icon name="lucide:plus" :size="14" />
+						<div class="font-medium">Add workspace</div>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

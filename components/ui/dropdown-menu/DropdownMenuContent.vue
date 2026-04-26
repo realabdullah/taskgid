@@ -3,15 +3,13 @@ import { DropdownMenuContent, type DropdownMenuContentEmits, type DropdownMenuCo
 import { computed, type HTMLAttributes } from "vue";
 import { cn } from "@/lib/utils";
 
-const props = withDefaults(defineProps<DropdownMenuContentProps & { class?: HTMLAttributes["class"] }>(), {
-	sideOffset: 4,
-});
+const { sideOffset = 4, ...props } = defineProps<DropdownMenuContentProps & { class?: HTMLAttributes["class"] }>();
 const emits = defineEmits<DropdownMenuContentEmits>();
 
 const delegatedProps = computed(() => {
 	const { class: _, ...delegated } = props;
 
-	return delegated;
+	return { ...delegated, sideOffset };
 });
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);

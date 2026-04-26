@@ -8,7 +8,13 @@ defineProps<{ placeholder: string }>();
 const selectedTasks = defineModel<Task[]>({ default: [] });
 const flattendSelected = computed(() => selectedTasks.value.map((task) => task.id));
 
-const { data: tasks } = useQuery({
+const {
+	data: tasks,
+	isPending: isTasksLoading,
+	isError: isTasksError,
+	error: tasksError,
+	refetch: refetchTasks,
+} = useQuery({
 	queryKey: ["workspace-tasks", useRoute().params.slug],
 	queryFn: async () => {
 		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[] }>(`/workspaces/${useRoute().params.slug}/tasks`);
@@ -21,12 +27,10 @@ const addOrRemoveTask = (task: Task) => {
 	if (flattendSelected.value.includes(task.id)) {
 		const index = selectedTasks.value.findIndex(({ id }) => id === task.id);
 		selectedTasks.value.splice(index, 1);
-		console.log("1 tasss: => ", task, selectedTasks, flattendSelected);
 		return;
 	}
 
 	selectedTasks.value.push(task);
-	console.log("2 tasss: => ", task, selectedTasks, flattendSelected);
 };
 </script>
 
@@ -43,18 +47,34 @@ const addOrRemoveTask = (task: Task) => {
 				<Command>
 					<CommandInput placeholder="Search tasks..." />
 					<CommandList>
-						<CommandEmpty>No tasks found.</CommandEmpty>
-						<CommandGroup>
-							<template v-if="tasks && tasks.length">
-								<CommandItem v-for="task in tasks" :key="task.id" :value="task.title" class="flex items-center justify-between" @select="addOrRemoveTask(task)">
-									<div class="flex items-center">
-										<Icon name="lucide:check" :size="16" :class="cn('mr-2', flattendSelected.includes(task.id) ? 'opacity-100' : 'opacity-0')" />
-										<span>{{ task.title }}</span>
-									</div>
-									<Badge variant="outline" :class="getPriorityColor(task.priority)"> {{ task.priority }} </Badge>
-								</CommandItem>
-							</template>
-						</CommandGroup>
+						<div v-if="isTasksLoading" class="space-y-2 p-3">
+							<Skeleton class="h-8 w-full" />
+							<Skeleton class="h-8 w-full" />
+						</div>
+
+						<div v-else-if="isTasksError" class="p-3">
+							<AppEmptyState
+								heading="Could not load tasks"
+								:body="String(tasksError || 'Try again.')"
+								icon="lucide:alert-circle"
+								:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
+							/>
+						</div>
+
+						<template v-else>
+							<CommandEmpty>No tasks found.</CommandEmpty>
+							<CommandGroup>
+								<template v-if="tasks && tasks.length">
+									<CommandItem v-for="task in tasks" :key="task.id" :value="task.title" class="flex items-center justify-between" @select="addOrRemoveTask(task)">
+										<div class="flex items-center">
+											<Icon name="lucide:check" :size="16" :class="cn('mr-2', flattendSelected.includes(task.id) ? 'opacity-100' : 'opacity-0')" />
+											<span>{{ task.title }}</span>
+										</div>
+										<Badge variant="outline" :class="getPriorityColor(task.priority)"> {{ task.priority }} </Badge>
+									</CommandItem>
+								</template>
+							</CommandGroup>
+						</template>
 					</CommandList>
 				</Command>
 			</PopoverContent>

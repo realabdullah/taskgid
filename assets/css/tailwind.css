@@ -1,10 +1,82 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./fonts.css";
+@import "../design-tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-	--font-display: "Geist", "sans-serif";
+	--font-display: "Geist", sans-serif;
+	--font-body: "Inter", sans-serif;
+	--font-mono: "JetBrains Mono", monospace;
+
+	--text-2xs: 0.71875rem;
+	--text-xs: 0.78125rem;
+	--text-sm: 0.875rem;
+	--text-base: 0.9375rem;
+	--text-md: 1rem;
+	--text-lg: 1.1875rem;
+	--text-xl: 1.4375rem;
+	--text-2xl: 1.8125rem;
+	--text-3xl: 2.375rem;
+
+	--leading-tight: 1.2;
+	--leading-normal: 1.5;
+	--leading-none: 1;
+
+	--color-surface-0: var(--color-surface-0);
+	--color-surface-1: var(--color-surface-1);
+	--color-surface-2: var(--color-surface-2);
+	--color-surface-3: var(--color-surface-3);
+	--color-border-strong: var(--color-border-strong);
+	--color-text-primary: var(--color-text-primary);
+	--color-text-secondary: var(--color-text-secondary);
+	--color-text-tertiary: var(--color-text-tertiary);
+	--color-text-disabled: var(--color-text-disabled);
+	--color-accent-hover: var(--color-accent-hover);
+	--color-accent-active: var(--color-accent-active);
+	--color-accent-subtle: var(--color-accent-subtle);
+	--color-accent-text: var(--color-accent-text);
+	--color-accent-soft: var(--color-accent-soft);
+	--color-accent-strong: var(--color-accent-strong);
+	--color-brand-line: var(--color-brand-line);
+	--color-brand-focus: var(--color-brand-focus);
+	--color-brand-hero-start: var(--color-brand-hero-start);
+	--color-brand-hero-end: var(--color-brand-hero-end);
+	--color-success: var(--color-success);
+	--color-success-subtle: var(--color-success-subtle);
+	--color-warning: var(--color-warning);
+	--color-warning-subtle: var(--color-warning-subtle);
+	--color-danger: var(--color-danger);
+	--color-danger-subtle: var(--color-danger-subtle);
+	--color-info: var(--color-info);
+	--color-info-subtle: var(--color-info-subtle);
+
+	--color-status-todo: var(--status-todo);
+	--color-status-in-progress: var(--status-in-progress);
+	--color-status-in-review: var(--status-in-review);
+	--color-status-done: var(--status-done);
+	--color-status-blocked: var(--status-blocked);
+	--color-status-cancelled: var(--status-cancelled);
+
+	--color-priority-urgent: var(--priority-urgent);
+	--color-priority-high: var(--priority-high);
+	--color-priority-medium: var(--priority-medium);
+	--color-priority-low: var(--priority-low);
+	--color-priority-none: var(--priority-none);
+
+	--radius-sm: var(--radius-sm);
+	--radius-md: var(--radius-md);
+	--radius-lg: var(--radius-lg);
+	--radius-xl: var(--radius-xl);
+	--radius-full: var(--radius-full);
+
+	--shadow-xs: var(--shadow-xs);
+	--shadow-sm: var(--shadow-sm);
+	--shadow-md: var(--shadow-md);
+	--shadow-lg: var(--shadow-lg);
+	--shadow-xl: var(--shadow-xl);
+	--shadow-premium: var(--shadow-premium);
 }
 
 @theme inline {
@@ -46,83 +118,51 @@
 	--color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--destructive-foreground: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
-	--radius: 0.625rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
-}
+@layer components {
+	.interactive {
+		@apply transition-all duration-[140ms] ease-out;
+	}
 
-.dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.145 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.145 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.985 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.396 0.141 25.723);
-	--destructive-foreground: oklch(0.637 0.237 25.331);
-	--border: oklch(0.269 0 0);
-	--input: oklch(0.269 0 0);
-	--ring: oklch(0.439 0 0);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(0.269 0 0);
-	--sidebar-ring: oklch(0.439 0 0);
+	.interactive-slow {
+		@apply transition-all duration-[350ms] ease-out;
+	}
+
+	.linear-shell {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--color-border);
+		background-color: var(--color-surface-0);
+		box-shadow: var(--shadow-premium);
+	}
+
+	.linear-shell::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-hero-start) 80%, transparent), transparent 45%);
+	}
+
+	.linear-rule {
+		border-color: var(--color-border);
+		background-image: linear-gradient(90deg, var(--color-brand-line), transparent 72%);
+	}
+
+	.linear-title {
+		font-family: var(--font-display);
+		color: var(--color-text-primary);
+		letter-spacing: -0.015em;
+	}
 }
 
 @layer base {
 	* {
-		@apply border-border outline-ring/50;
+		border-color: var(--border);
+		outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
 	}
 	body {
-		font-family: "Geist", sans-serif;
-		@apply bg-background text-foreground;
+		font-family: var(--font-body);
+		background-color: var(--background);
+		color: var(--foreground);
 	}
 }

@@ -4,7 +4,13 @@ import type { StatisticsResponse } from "~/types";
 
 definePageMeta({ name: "workspaces-slug", layout: "workspace" });
 
-const { data: stats } = useQuery({
+const {
+	data: stats,
+	isPending: isStatsLoading,
+	isError: isStatsError,
+	error: statsError,
+	refetch: refetchStats,
+} = useQuery({
 	queryKey: ["workspace-stats", useRoute().params.slug],
 	queryFn: async () => {
 		const { success, statistics } = await useApiFetch<StatisticsResponse>(`/workspaces/${useRoute().params.slug}/statistics`);
@@ -21,13 +27,19 @@ const tabs = [
 const statOverview = computed(() => [
 	{
 		title: "Tasks Completed",
-		value: stats.value?.completedTasks.count,
-		yesterday: `+${stats.value?.completedTasks.completedYesterday}`,
+		value: stats.value?.completedTasks.count ?? 0,
+		yesterday: `+${stats.value?.completedTasks.completedYesterday ?? 0}`,
 		icon: "hugeicons:checkmark-circle-01",
 		color: "text-green-500",
 	},
-	{ title: "In Progress", value: stats.value?.inProgressTasks.count, yesterday: `-${stats.value?.inProgressTasks.movedToDoneYesterday}`, icon: "hugeicons:clock-01", color: "text-amber-500" },
-	{ title: "Overdue", value: stats.value?.overdueTasks.count, yesterday: `+${stats.value?.overdueTasks.newlyOverdueYesterday}`, icon: "hugeicons:alert-circle", color: "text-rose-500" },
+	{
+		title: "In Progress",
+		value: stats.value?.inProgressTasks.count ?? 0,
+		yesterday: `-${stats.value?.inProgressTasks.movedToDoneYesterday ?? 0}`,
+		icon: "hugeicons:clock-01",
+		color: "text-amber-500",
+	},
+	{ title: "Overdue", value: stats.value?.overdueTasks.count ?? 0, yesterday: `+${stats.value?.overdueTasks.newlyOverdueYesterday ?? 0}`, icon: "hugeicons:alert-circle", color: "text-rose-500" },
 ]);
 </script>
 
@@ -42,7 +54,21 @@ const statOverview = computed(() => [
 			<AppTaskCreateOrEdit is-creating />
 		</div>
 
-		<div class="grid gap-6 md:grid-cols-3">
+		<div v-if="isStatsLoading" class="grid gap-6 md:grid-cols-3">
+			<Skeleton class="h-28 w-full" />
+			<Skeleton class="h-28 w-full" />
+			<Skeleton class="h-28 w-full" />
+		</div>
+
+		<AppEmptyState
+			v-else-if="isStatsError"
+			heading="Could not load workspace stats"
+			:body="String(statsError || 'Try again in a moment.')"
+			icon="lucide:alert-circle"
+			:action="{ label: 'Retry', onClick: () => refetchStats(), variant: 'secondary' }"
+		/>
+
+		<div v-else class="grid gap-6 md:grid-cols-3">
 			<Card v-for="stat in statOverview" :key="stat.title">
 				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle class="text-sm font-medium">{{ stat.title }}</CardTitle>
@@ -62,7 +88,8 @@ const statOverview = computed(() => [
 
 			<TabsContent :value="activeTab" class="space-y-4">
 				<AppTaskRecents v-if="activeTab === 'tasks'" />
-				<AppWorkspaceStat v-else-if="activeTab === 'stats'" :stats="stats" />
+				<AppWorkspaceStat v-else-if="activeTab === 'stats' && stats" :stats="stats" />
+				<AppEmptyState v-else-if="activeTab === 'stats'" heading="No stats available" body="Workspace statistics will appear once task activity is available." icon="lucide:bar-chart-3" />
 			</TabsContent>
 		</Tabs>
 	</div>

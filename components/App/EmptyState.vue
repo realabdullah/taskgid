@@ -1,21 +1,31 @@
 <script lang="ts" setup>
-defineProps<{ title: string; description: string; action?: string }>();
-defineEmits<(event: "create") => void>();
+type EmptyStateAction = {
+	label: string;
+	onClick: () => void;
+	variant?: "primary" | "secondary";
+};
+
+const props = withDefaults(
+	defineProps<{
+		heading: string;
+		subheading?: string;
+		body: string;
+		icon?: string;
+		action?: EmptyStateAction;
+	}>(),
+	{
+		subheading: "Nothing here yet",
+		icon: "hugeicons:folder-02",
+	}
+);
 </script>
 
 <template>
-	<div class="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
-		<div class="bg-muted rounded-full p-4">
-			<Icon name="hugeicons:folder-02" :size="40" class="text-muted-foreground" />
-		</div>
-
-		<h3 class="mt-4 text-lg font-medium">{{ title }}</h3>
-
-		<p class="text-muted-foreground mt-2 max-w-sm text-sm">{{ description }}</p>
-
-		<Button v-if="action" class="mt-4 bg-black text-white hover:bg-black/90" @click="$emit('create')">
-			<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
-			{{ action }}
-		</Button>
+	<div class="border-border bg-surface-0 flex flex-col items-center justify-center rounded-lg border px-6 py-12 text-center">
+		<Icon :name="props.icon" :size="48" class="text-text-tertiary" aria-hidden="true" />
+		<p v-if="props.subheading" class="text-2xs text-text-tertiary mt-4 font-semibold tracking-[0.12em] uppercase">{{ props.subheading }}</p>
+		<p class="text-text-primary mt-4 text-lg font-semibold">{{ props.heading }}</p>
+		<p class="text-text-secondary mt-2 max-w-xs text-sm">{{ props.body }}</p>
+		<Button v-if="props.action" :variant="props.action.variant ?? 'primary'" class="mt-6" @click="props.action.onClick">{{ props.action.label }}</Button>
 	</div>
 </template>

@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/vue-query";
 import type { Pagination, Team, Workspace } from "~/types";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
-	const workspaceSlug = computed(() => useRoute().params.slug as string);
+	const workspaceSlug = computed(() => {
+		const slug = useRoute().params.slug;
+		return typeof slug === "string" ? slug : "";
+	});
 
 	const { data: workspace } = useQuery({
 		queryKey: ["workspace", workspaceSlug],
@@ -19,6 +22,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 			if (!data || !success) throw new Error("Failed to fetch workspace teams");
 			return data;
 		},
+		enabled: () => !!workspaceSlug.value,
 	});
 
 	return { workspace, teams };

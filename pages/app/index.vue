@@ -1,39 +1,113 @@
 <script lang="ts" setup>
+import { toast } from "vue-sonner";
+import { useStore } from "../../stores";
+import { useWorkspacesStore } from "../../stores/workspaces";
+import { formatDate } from "../../utils";
+
 definePageMeta({
 	name: "app",
 	title: "Dashboard",
 	description: "TaskGid - Dashboard",
+	layout: "workspace",
 });
 
 const { user } = storeToRefs(useStore());
-const isUserProfileOpen = ref(false);
-const isUserSettingsOpen = ref(false);
+const { workspaces } = storeToRefs(useWorkspacesStore());
 
-const setSettingsOpen = () => {
-	isUserSettingsOpen.value = true;
-	isUserProfileOpen.value = false;
+const isInviteOpen = ref(false);
+const isCreateWorkspaceOpen = ref(false);
+
+const selectedWorkspace = computed(() => workspaces.value?.[0]);
+
+const greeting = computed(() => {
+	const hour = new Date().getHours();
+	if (hour < 12) return "Good morning";
+	if (hour < 18) return "Good afternoon";
+	return "Good evening";
+});
+
+const currentDate = computed(() => formatDate(new Date().toISOString(), "dddd, MMMM D"));
+
+const openNewTask = async () => {
+	if (!selectedWorkspace.value) {
+		toast("Please create a workspace first to manage tasks.");
+		openCreateWorkspace();
+		return;
+	}
+	await navigateTo(`/app/workspaces/${selectedWorkspace.value.slug}/tasks`);
 };
+
+const openInvite = () => {
+	if (!selectedWorkspace.value) {
+		toast("Please create a workspace first to invite teammates.");
+		openCreateWorkspace();
+		return;
+	}
+	isInviteOpen.value = true;
+};
+
+const openCreateWorkspace = () => {
+	isCreateWorkspaceOpen.value = true;
+};
+
+onMounted(() => {
+	window.addEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
+});
 </script>
 
 <template>
-	<div class="flex h-full flex-1 flex-col overflow-hidden">
-		<AppHeader @view-profile="isUserProfileOpen = true" @edit-user="setSettingsOpen" />
-
-		<main class="container mx-auto flex-1 overflow-auto p-6">
-			<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+	<div class="space-y-8 pb-4">
+		<section class="linear-shell rounded-xl p-6">
+			<div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 				<div>
-					<h1 class="text-2xl font-bold">Welcome back, {{ user?.firstName }}</h1>
-					<p class="text-muted-foreground">Member since {{ formatDate(user?.createdAt) }}</p>
+					<p class="text-2xs text-text-tertiary mb-2 font-semibold tracking-[0.12em] uppercase">My workspace</p>
+					<h1 class="linear-title text-2xl font-semibold">{{ greeting }}, {{ user?.firstName }}.</h1>
+					<p class="text-text-tertiary mt-1 text-sm">{{ currentDate }}</p>
 				</div>
 
-				<AppWorkspaceCreateOrEdit is-creating />
+				<section class="flex flex-wrap items-center gap-3">
+					<Button class="h-9 shadow-sm" @click="openNewTask">
+						<Icon name="lucide:plus" :size="16" />
+						New task
+					</Button>
+					<Button variant="secondary" class="h-9" @click="openInvite">
+						<Icon name="lucide:user-plus" :size="16" />
+						Invite teammate
+					</Button>
+					<Button variant="secondary" class="h-9" @click="openCreateWorkspace">
+						<Icon name="lucide:folder-plus" :size="16" />
+						New workspace
+					</Button>
+				</section>
 			</div>
+		</section>
 
-			<AppPendingInvites />
-			<AppWorkspaces />
+		<AppPendingInvites />
 
-			<UserProfile v-model="isUserProfileOpen" @edit="setSettingsOpen" />
-			<UserSettings v-model="isUserSettingsOpen" />
-		</main>
+		<template v-if="selectedWorkspace">
+			<AppMyTasksWidget />
+			<AppDashboardWorkspaces />
+			<AppWorkspaceInvite v-model="isInviteOpen" :workspace="selectedWorkspace" />
+		</template>
+
+		<AppEmptyState
+			v-else
+			heading="Create your first workspace"
+			subheading="Welcome to TaskGid"
+			body="You need a workspace to structure your team, create tasks, and start collaborating."
+			icon="hugeicons:folder-add"
+			:action="{
+				label: 'New workspace',
+				onClick: openCreateWorkspace,
+				variant: 'primary',
+			}"
+			class="mt-8"
+		/>
+
+		<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
 	</div>
 </template>

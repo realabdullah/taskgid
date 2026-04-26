@@ -41,7 +41,7 @@ export const useApiFetch = <T>(request: string | Request, opts: FetchOptions = {
 
 			if (response.status === 401) {
 				authToken.value = undefined;
-				setTimeout(() => navigateTo("/login"), 50);
+				setTimeout(() => navigateTo("/"), 50);
 			}
 
 			throw structuredError;

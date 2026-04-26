@@ -1,37 +1,17 @@
-<script lang="ts" setup>
-const route = useRoute();
-</script>
-
 <template>
-	<SidebarProvider>
+	<SidebarProvider class="bg-surface-1">
 		<AppSidebar />
 
-		<SidebarInset>
-			<header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-				<div class="flex items-center gap-2 px-4">
-					<SidebarTrigger class="-ml-1" />
-
-					<Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
-
-					<Breadcrumb v-if="String(route.name).includes('tasks')">
-						<BreadcrumbList>
-							<BreadcrumbItem class="hidden md:block">
-								<BreadcrumbLink :href="`/app/workspaces/${route.params.slug}/tasks`"> Tasks </BreadcrumbLink>
-							</BreadcrumbItem>
-
-							<BreadcrumbSeparator class="hidden md:block" />
-
-							<BreadcrumbItem v-if="route.params.taskId">
-								<BreadcrumbPage>{{ route.name }}</BreadcrumbPage>
-							</BreadcrumbItem>
-						</BreadcrumbList>
-					</Breadcrumb>
+		<SidebarInset class="bg-surface-1 relative">
+			<div class="from-brand-hero-start pointer-events-none absolute inset-x-0 top-0 h-44 bg-linear-to-b to-transparent" />
+			<AppHeader />
+			<div class="bg-surface-1 relative z-10 flex-1 overflow-auto">
+				<div class="mx-auto w-full max-w-7xl px-6 py-8 lg:px-8">
+					<slot />
 				</div>
-			</header>
-
-			<div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-				<slot />
 			</div>
+
+			<UserSettingsSheet />
 		</SidebarInset>
 	</SidebarProvider>
 </template>

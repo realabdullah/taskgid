@@ -6,22 +6,18 @@ const { workspace } = storeToRefs(useWorkspaceStore());
 
 <template>
 	<div class="space-y-6">
-		<div class="flex flex-col justify-between gap-4 sm:flex-row">
+		<div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Team Members</h1>
-				<p class="text-muted-foreground">Manage team members and their permissions</p>
+				<h1 class="text-text-primary text-xl font-semibold">Team</h1>
+				<p class="text-text-secondary text-sm">Manage members, assignments, and performance.</p>
 			</div>
 
-			<AppWorkspaceInvite v-if="workspace" :workspace="workspace" render-trigger />
+			<div class="flex items-center gap-2">
+				<AppWorkspaceInvite v-if="workspace" :workspace="workspace" render-trigger />
+			</div>
 		</div>
 
-		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-			<div class="lg:col-span-2">
-				<AppTeamMembersList />
-			</div>
-			<div>
-				<AppTeamMembersStats />
-			</div>
-		</div>
+		<AppTeamMembersStats />
+		<AppTeamMembersList />
 	</div>
 </template>

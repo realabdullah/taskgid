@@ -5,8 +5,11 @@ import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 import type { Task, Team } from "~/types";
 
-const props = defineProps<{ isCreating?: boolean; task?: Task }>();
+const props = defineProps<{ isCreating?: boolean; task?: Task; hideTrigger?: boolean }>();
 const emits = defineEmits<(event: "close") => void>();
+const route = useRoute();
+const workspaceSlug = computed(() => (typeof route.params.slug === "string" ? route.params.slug : ""));
+const isCreatingMode = computed(() => props.isCreating ?? !props.task);
 
 const isOpen = defineModel<boolean>();
 
@@ -39,8 +42,11 @@ const taskKeyMap: { [key: string]: string } = {
 const client = useQueryClient();
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const baseurl = `/workspaces/${useRoute().params.slug}/tasks`;
-		const url = props.isCreating ? baseurl : `${baseurl}/${props.task?.id}`;
+		if (!workspaceSlug.value) {
+			throw new Error("Select a workspace before creating tasks.");
+		}
+		const baseurl = `/workspaces/${workspaceSlug.value}/tasks`;
+		const url = isCreatingMode.value ? baseurl : `${baseurl}/${props.task?.id}`;
 		const payload = {
 			...values,
 			dueDate: values.dueDate ? values.dueDate.toISOString() : undefined,
@@ -48,14 +54,15 @@ const onSubmit = handleSubmit(async (values) => {
 			priority: values.priority ? taskKeyMap[values.priority] || values.priority : values.priority,
 		};
 		const { data, success, error } = await useApiFetch<{ success: boolean; data: Task; error?: string }>(url, {
-			method: props.isCreating ? "POST" : "PUT",
+			method: isCreatingMode.value ? "POST" : "PUT",
 			body: { ...payload },
 		});
-		if (!data || !success) throw new Error(error || (props.isCreating ? "Failed to create task" : "Failed to update task"));
+		if (!data || !success) throw new Error(error || (isCreatingMode.value ? "Failed to create task" : "Failed to update task"));
 		setOpen(false);
-		client.invalidateQueries({ queryKey: ["workspace-recent-tasks"] });
-		toast(props.isCreating ? "Task created successfully" : "Task updated successfully.");
-		if (!props.isCreating) emits("close");
+		client.invalidateQueries({ queryKey: ["workspace-recent-tasks", workspaceSlug.value] });
+		client.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
+		toast(isCreatingMode.value ? "Task created successfully" : "Task updated successfully.");
+		if (!isCreatingMode.value) emits("close");
 	} catch (error) {
 		toast(String(error));
 	}
@@ -64,7 +71,7 @@ const onSubmit = handleSubmit(async (values) => {
 const fields = computed(() =>
 	TaskFormFields.map((field) => {
 		if (field.id === "assignees") {
-			const teams = client.getQueryData(["workspace-teams", useRoute().params.slug]) as Team[];
+			const teams = (client.getQueryData(["workspace-teams", workspaceSlug.value]) as Team[] | undefined) ?? [];
 			return {
 				...field,
 				options: teams.map((member) => ({
@@ -126,20 +133,20 @@ watch(
 
 <template>
 	<Dialog :open="isOpen" @update:open="setOpen">
-		<DialogTrigger v-if="isCreating" as-child>
-			<Button class="rounded-md bg-black px-4 py-2 text-white hover:bg-black/90">
-				<Icon name="hugeicons:plus-sign" :size="16" class="mr-2" />
+		<DialogTrigger v-if="isCreatingMode && !hideTrigger" as-child>
+			<Button>
+				<Icon name="hugeicons:plus-sign" :size="16" />
 				Create Task
 			</Button>
 		</DialogTrigger>
 
-		<DialogContent class="max-h-[90vh] space-y-6 overflow-y-auto rounded-lg bg-white p-6 shadow-xl sm:max-w-[500px]">
+		<DialogContent class="border-border bg-surface-0 max-h-[90vh] space-y-6 overflow-y-auto rounded-lg border p-6 shadow-md sm:max-w-[500px]">
 			<DialogHeader class="space-y-1">
-				<DialogTitle class="text-xl font-semibold text-gray-900">
-					{{ isCreating ? "Create New Task" : "Update Task" }}
+				<DialogTitle class="text-text-primary text-xl font-semibold">
+					{{ isCreatingMode ? "Create New Task" : "Update Task" }}
 				</DialogTitle>
-				<DialogDescription class="text-sm text-gray-500">
-					{{ isCreating ? "Add a new task to your workspace. Fill out the details below." : "Edit your task details below to update it in your workspace." }}
+				<DialogDescription class="text-text-secondary text-sm">
+					{{ isCreatingMode ? "Add a new task to your workspace. Fill out the details below." : "Edit your task details below to update it in your workspace." }}
 				</DialogDescription>
 			</DialogHeader>
 
@@ -160,9 +167,9 @@ watch(
 				</div>
 
 				<DialogFooter class="flex justify-between pt-2">
-					<Button type="button" variant="outline" class="rounded-md border px-4 py-2 text-gray-700 hover:bg-gray-100" @click="setOpen(false)"> Cancel </Button>
-					<Button type="submit" class="rounded-md bg-black px-5 py-2 text-white hover:bg-black/90">
-						{{ isCreating ? "Create Task" : "Update Task" }}
+					<Button type="button" variant="outline" @click="setOpen(false)"> Cancel </Button>
+					<Button type="submit">
+						{{ isCreatingMode ? "Create Task" : "Update Task" }}
 					</Button>
 				</DialogFooter>
 			</form>

@@ -1,79 +1,108 @@
 <script setup lang="ts">
-import { useSidebar, type SidebarProps } from "@/components/ui/sidebar";
+import { type SidebarProps } from "@/components/ui/sidebar";
 
-const props = withDefaults(defineProps<SidebarProps>(), {
-	collapsible: "icon",
-});
+const { collapsible = "icon", ...props } = defineProps<SidebarProps>();
 
 useWorkspaceStore();
-const { isMobile } = useSidebar();
 const route = useRoute();
-const data = computed(() => ({
-	navigations: [
-		{ title: "Home", url: `/app/workspaces/${route.params.slug}`, isActive: route.name === "workspaces-slug", icon: "hugeicons:home-05" },
-		{ title: "Tasks", url: `/app/workspaces/${route.params.slug}/tasks`, isActive: route.name === "workspaces-slug-tasks", icon: "hugeicons:task-done-01" },
-		{ title: "Team", url: `/app/workspaces/${route.params.slug}/team`, isActive: route.name === "workspaces-slug-team", icon: "hugeicons:user-group-02" },
-		{ title: "Settings", url: `/app/workspaces/${route.params.slug}/settings`, isActive: route.name === "workspaces-slug-settings", icon: "hugeicons:settings-01" },
-	],
-	tasks: [
-		{ title: "Design Engineering", url: "#", isActive: false, icon: "hugeicons:keyframes-multiple" },
-		{ title: "Sales & Marketing", url: "#", isActive: false, icon: "hugeicons:keyframes-multiple" },
-		{ title: "Travel", url: "#", isActive: false, icon: "hugeicons:keyframes-multiple" },
-	],
-}));
+const { workspaces } = storeToRefs(useWorkspacesStore());
 
-const taskOptions = computed(() => [
-	{ title: "View Tasks", icon: "hugeicons:task-01", action: () => {} },
-	{ title: "Share Tasks", icon: "hugeicons:folder-shared-02", action: () => {} },
-	{ title: "Delete Tasks", icon: "hugeicons:delete-04", action: () => {} },
+const currentSlug = computed(() => {
+	const slug = route.params.slug;
+	if (typeof slug === "string" && slug.length > 0) {
+		return slug;
+	}
+	return workspaces.value?.[0]?.slug ?? "";
+});
+
+const workspaceNav = computed(() => [
+	{
+		title: "Tasks",
+		url: currentSlug.value ? `/app/workspaces/${currentSlug.value}/tasks` : "/app",
+		isActive: route.name === "tasks",
+		icon: "lucide:list",
+		shortcut: "G T",
+		disabled: !currentSlug.value,
+	},
+	{
+		title: "Team",
+		url: currentSlug.value ? `/app/workspaces/${currentSlug.value}/team` : "/app",
+		isActive: route.name === "workspaces-slug-team",
+		icon: "lucide:users",
+		shortcut: "G M",
+		disabled: !currentSlug.value,
+	},
+	{
+		title: "Settings",
+		url: currentSlug.value ? `/app/workspaces/${currentSlug.value}/settings` : "/app",
+		isActive: route.name === "workspaces-slug-settings",
+		icon: "lucide:settings",
+		shortcut: "G S",
+		disabled: !currentSlug.value,
+	},
+]);
+
+const myWorkNav = computed(() => [
+	{ title: "My Tasks", url: "/app", isActive: route.name === "app", icon: "lucide:check-square" },
+	{ title: "Recent", url: currentSlug.value ? `/app/workspaces/${currentSlug.value}` : "/app", isActive: route.name === "workspaces-slug", icon: "lucide:clock-3", disabled: !currentSlug.value },
 ]);
 </script>
 
 <template>
-	<Sidebar v-bind="props">
-		<SidebarHeader>
+	<Sidebar :collapsible="collapsible" v-bind="props" class="border-border bg-surface-1 border-r">
+		<SidebarHeader class="linear-rule border-border border-b p-2">
 			<WorkspaceSwitcher />
 		</SidebarHeader>
 
-		<SidebarContent>
-			<SidebarGroup v-for="(options, title) in data" :key="title" :class="{ 'group-data-[collapsible=icon]:hidden': title === 'tasks' }">
-				<SidebarGroupLabel>
-					<span class="capitalize">{{ title }}</span>
+		<SidebarContent class="gap-4 px-2 py-3">
+			<SidebarGroup>
+				<SidebarGroupLabel class="text-2xs text-text-tertiary px-2 font-semibold tracking-widest uppercase">
+					<span>Workspace</span>
 				</SidebarGroupLabel>
 
 				<SidebarMenu>
-					<SidebarMenuItem v-for="option in options" :key="option.title">
-						<SidebarMenuButton :tooltip="option.title" as-child>
-							<NuxtLink :to="option.url">
-								<Icon :name="option.icon" :size="18" class="text-sidebar-foreground/70" />
+					<SidebarMenuItem v-for="option in workspaceNav" :key="option.title" class="group/menu-item">
+						<SidebarMenuButton
+							:tooltip="option.disabled ? 'Create a workspace first' : option.title"
+							as-child
+							:is-active="option.isActive"
+							class="text-text-secondary hover:bg-surface-2 hover:text-text-primary data-[active=true]:bg-accent-soft data-[active=true]:text-accent-strong h-8 rounded-md px-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-medium"
+						>
+							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
+							<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
+								<Icon :name="option.icon" :size="16" />
+								<span>{{ option.title }}</span>
+								<span class="text-2xs text-text-tertiary ml-auto group-data-[collapsible=icon]:hidden">{{ option.shortcut }}</span>
+							</NuxtLink>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarGroup>
+
+			<SidebarGroup>
+				<SidebarGroupLabel class="text-2xs text-text-tertiary px-2 font-semibold tracking-widest uppercase">
+					<span>My Work</span>
+				</SidebarGroupLabel>
+				<SidebarMenu>
+					<SidebarMenuItem v-for="option in myWorkNav" :key="option.title">
+						<SidebarMenuButton
+							:tooltip="option.disabled ? 'Create a workspace first' : option.title"
+							as-child
+							:is-active="option.isActive"
+							class="text-text-secondary hover:bg-surface-2 hover:text-text-primary data-[active=true]:bg-accent-soft data-[active=true]:text-accent-strong h-8 rounded-md px-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-medium"
+						>
+							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
+								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
+								<Icon :name="option.icon" :size="16" />
 								<span>{{ option.title }}</span>
 							</NuxtLink>
 						</SidebarMenuButton>
-
-						<DropdownMenu v-if="title === 'tasks'">
-							<DropdownMenuTrigger as-child>
-								<SidebarMenuAction show-on-hover>
-									<Icon name="hugeicons:more-horizontal-circle-01" :size="16" class="text-sidebar-foreground/70" />
-									<span class="sr-only">More</span>
-								</SidebarMenuAction>
-							</DropdownMenuTrigger>
-
-							<DropdownMenuContent class="w-48 rounded-lg" :side="isMobile ? 'bottom' : 'right'" :align="isMobile ? 'end' : 'start'">
-								<template v-for="task in taskOptions" :key="task.title">
-									<DropdownMenuSeparator v-if="task.title === 'Delete Tasks'" />
-									<DropdownMenuItem @click="task.action">
-										<Icon :name="task.icon" :size="16" class="text-muted-foreground" />
-										<span>{{ task.title }}</span>
-									</DropdownMenuItem>
-								</template>
-							</DropdownMenuContent>
-						</DropdownMenu>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarGroup>
 		</SidebarContent>
 
-		<SidebarFooter>
+		<SidebarFooter class="linear-rule border-border border-t p-2">
 			<NavUser />
 		</SidebarFooter>
 

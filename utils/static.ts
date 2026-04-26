@@ -37,7 +37,7 @@ export const updateAccountFields = [
 
 export const TaskFormFields = [
 	{ id: "title", label: "Title", type: "text", placeholder: "Enter task title", extra: "A clear, concise title for your task.", fullWidth: true },
-	{ id: "description", label: "Description", type: "textarea", placeholder: "Enter task description", extra: "Provide details about what needs to be done.", fullWidth: true },
+	{ id: "description", label: "Description", type: "wysiwyg", placeholder: "Enter task description", extra: "Provide details about what needs to be done.", fullWidth: true },
 	{ id: "dueDate", label: "Due Date", type: "date", placeholder: "Select task due date", extra: "When should this task be completed?", fullWidth: false },
 	{ id: "priority", label: "Priority", type: "select", placeholder: "Select task priority", extra: "Set the importance level of this task.", fullWidth: false },
 	{ id: "assignees", label: "Assignees", type: "select", placeholder: "Assign task", extra: "Who should work on this task? Leave empty for unassigned.", isMultiple: true, fullWidth: false },

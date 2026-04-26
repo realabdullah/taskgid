@@ -42,7 +42,13 @@ const tasksStats = computed(() => {
 });
 
 const { getLabel, getDescription } = useActivityLabel();
-const { data: activities } = useQuery({
+const {
+	data: activities,
+	isPending: isActivitiesLoading,
+	isError: isActivitiesError,
+	error: activitiesError,
+	refetch: refetchActivities,
+} = useQuery({
 	queryKey: ["member-activity", props.stats?.memberActivity],
 	queryFn: async () => {
 		const { success, data, message } = await useApiFetch<{ success: boolean; data: ActivityDetails[]; message?: string }>(`/workspaces/${useRoute().params.slug}/activities`);
@@ -83,7 +89,21 @@ const { data: activities } = useQuery({
 
 					<div v-else-if="activeTab === 'activity'" class="mt-4 space-y-4">
 						<div class="text-sm font-medium">Recent Activity</div>
-						<div v-if="activities?.length" class="space-y-4">
+						<div v-if="isActivitiesLoading" class="space-y-2">
+							<Skeleton class="h-8 w-full" />
+							<Skeleton class="h-8 w-full" />
+							<Skeleton class="h-8 w-full" />
+						</div>
+
+						<AppEmptyState
+							v-else-if="isActivitiesError"
+							heading="Could not load activity"
+							:body="String(activitiesError || 'Please try again.')"
+							icon="lucide:alert-circle"
+							:action="{ label: 'Retry', onClick: () => refetchActivities(), variant: 'secondary' }"
+						/>
+
+						<div v-else-if="activities?.length" class="space-y-4">
 							<div v-for="activity in activities" :key="activity.id" class="flex items-start gap-4">
 								<div class="bg-primary mt-2 h-2 w-2 rounded-full" />
 								<div class="space-y-1">
@@ -94,7 +114,7 @@ const { data: activities } = useQuery({
 							</div>
 						</div>
 
-						<AppEmptyState v-else title="No activities yet" description="No activity recorded yet. Once you start managing tasks, your team's progress will appear here." />
+						<AppEmptyState v-else heading="No activities yet" body="No activity recorded yet. Once you start managing tasks, your team's progress will appear here." />
 					</div>
 
 					<div v-else-if="activeTab === 'members'" class="mt-4 space-y-4">
@@ -110,6 +130,8 @@ const { data: activities } = useQuery({
 								</div>
 							</div>
 						</div>
+
+						<AppEmptyState v-else heading="No member activity yet" body="Member activity will appear here after task updates and assignments." icon="lucide:users" />
 					</div>
 				</TabsContent>
 			</Tabs>

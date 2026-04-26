@@ -8,10 +8,15 @@ const pageMap: { [key: string]: { title: string; description: string } } = {
 
 const route = useRoute();
 const page = computed(() => pageMap[route.name as keyof typeof pageMap]);
+const isSplitAuthPage = computed(() => route.path === "/");
 </script>
 
 <template>
-	<div class="relative container mx-auto flex min-h-screen flex-col items-center justify-center p-6">
+	<div v-if="isSplitAuthPage" class="min-h-screen">
+		<slot />
+	</div>
+
+	<div v-else class="relative container mx-auto flex min-h-screen flex-col items-center justify-center p-6">
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 			<div class="flex flex-col space-y-2 text-center">
 				<div class="bg-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
