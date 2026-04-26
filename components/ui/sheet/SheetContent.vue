@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface SheetContentProps extends DialogContentProps {
 	class?: HTMLAttributes["class"];
 	side?: "top" | "right" | "bottom" | "left";
+	hideClose?: boolean;
 }
 
 defineOptions({
@@ -16,6 +17,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<SheetContentProps>(), {
 	side: "right",
+	hideClose: false,
 });
 const emits = defineEmits<DialogContentEmits>();
 
@@ -47,6 +49,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 			<slot />
 
 			<DialogClose
+				v-if="!props.hideClose"
 				class="ring-offset-background focus:ring-ring hover:bg-surface-2 absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
 			>
 				<X class="size-[18px]" />

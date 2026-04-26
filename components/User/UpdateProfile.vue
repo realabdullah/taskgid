@@ -151,6 +151,11 @@ const onCropImageLoad = () => {
 	resetCropState();
 };
 
+const onCropImageError = () => {
+	toast.error("This image could not be loaded for cropping. Try converting it to JPEG or PNG first.");
+	resetCropModal();
+};
+
 const onCropPointerMove = (event: PointerEvent) => {
 	if (!isCropDragging.value) return;
 	cropState.offsetX = cropDragStart.offsetX + (event.clientX - cropDragStart.x);
@@ -275,6 +280,7 @@ const applyCroppedImage = async () => {
 		fileDetails.value = { name: croppedFile.name, size: formatFileSize(croppedFile.size) };
 		setFieldValue("profilePicture", previewUrl);
 		resetCropModal();
+		toast.success("Avatar ready — save your profile to apply it.");
 	} catch (error) {
 		toast.error(getServerError(error, "Failed to process avatar image."));
 	} finally {
@@ -338,12 +344,19 @@ const uploadFile = async (file: File) => {
 			},
 		});
 
-		const fileUrl = result?.url ?? result?.data?.url ?? result?.data?.data?.url ?? result?.media?.url ?? result?.data?.media?.url;
+		const fileUrl = result?.file?.url;
 		if (typeof fileUrl === "string" && fileUrl.trim()) return fileUrl;
-
 		throw new Error("Upload succeeded but no file URL was returned.");
 	} catch (error) {
-		throw new Error(getServerError(error, "Failed to upload avatar."));
+		// Raw $fetch puts the server error body in error.data — prefer that over the generic HTTP status message
+		const apiMessage =
+			error && typeof error === "object" && "data" in error
+				? ((error as { data?: { message?: string } }).data?.message ?? (error as { data?: string }).data)
+				: undefined;
+		const message = typeof apiMessage === "string" && apiMessage.trim()
+			? apiMessage
+			: getServerError(error, "Failed to upload avatar.");
+		throw new Error(message);
 	}
 };
 
@@ -351,18 +364,28 @@ const onSubmit = handleSubmit(async () => {
 	try {
 		isSaving.value = true;
 		const payload = buildProfilePayload();
+		let uploadedAvatarUrl: string | null = null;
 
 		if (selectedFile.value) {
-			const fileUrl = await uploadFile(selectedFile.value);
-			payload.profilePicture = fileUrl;
-			setFieldValue("profilePicture", fileUrl);
-			clearPreviewUrl();
+			const fileToUpload = selectedFile.value;
+			// Clear immediately so a failed upload never causes a re-upload loop.
 			selectedFile.value = null;
 			fileDetails.value = null;
+
+			try {
+				uploadedAvatarUrl = await uploadFile(fileToUpload);
+			} catch (uploadError) {
+				toast.error(getServerError(uploadError, "Failed to upload avatar."));
+				return;
+			}
+
+			payload.profilePicture = uploadedAvatarUrl;
+			setFieldValue("profilePicture", uploadedAvatarUrl);
+			clearPreviewUrl();
 		}
 
-		if (Object.keys(payload).length === 0) {
-			isSaving.value = false;
+		const hasPayloadChanges = Object.keys(payload).length > 0;
+		if (!hasPayloadChanges && !uploadedAvatarUrl) {
 			return;
 		}
 
@@ -474,7 +497,7 @@ watch(
 				<p class="mt-2 text-xs text-gray-500">JPG, PNG or WEBP. 1MB max.</p>
 				<span v-if="fileDetails" class="text-sm text-gray-500"> {{ fileDetails?.name }} ({{ fileDetails?.size }}) </span>
 
-				<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
+				<input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="handleFileChange" />
 			</div>
 		</div>
 
@@ -497,7 +520,7 @@ watch(
 		<DialogContent class="sm:max-w-[560px]">
 			<DialogHeader>
 				<DialogTitle>Crop Avatar</DialogTitle>
-				<DialogDescription>Drag to position your image, then choose Apply to save a compressed avatar.</DialogDescription>
+				<DialogDescription>Drag to position your image, then choose Apply to save avatar.</DialogDescription>
 			</DialogHeader>
 
 			<div class="space-y-4 py-2">
@@ -511,8 +534,7 @@ watch(
 						:class="isCropDragging ? 'cursor-grabbing' : 'cursor-grab'"
 						:style="cropImageStyle"
 						draggable="false"
-						@load="onCropImageLoad"
-						@pointerdown="onCropPointerDown"
+						@load="onCropImageLoad"					@error="onCropImageError"						@pointerdown="onCropPointerDown"
 					/>
 				</div>
 

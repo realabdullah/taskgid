@@ -1,9 +1,29 @@
 <script setup lang="ts">
+import { toast } from "vue-sonner";
+import { useQueryClient } from "@tanstack/vue-query";
 import { useSidebar } from "@/components/ui/sidebar";
 
 const { user } = storeToRefs(useStore());
 const { isMobile } = useSidebar();
-const { logout } = useAuth();
+const token = useCookie<string | undefined>("TG-AUTHTOKEN");
+const queryClient = useQueryClient();
+
+const logout = async () => {
+	try {
+		await useApiFetch(API_ENDPOINTS.auth.logout, { method: "POST" });
+	} catch {
+		// Continue local logout even if server request fails.
+	}
+	user.value = null;
+	token.value = undefined;
+	await queryClient.cancelQueries({ queryKey: ["workspaces"] });
+	queryClient.removeQueries({ queryKey: ["workspaces"] });
+	queryClient.removeQueries({ queryKey: ["workspace"] });
+	queryClient.removeQueries({ queryKey: ["workspace-teams"] });
+	clearNuxtData();
+	toast("Logged out successfully.");
+	return navigateTo("/");
+};
 
 const viewProfile = () => {
 	window.dispatchEvent(new CustomEvent("taskgid:open-profile-intent"));
