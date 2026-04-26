@@ -13,7 +13,7 @@ const {
 } = useQuery({
 	queryKey: ["workspace-stats", useRoute().params.slug],
 	queryFn: async () => {
-		const { success, statistics } = await useApiFetch<StatisticsResponse>(`/workspaces/${useRoute().params.slug}/statistics`);
+		const { success, statistics } = await useApiFetch<StatisticsResponse>(API_ENDPOINTS.workspaces.statistics(useRoute().params.slug));
 		if (!statistics || !success) throw new Error("Failed to fetch workspace statistics");
 		return statistics;
 	},

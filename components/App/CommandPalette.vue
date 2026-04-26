@@ -20,7 +20,7 @@ const fetchTasks = useDebounceFn(async () => {
 		return;
 	}
 
-	const { success, data } = await useApiFetch<{ success: boolean; data: Task[] }>(`/workspaces/${workspaceSlug.value}/tasks`, {
+	const { success, data } = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), {
 		query: { search: search.value.trim() },
 	});
 

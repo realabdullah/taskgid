@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useQuery } from "@tanstack/vue-query";
 import type { Notification } from "@/types";
+import { useQuery } from "@tanstack/vue-query";
 
 const { user } = storeToRefs(useStore());
 const fetchNotifications = async () => {
@@ -8,7 +8,7 @@ const fetchNotifications = async () => {
 		return [] as Notification[];
 	}
 
-	const { success, data } = await useApiFetch<{ success: boolean; data: Notification[] }>(`/api/notifications/${user.value.id}`);
+	const { success, data } = await useApiFetch<{ success: boolean; data: Notification[] }>(API_ENDPOINTS.notifications.byUser(user.value.id));
 	if (!success || !data) {
 		throw new Error("Failed to fetch notifications");
 	}

@@ -31,8 +31,8 @@ cp .env.example .env
 
 ### Environment Variables
 
-| Variable | Description |
-|---|---|
+| Variable       | Description                                         |
+| -------------- | --------------------------------------------------- |
 | `API_BASE_URL` | Backend base URL (default: `http://localhost:8000`) |
 
 ## Development
@@ -45,11 +45,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm preview` | Preview production build |
-| `pnpm lint` | Run ESLint |
-| `pnpm lint:fix` | Auto-fix lint issues |
-| `pnpm format` | Run Prettier |
+| Command         | Description              |
+| --------------- | ------------------------ |
+| `pnpm dev`      | Start development server |
+| `pnpm build`    | Build for production     |
+| `pnpm preview`  | Preview production build |
+| `pnpm lint`     | Run ESLint               |
+| `pnpm lint:fix` | Auto-fix lint issues     |
+| `pnpm format`   | Run Prettier             |

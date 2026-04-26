@@ -21,7 +21,7 @@ const {
 } = useQuery({
 	queryKey: ["team-members-stat", periodToApiValue],
 	queryFn: async () => {
-		const url = `/workspaces/${route.params.slug}/team/statistics?period=${periodToApiValue.value}`;
+		const url = API_ENDPOINTS.workspaces.teamStatistics(route.params.slug, periodToApiValue.value);
 		const { success, message, data } = await useApiFetch<{ success: boolean; message?: string; data: TeamPerformanceStat }>(url, {
 			method: "GET",
 		});

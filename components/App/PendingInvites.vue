@@ -16,7 +16,7 @@ const {
 } = useQuery({
 	queryKey: ["pending-invitations"],
 	queryFn: async () => {
-		const data = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>("/invite/pending");
+		const data = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>(API_ENDPOINTS.invites.pending);
 		if (!data?.data) {
 			throw new Error("Failed to fetch pending invitations");
 		}
@@ -25,13 +25,14 @@ const {
 });
 
 const inviteCount = computed(() => pendingInvites.value?.length ?? 0);
+type InvitationEndpoint = typeof API_ENDPOINTS.invites.accept | typeof API_ENDPOINTS.invites.decline;
 
 type MutationContext = {
 	previousInvites: PendingInvitation[];
 };
 
 const invitationActionMutation = useMutation({
-	mutationFn: async ({ endpoint, invitation }: { endpoint: "/invite/accept" | "/invite/decline"; invitation: PendingInvitation }) => {
+	mutationFn: async ({ endpoint, invitation }: { endpoint: InvitationEndpoint; invitation: PendingInvitation }) => {
 		const response = await useApiFetch<{ success: boolean; message?: string; error?: string }>(endpoint, {
 			method: "POST",
 			body: { token: invitation.token },
@@ -58,7 +59,7 @@ const invitationActionMutation = useMutation({
 		toast.error(String(error));
 	},
 	onSuccess: (_, variables) => {
-		if (variables.endpoint === "/invite/accept") {
+		if (variables.endpoint === API_ENDPOINTS.invites.accept) {
 			toast.success("Invitation accepted successfully");
 		} else {
 			toast.success("Invitation declined");
@@ -71,11 +72,11 @@ const invitationActionMutation = useMutation({
 });
 
 const acceptInvitation = (invitation: PendingInvitation) => {
-	invitationActionMutation.mutate({ endpoint: "/invite/accept", invitation });
+	invitationActionMutation.mutate({ endpoint: API_ENDPOINTS.invites.accept, invitation });
 };
 
 const declineInvitation = (invitation: PendingInvitation) => {
-	invitationActionMutation.mutate({ endpoint: "/invite/decline", invitation });
+	invitationActionMutation.mutate({ endpoint: API_ENDPOINTS.invites.decline, invitation });
 };
 </script>
 

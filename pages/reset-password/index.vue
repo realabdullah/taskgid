@@ -11,9 +11,24 @@ const { isFieldDirty, handleSubmit } = useForm({
 	validationSchema: formSchema,
 });
 
-const onSubmit = handleSubmit((values) => {
-	toast("Form submitted successfully!");
-	console.log("Form values:", values);
+const isSubmitting = ref(false);
+
+const onSubmit = handleSubmit(async (values) => {
+	try {
+		isSubmitting.value = true;
+		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.forgotPassword, {
+			method: "POST",
+			body: { email: values.email },
+		});
+		if (!success || error) {
+			throw new Error(error || message || "Failed to send reset link");
+		}
+		toast.success(message || "If an account exists for this email, a reset link has been sent.");
+	} catch (error) {
+		toast.error(String(error));
+	} finally {
+		isSubmitting.value = false;
+	}
 });
 </script>
 
@@ -21,8 +36,12 @@ const onSubmit = handleSubmit((values) => {
 	<div class="grid gap-4">
 		<form class="space-y-4" @submit="onSubmit">
 			<AuthFormField name="email" label="Email Address" type="email" placeholder="name@example.com" :is-field-dirty="!isFieldDirty" />
-			<Button class="w-full"> Send Reset Link </Button>
+			<Button class="w-full" :disabled="isSubmitting">
+				{{ isSubmitting ? "Sending Link..." : "Send Reset Link" }}
+			</Button>
 		</form>
+
+		<p class="text-text-secondary text-center text-sm">Use the link from your email to continue resetting your password.</p>
 
 		<p class="text-muted-foreground px-8 text-center text-sm">
 			Remember your password?

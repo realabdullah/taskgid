@@ -23,9 +23,12 @@ const cancelChanges = () => {
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		isSaving.value = true;
-		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>("/users/profile", {
-			method: "PATCH",
-			body: { ...values },
+		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.changePassword, {
+			method: "POST",
+			body: {
+				currentPassword: values.currentPassword,
+				newPassword: values.newPassword,
+			},
 		});
 		if (!success || error) throw new Error(error || message || "Failed to update login information");
 		toast(message || "Login information updated successfully");

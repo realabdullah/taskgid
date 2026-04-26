@@ -51,7 +51,7 @@ const {
 } = useQuery({
 	queryKey: ["member-activity", props.stats?.memberActivity],
 	queryFn: async () => {
-		const { success, data, message } = await useApiFetch<{ success: boolean; data: ActivityDetails[]; message?: string }>(`/workspaces/${useRoute().params.slug}/activities`);
+		const { success, data, message } = await useApiFetch<{ success: boolean; data: ActivityDetails[]; message?: string }>(API_ENDPOINTS.workspaces.activities(useRoute().params.slug));
 		if (!data || !success) throw new Error(message || "Failed to fetch workspace statistics");
 		return data;
 	},

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import * as z from "zod";
-import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
+import * as z from "zod";
 import type { BaseUser } from "~/types";
 
 interface AssignmentResponse {
@@ -25,7 +25,7 @@ const { handleSubmit } = useForm({
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		isAssigningTasks.value = true;
-		const url = `/workspaces/${route.params.slug}/tasks/batch-assign`;
+		const url = API_ENDPOINTS.workspaces.batchAssignTasks(route.params.slug);
 		const body = { taskIds: { ...values }, assigneeId: member.id };
 		const res = await useApiFetch<AssignmentResponse>(url, {
 			method: "POST",

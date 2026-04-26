@@ -10,7 +10,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	const { data: workspace } = useQuery({
 		queryKey: ["workspace", workspaceSlug],
 		queryFn: async () => {
-			return await useApiFetch<Workspace>(`/workspaces/${workspaceSlug.value}`, { method: "GET" });
+			return await useApiFetch<Workspace>(API_ENDPOINTS.workspaces.bySlug(workspaceSlug.value), { method: "GET" });
 		},
 		enabled: () => !!workspaceSlug.value,
 	});
@@ -18,7 +18,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	const { data: teams } = useQuery({
 		queryKey: ["workspace-teams", workspaceSlug],
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: Team[]; pagination: Pagination }>(`/workspaces/${workspaceSlug.value}/team`);
+			const { success, data } = await useApiFetch<{ success: boolean; data: Team[]; pagination: Pagination }>(API_ENDPOINTS.workspaces.team(workspaceSlug.value));
 			if (!data || !success) throw new Error("Failed to fetch workspace teams");
 			return data;
 		},

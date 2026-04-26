@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useQuery } from "@tanstack/vue-query";
 import type { Comment } from "@/types";
+import { useQuery } from "@tanstack/vue-query";
 
 const { comment, isNested } = defineProps<{ comment: Comment; isNested?: boolean }>();
 
@@ -19,7 +19,7 @@ const {
 		const { success, data } = await useApiFetch<{
 			success: boolean;
 			data: Comment[];
-		}>(`/workspaces/${route.params.slug}/tasks/${route.params.id}/comments/${comment.id}/replies`);
+		}>(API_ENDPOINTS.workspaces.taskCommentReplies(route.params.slug, route.params.id, comment.id));
 		if (!data || !success) throw new Error("Failed to fetch replies");
 		return data;
 	},

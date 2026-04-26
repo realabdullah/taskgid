@@ -8,7 +8,7 @@ const { passkeys, addingPasskey, handleAddPasskey } = usePasskeys();
 const { status } = useAsyncData(
 	"passkeys",
 	async () => {
-		const data = await useApiFetch<{ authns: Passkey[] }>("/users/authn", { method: "GET" });
+		const data = await useApiFetch<{ authns: Passkey[] }>(API_ENDPOINTS.users.authn, { method: "GET" });
 		return data?.authns?.length > 0 ? data.authns : [];
 	},
 	{

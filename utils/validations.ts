@@ -120,7 +120,7 @@ export const updateProfileSchema = z.object({
 
 export const updateAccountSchema = z
 	.object({
-		password: z.string().min(8, "Current Password must be at least 8 characters"),
+		currentPassword: z.string().min(8, "Current Password must be at least 8 characters"),
 		newPassword: z.string().min(8, "New Password must be at least 8 characters"),
 		confirmPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
 	})

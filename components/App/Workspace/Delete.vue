@@ -7,7 +7,7 @@ const emits = defineEmits<(event: "delete-action", value: boolean | string) => v
 const isOpen = defineModel<boolean>();
 
 const deleteWorkspace = async () => {
-	const { success } = await useApiFetch<{ success: boolean }>(`/workspaces/${props.slug}`, { method: "DELETE" });
+	const { success } = await useApiFetch<{ success: boolean }>(API_ENDPOINTS.workspaces.bySlug(props.slug), { method: "DELETE" });
 	if (!success) {
 		toast("Failed to delete workspace");
 		return;

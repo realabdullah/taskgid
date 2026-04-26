@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { startRegistration, startAuthentication } from "@simplewebauthn/browser";
+import { startAuthentication, startRegistration } from "@simplewebauthn/browser";
 import { toast } from "vue-sonner";
 import type { GetAuthnOptions, LoginResponse, Passkey } from "../types";
 
@@ -12,13 +12,13 @@ export const usePasskeys = () => {
 			if (addingPasskey.value) return;
 			addingPasskey.value = true;
 
-			const { success, error, options } = await useApiFetch<{ options: GetAuthnOptions; success: boolean; error?: string }>("/users/authn/options", { method: "GET" });
+			const { success, error, options } = await useApiFetch<{ options: GetAuthnOptions; success: boolean; error?: string }>(API_ENDPOINTS.users.authnOptions, { method: "GET" });
 			if (!success || !options || error) throw new Error(error || "Failed to get options for registering passkey");
 
 			const attResp = await startRegistration({ optionsJSON: options as any });
 			if (!attResp) throw new Error("Failed to register passkey");
 
-			const res = await useApiFetch<{ success: boolean; error?: string }>("/users/authn/verify", {
+			const res = await useApiFetch<{ success: boolean; error?: string }>(API_ENDPOINTS.users.authnVerify, {
 				method: "POST",
 				body: { ...attResp },
 			});
@@ -39,13 +39,16 @@ export const usePasskeys = () => {
 	};
 
 	const loginWithPasskey = async (email: string) => {
-		const { success, error, options } = await useApiFetch<{ options: GetAuthnOptions; success: boolean; error?: string }>("/auth/authn/request-login", { method: "POST", body: { email } });
+		const { success, error, options } = await useApiFetch<{ options: GetAuthnOptions; success: boolean; error?: string }>(API_ENDPOINTS.auth.passkeyRequestLogin, {
+			method: "POST",
+			body: { email },
+		});
 		if (!success || !options || error) throw new Error(error || "Failed to get options for registering passkey");
 
 		const attResp = await startAuthentication({ optionsJSON: options as any });
 		if (!attResp) throw new Error("Failed to process passkey");
 
-		const data = await useApiFetch<LoginResponse>("/auth/authn/login", { method: "POST", body: { ...attResp } });
+		const data = await useApiFetch<LoginResponse>(API_ENDPOINTS.auth.passkeyLogin, { method: "POST", body: { ...attResp } });
 		return data;
 	};
 

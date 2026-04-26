@@ -50,7 +50,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
 		if (!userStore.user) {
 			try {
-				const { user: res } = await useApiFetch<{ user: User }>("/users/profile", { method: "GET" });
+				const { user: res } = await useApiFetch<{ user: User }>(API_ENDPOINTS.users.profile, { method: "GET" });
 				if (!res) throw new Error("Failed to get user profile");
 				userStore.user = { ...res };
 			} catch (error) {

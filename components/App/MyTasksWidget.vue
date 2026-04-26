@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query";
+
 import type { Task } from "~/types";
 import { useApiFetch } from "../../composables/useApiFetch";
 import { useStore } from "../../stores";
@@ -55,7 +56,7 @@ const {
 
 		const tasksByWorkspace = await Promise.all(
 			allWorkspaces.map(async (workspace) => {
-				const response = await useApiFetch<{ success: boolean; data: Task[] }>(`/workspaces/${workspace.slug}/tasks`);
+				const response = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspace.slug));
 				if (!response?.success || !response.data) {
 					throw new Error(`Failed to load tasks for ${workspace.title}`);
 				}

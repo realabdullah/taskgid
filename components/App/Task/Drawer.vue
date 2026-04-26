@@ -28,7 +28,7 @@ const {
 	queryKey: computed(() => ["task", props.taskId]),
 	enabled: computed(() => props.open && Boolean(props.taskId)),
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: Task }>(`/workspaces/${workspaceSlug.value}/tasks/${props.taskId}`);
+		const { success, data } = await useApiFetch<{ success: boolean; data: Task }>(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, props.taskId));
 		if (!success || !data) {
 			throw new Error("Failed to fetch task");
 		}
@@ -46,7 +46,7 @@ const {
 	queryKey: computed(() => ["task-activities", props.taskId]),
 	enabled: computed(() => props.open && Boolean(props.taskId)),
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(`/workspaces/${workspaceSlug.value}/tasks/${props.taskId}/activities`);
+		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(API_ENDPOINTS.workspaces.taskActivities(workspaceSlug.value, props.taskId));
 		if (!success || !data) {
 			throw new Error("Failed to fetch task activities");
 		}
@@ -72,7 +72,7 @@ const deleteTask = async () => {
 		return;
 	}
 
-	await useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${task.value.id}`, {
+	await useApiFetch(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, task.value.id), {
 		method: "DELETE",
 	});
 

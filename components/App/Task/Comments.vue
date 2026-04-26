@@ -1,7 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
-import { useQuery } from "@tanstack/vue-query";
 import type { Comment, Pagination } from "@/types";
+import { useQuery } from "@tanstack/vue-query";
 
 const route = useRoute();
 
@@ -18,7 +18,7 @@ const {
 			success: boolean;
 			data: Comment[];
 			pagination: Pagination;
-		}>(`/workspaces/${useRoute().params.slug}/tasks/${route.params.id}/comments`);
+		}>(API_ENDPOINTS.workspaces.taskComments(useRoute().params.slug, route.params.id));
 		if (!data || !success) throw new Error("Failed to fetch task comments");
 		return { comments: data, pagination };
 	},

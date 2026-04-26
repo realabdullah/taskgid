@@ -129,10 +129,7 @@ onBeforeUnmount(() => {
 										:class="currentTheme === opt.value ? 'border-primary bg-accent-subtle' : 'border-border bg-surface-1 hover:bg-surface-2'"
 										@click="setTheme(opt.value)"
 									>
-										<div
-											class="flex h-10 w-full items-center justify-center rounded-md"
-											:class="opt.previewClass"
-										>
+										<div class="flex h-10 w-full items-center justify-center rounded-md" :class="opt.previewClass">
 											<Icon :name="opt.icon" :size="20" :class="currentTheme === opt.value ? 'text-primary' : 'text-text-tertiary'" />
 										</div>
 										<span class="text-xs font-medium" :class="currentTheme === opt.value ? 'text-primary' : 'text-text-secondary'">{{ opt.label }}</span>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Placeholder from "@tiptap/extension-placeholder"
-import StarterKit from "@tiptap/starter-kit"
-import { EditorContent, useEditor } from "@tiptap/vue-3"
+import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
 
 const props = defineProps<{
 	modelValue?: string;
@@ -69,7 +69,7 @@ onBeforeUnmount(() => editor.value?.destroy());
 			</button>
 			<button
 				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm transition-colors line-through"
+				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm line-through transition-colors"
 				:class="{ 'bg-surface-2 text-primary': editor?.isActive('strike') }"
 				title="Strikethrough"
 				@click="editor?.chain().focus().toggleStrike().run()"

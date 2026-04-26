@@ -18,7 +18,7 @@ const {
 } = useQuery({
 	queryKey: ["members-list", route.params.slug, filter, search],
 	queryFn: async () => {
-		const url = `/workspaces/${route.params.slug}/team/comprehensive`;
+		const url = API_ENDPOINTS.workspaces.teamComprehensive(route.params.slug);
 		const queryParams = isFilterActive.value ? filter : undefined;
 		const { success, data, message } = await useApiFetch<{ success: boolean; data: TeamMember[]; pagination: Pagination; message?: string }>(url, {
 			method: "GET",

@@ -16,7 +16,7 @@ const { isFieldDirty, handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const res = await useApiFetch<LoginResponse>("/auth/login", {
+		const res = await useApiFetch<LoginResponse>(API_ENDPOINTS.auth.login, {
 			method: "POST",
 			body: { ...values },
 		});

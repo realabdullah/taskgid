@@ -117,7 +117,7 @@ const onSubmit = handleSubmit(async () => {
 			user: data,
 			error,
 			message,
-		} = await useApiFetch<{ success: boolean; error?: string; message?: string; user: User }>("/users/profile", {
+		} = await useApiFetch<{ success: boolean; error?: string; message?: string; user: User }>(API_ENDPOINTS.users.profile, {
 			method: "PATCH",
 			body: { ...payload },
 		});

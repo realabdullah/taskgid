@@ -14,7 +14,7 @@ export const useWorkspacesStore = defineStore("workspaces", () => {
 	} = useQuery({
 		queryKey: ["workspaces", workspaceType, pagination, user],
 		queryFn: async () => {
-			const data = await useApiFetch<GetWorkspaces>("/workspaces", {
+			const data = await useApiFetch<GetWorkspaces>(API_ENDPOINTS.workspaces.base, {
 				method: "GET",
 				params: { type: workspaceType.value, ...pagination.value },
 			});

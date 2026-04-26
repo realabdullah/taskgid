@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type SidebarProps } from "@/components/ui/sidebar";
+import type { SidebarProps } from "@/components/ui/sidebar";
 
 const { collapsible = "icon", ...props } = defineProps<SidebarProps>();
 
@@ -69,7 +69,7 @@ const myWorkNav = computed(() => [
 							class="text-text-secondary hover:bg-surface-2 hover:text-text-primary data-[active=true]:bg-accent-soft data-[active=true]:text-accent-strong h-8 rounded-md px-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-medium"
 						>
 							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
-							<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
+								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
 								<Icon :name="option.icon" :size="16" />
 								<span>{{ option.title }}</span>
 								<span class="text-2xs text-text-tertiary ml-auto group-data-[collapsible=icon]:hidden">{{ option.shortcut }}</span>

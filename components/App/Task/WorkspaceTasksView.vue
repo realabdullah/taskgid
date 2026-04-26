@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { refDebounced } from "@vueuse/core";
-import type { Task, TaskFilter } from "~/types";
+
 import { useApiFetch } from "~/composables/useApiFetch";
 import { useWorkspaceStore } from "~/stores/workspace";
+import type { Task, TaskFilter } from "~/types";
 import { formatDate } from "~/utils";
 
 type ViewMode = "list" | "board";
@@ -89,7 +90,7 @@ const {
 } = useQuery({
 	queryKey: computed(() => ["workspace-tasks", workspaceSlug.value, { ...filter }]),
 	queryFn: async () => {
-		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[] }>(`/workspaces/${workspaceSlug.value}/tasks`, {
+		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), {
 			query: filter,
 		});
 		if (!tasks || !success) throw new Error("Failed to fetch workspace tasks");
@@ -323,7 +324,7 @@ const saveInlineEdit = async (task: Task) => {
 	}
 
 	try {
-		await useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${task.id}`, {
+		await useApiFetch(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, task.id), {
 			method: "PATCH",
 			body: { title: nextTitle },
 		});
@@ -351,7 +352,7 @@ const onTaskDeletedFromDrawer = async (deletedTaskId: string) => {
 const deleteSelectedTask = async () => {
 	if (!selectedTask.value) return;
 
-	await useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${selectedTask.value.id}`, {
+	await useApiFetch(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, selectedTask.value.id), {
 		method: "DELETE",
 	});
 
@@ -365,7 +366,7 @@ const bulkPatch = async (payload: Partial<Pick<Task, "status" | "priority">> & {
 
 	await Promise.all(
 		selectedTaskIds.value.map((taskId) =>
-			useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${taskId}`, {
+			useApiFetch(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, taskId), {
 				method: "PATCH",
 				body: payload,
 			})
@@ -380,7 +381,7 @@ const bulkDelete = async () => {
 
 	await Promise.all(
 		selectedTaskIds.value.map((taskId) =>
-			useApiFetch(`/workspaces/${workspaceSlug.value}/tasks/${taskId}`, {
+			useApiFetch(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, taskId), {
 				method: "DELETE",
 			})
 		)

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import type { Comment } from "@/types";
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Comment } from "@/types";
 
 const { parentId } = defineProps<{ parentId?: string }>();
 
@@ -14,7 +14,7 @@ const isAddingComment = ref(false);
 const addComment = async () => {
 	try {
 		isAddingComment.value = true;
-		const url = `/workspaces/${route.params.slug}/tasks/${route.params.id}/comments`;
+		const url = API_ENDPOINTS.workspaces.taskComments(route.params.slug, route.params.id);
 		const res = await useApiFetch<{ success: boolean; data: Comment }>(url, {
 			method: "POST",
 			body: { content: comment.value, parentId },

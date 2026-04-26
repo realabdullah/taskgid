@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
 import { storeToRefs } from "pinia";
-import type { Notification } from "~/types";
+
 import { useStore } from "~/stores";
+import type { Notification } from "~/types";
 
 const { user } = storeToRefs(useStore());
 const commandPaletteOpen = useState<boolean>("command-palette-open", () => false);
@@ -15,7 +16,7 @@ const { data: notifications } = useQuery({
 	queryKey: computed(() => ["notifications-count", user.value?.id]),
 	enabled: computed(() => Boolean(user.value?.id)),
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: Notification[] }>(`/api/notifications/${user.value?.id}`);
+		const { success, data } = await useApiFetch<{ success: boolean; data: Notification[] }>(API_ENDPOINTS.notifications.byUser(user.value?.id));
 		return success && data ? data : [];
 	},
 });

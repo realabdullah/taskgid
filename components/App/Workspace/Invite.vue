@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
+import * as z from "zod";
+
 import type { Workspace } from "~/types";
 
 const props = defineProps<{ workspace: Workspace; renderTrigger?: boolean }>();
@@ -20,7 +21,7 @@ const { isFieldDirty, handleSubmit } = useForm({ validationSchema: formSchema, i
 
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const { success, error } = await useApiFetch<{ success: boolean; error?: string }>("/invite", {
+		const { success, error } = await useApiFetch<{ success: boolean; error?: string }>(API_ENDPOINTS.invites.base, {
 			method: "POST",
 			body: { ...values },
 		});

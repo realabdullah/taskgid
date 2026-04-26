@@ -27,7 +27,7 @@ const { isFieldDirty, handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const url = props.isCreating ? "/workspaces" : `/workspaces/${props.workspace?.slug}`;
+		const url = props.isCreating ? API_ENDPOINTS.workspaces.base : API_ENDPOINTS.workspaces.bySlug(props.workspace?.slug);
 		const { workspace: data } = await useApiFetch<{
 			workspace: Workspace;
 		}>(url, {

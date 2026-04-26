@@ -16,7 +16,7 @@ const { isFieldDirty, handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
 	try {
-		const res = await useApiFetch<SignupResponse>("/auth/register", {
+		const res = await useApiFetch<SignupResponse>(API_ENDPOINTS.auth.register, {
 			method: "POST",
 			body: { ...values },
 		});

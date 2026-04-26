@@ -45,8 +45,8 @@ const onSubmit = handleSubmit(async (values) => {
 		if (!workspaceSlug.value) {
 			throw new Error("Select a workspace before creating tasks.");
 		}
-		const baseurl = `/workspaces/${workspaceSlug.value}/tasks`;
-		const url = isCreatingMode.value ? baseurl : `${baseurl}/${props.task?.id}`;
+		const baseurl = API_ENDPOINTS.workspaces.tasks(workspaceSlug.value);
+		const url = isCreatingMode.value ? baseurl : API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, props.task?.id);
 		const payload = {
 			...values,
 			dueDate: values.dueDate ? values.dueDate.toISOString() : undefined,

@@ -30,7 +30,7 @@ export const profileUpdateFields = [
 ];
 
 export const updateAccountFields = [
-	{ id: "password", label: "Current Password", type: "password", placeholder: "••••••••" },
+	{ id: "currentPassword", label: "Current Password", type: "password", placeholder: "••••••••" },
 	{ id: "newPassword", label: "New Password", type: "password", placeholder: "••••••••" },
 	{ id: "confirmPassword", label: "Confirm New Password", type: "password", placeholder: "••••••••" },
 ];

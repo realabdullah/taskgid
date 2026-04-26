@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
-import type { Task, Pagination } from "~/types";
+import type { Pagination, Task } from "~/types";
 
 const route = useRoute();
 const workspaceSlug = computed(() => (typeof route.params.slug === "string" ? route.params.slug : ""));
@@ -21,7 +21,7 @@ const {
 } = useQuery({
 	queryKey: ["workspace-recent-tasks", workspaceSlug],
 	queryFn: async () => {
-		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[]; pagination: Pagination }>(`/workspaces/${workspaceSlug.value}/tasks`);
+		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[]; pagination: Pagination }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value));
 		if (!tasks || !success) throw new Error("Failed to fetch workspace tasks");
 		return tasks;
 	},

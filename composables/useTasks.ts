@@ -7,7 +7,7 @@ export const useTasks = () => {
 
 	const deleteTask = async (taskId: string, callback?: () => void) => {
 		try {
-			const url = `/workspaces/${route.params.slug}/tasks/${taskId}`;
+			const url = API_ENDPOINTS.workspaces.taskById(route.params.slug, taskId);
 			const { success, message } = await useApiFetch<{ success: boolean; message: string }>(url, { method: "DELETE" });
 			if (success) {
 				client.invalidateQueries({ queryKey: ["workspace-recent-tasks"] });

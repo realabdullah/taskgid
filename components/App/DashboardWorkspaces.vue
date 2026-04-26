@@ -64,6 +64,5 @@ const openCreateWorkspace = () => {
 				<span class="mt-2 text-sm font-medium">Create workspace</span>
 			</button>
 		</div>
-
 	</section>
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
-import type { UserBareTask, TeamMember, ActivityDetails } from "~/types";
+import type { ActivityDetails, TeamMember, UserBareTask } from "~/types";
 
 const isOpen = defineModel<boolean>();
 const { member } = defineProps<{ member: TeamMember }>();
@@ -17,7 +17,7 @@ const {
 } = useQuery({
 	queryKey: ["user-tasks", member.id],
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: UserBareTask[] }>(`/workspaces/${route.params.slug}/members/${member.id}/tasks`);
+		const { success, data } = await useApiFetch<{ success: boolean; data: UserBareTask[] }>(API_ENDPOINTS.workspaces.memberTasks(route.params.slug, member.id));
 		if (!data || !success) throw new Error("Failed to fetch member tasks");
 		return data;
 	},
@@ -33,7 +33,7 @@ const {
 } = useQuery({
 	queryKey: ["user-activities", member.id],
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(`/workspaces/${route.params.slug}/members/${member.id}/activities`);
+		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(API_ENDPOINTS.workspaces.memberActivities(route.params.slug, member.id));
 		if (!data || !success) throw new Error("Failed to fetch member activity");
 		return data;
 	},
