@@ -133,13 +133,11 @@ export const taskFormSchema = z.object({
 	title: z
 		.string()
 		.min(3, { message: "Title must be at least 3 characters" })
-		.max(50, { message: "Title must be less than 50 characters" })
-		.regex(/^[a-zA-Z0-9 ]+$/, { message: "Title should only contain letters and numbers" }),
+		.max(50, { message: "Title must be less than 50 characters" }),
 	description: z
 		.string()
 		.min(10, { message: "Description must be at least 10 characters" })
-		.max(200, { message: "Description must be less than 200 characters" })
-		.regex(/^[a-zA-Z0-9 ]+$/, { message: "Description should only contain letters and numbers" }),
+		.max(200, { message: "Description must be less than 200 characters" }),
 	dueDate: z.date().optional(),
 	priority: z.enum(["high", "medium", "low"]).optional(),
 	assignees: z.array(z.string()).optional(),

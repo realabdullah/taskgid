@@ -1,10 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <!-- eslint-disable @typescript-eslint/ban-ts-comment -->
 <script lang="ts" setup>
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { toast } from "vue-sonner";
-import type { User } from "~/types";
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
+import { toast } from "vue-sonner"
+import type { User } from "~/types"
 
 const props = withDefaults(
 	defineProps<{
@@ -81,11 +81,25 @@ const uploadFile = async (file: File) => {
 		const formData = new FormData();
 		formData.append("file", file);
 
-		const result = await $fetch<any>("/api/upload", { method: "POST", body: formData });
-		if (result && result.url) return result.url as string;
-		else throw new Error("Failed to upload file");
+		const config = useRuntimeConfig();
+		const authToken = useCookie<string | undefined>("TG-AUTHTOKEN");
+
+		const result = await $fetch<any>("/media/upload", {
+			baseURL: config.public.apiBaseUrl,
+			method: "POST",
+			body: formData,
+			headers: {
+				Accept: "application/json",
+				...(authToken.value ? { Authorization: `Bearer ${authToken.value}` } : {}),
+			},
+		});
+
+		if (result?.url) return result.url as string;
+		if (result?.data?.url) return result.data.url as string;
+
+		throw new Error("Failed to upload file");
 	} catch (error) {
-		throw new Error(error as string);
+		throw new Error(error instanceof Error ? error.message : "Failed to upload file");
 	}
 };
 

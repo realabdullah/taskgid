@@ -1,4 +1,4 @@
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from "@tailwindcss/vite"
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -33,8 +33,12 @@ export default defineNuxtConfig({
 			],
 		},
 	},
-	css: ["~/assets/css/tailwind.css"],
-	runtimeConfig: { public: { apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000" } },
+	css: ["~/assets/css/tailwind.css", "./node_modules/@novu/js/dist/index.css"],
+	runtimeConfig: {
+		public: {
+			apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000",
+		},
+	},
 	build: {
 		transpile: ["@vuepic/vue-datepicker"],
 	},
@@ -52,4 +56,4 @@ export default defineNuxtConfig({
 		 */
 		componentDir: "./components/ui",
 	},
-});
+})

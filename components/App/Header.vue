@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { useQuery } from "@tanstack/vue-query";
 import { storeToRefs } from "pinia";
 
 import { useStore } from "~/stores";
-import type { Notification } from "~/types";
 
 const { user } = storeToRefs(useStore());
 const commandPaletteOpen = useState<boolean>("command-palette-open", () => false);
@@ -11,17 +9,6 @@ const commandPaletteOpen = useState<boolean>("command-palette-open", () => false
 const openCommandPalette = () => {
 	commandPaletteOpen.value = true;
 };
-
-const { data: notifications } = useQuery({
-	queryKey: computed(() => ["notifications-count", user.value?.id]),
-	enabled: computed(() => Boolean(user.value?.id)),
-	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: Notification[] }>(API_ENDPOINTS.notifications.byUser(user.value?.id));
-		return success && data ? data : [];
-	},
-});
-
-const notificationCount = computed(() => notifications.value?.length ?? 0);
 </script>
 
 <template>
@@ -49,20 +36,7 @@ const notificationCount = computed(() => notifications.value?.length ?? 0);
 		</div>
 
 		<div class="flex items-center justify-end gap-2">
-			<Popover>
-				<PopoverTrigger as-child>
-					<Button variant="ghost" size="icon" class="h-9 w-9 shrink-0" aria-label="Open notifications">
-						<Icon name="hugeicons:notification-02" :size="18" />
-						<span v-if="notificationCount > 0 && notificationCount <= 9" class="bg-danger absolute top-2 right-2 h-2 w-2 rounded-full" />
-						<span v-else-if="notificationCount > 9" class="bg-danger text-2xs absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-medium text-white">
-							{{ notificationCount }}
-						</span>
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent align="end" class="border-border bg-surface-0 w-[360px] border p-3">
-					<AppNotifications />
-				</PopoverContent>
-			</Popover>
+			<AppNotificationInbox />
 
 			<div class="border-border bg-surface-0 hidden h-9 min-w-0 items-center gap-2 rounded-full border px-3 sm:flex">
 				<Avatar class="h-6 w-6 shrink-0">

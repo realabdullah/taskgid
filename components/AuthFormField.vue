@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { vAutoAnimate } from "@formkit/auto-animate/vue";
+import TipTapEditor from "@/components/ui/tiptap/TipTapEditor.vue"
+import { vAutoAnimate } from "@formkit/auto-animate/vue"
 
 interface AuthFormFieldProps {
 	name: string;
@@ -23,7 +24,7 @@ defineProps<AuthFormFieldProps>();
 
 			<DateFormField v-if="type === 'date'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
 
-			<UiTiptapTipTapEditor v-else-if="type === 'wysiwyg'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
+			<TipTapEditor v-else-if="type === 'wysiwyg'" :placeholder="placeholder" v-bind="componentField" class="w-full" />
 
 			<Select v-else-if="type === 'select'" v-bind="componentField" :multiple="isMultiple">
 				<FormControl>

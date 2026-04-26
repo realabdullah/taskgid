@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useQueryClient } from "@tanstack/vue-query";
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { toast } from "vue-sonner";
-import type { Task, Team } from "~/types";
+import { useQueryClient } from "@tanstack/vue-query"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
+import { toast } from "vue-sonner"
+import type { Task, Team } from "~/types"
 
 const props = defineProps<{ isCreating?: boolean; task?: Task; hideTrigger?: boolean }>();
 const emits = defineEmits<(event: "close") => void>();
@@ -13,21 +13,24 @@ const isCreatingMode = computed(() => props.isCreating ?? !props.task);
 
 const isOpen = defineModel<boolean>();
 
+const getFormValues = (task?: Task) => ({
+	title: task?.title || "",
+	description: task?.description || "",
+	dueDate: task?.dueDate ? new Date(task.dueDate) : undefined,
+	priority: task?.priority,
+	assignees: task?.assignees.map((user) => user.username) || [],
+	status: task?.status,
+});
+
 const setOpen = (open: boolean) => {
 	isOpen.value = open;
+	if (!open) emits("close");
 };
 
 const formSchema = toTypedSchema(taskFormSchema);
-const { isFieldDirty, handleSubmit, setValues } = useForm({
+const { isFieldDirty, handleSubmit, resetForm } = useForm({
 	validationSchema: formSchema,
-	initialValues: {
-		title: props.task?.title,
-		description: props.task?.description,
-		dueDate: props.task?.dueDate ? new Date(props.task.dueDate) : undefined,
-		priority: props.task?.priority,
-		assignees: props.task?.assignees.map((user) => user.username) || [],
-		status: props.task?.status,
-	},
+	initialValues: getFormValues(props.task),
 });
 
 const taskKeyMap: { [key: string]: string } = {
@@ -54,7 +57,7 @@ const onSubmit = handleSubmit(async (values) => {
 			priority: values.priority ? taskKeyMap[values.priority] || values.priority : values.priority,
 		};
 		const { data, success, error } = await useApiFetch<{ success: boolean; data: Task; error?: string }>(url, {
-			method: isCreatingMode.value ? "POST" : "PUT",
+			method: isCreatingMode.value ? "POST" : "PATCH",
 			body: { ...payload },
 		});
 		if (!data || !success) throw new Error(error || (isCreatingMode.value ? "Failed to create task" : "Failed to update task"));
@@ -62,7 +65,6 @@ const onSubmit = handleSubmit(async (values) => {
 		client.invalidateQueries({ queryKey: ["workspace-recent-tasks", workspaceSlug.value] });
 		client.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
 		toast(isCreatingMode.value ? "Task created successfully" : "Task updated successfully.");
-		if (!isCreatingMode.value) emits("close");
 	} catch (error) {
 		toast(String(error));
 	}
@@ -114,20 +116,16 @@ const fields = computed(() =>
 >;
 
 watch(
-	() => props.task,
-	(task) => {
-		if (task) {
-			setValues({
-				title: task.title,
-				description: task.description,
-				dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-				priority: task.priority,
-				assignees: task.assignees.map((user) => user.username),
-				status: task.status,
-			});
+	[() => props.task, () => isOpen.value, () => isCreatingMode.value],
+	([task, open, creating]) => {
+		if (!open) {
+			resetForm({ values: getFormValues(creating ? undefined : task) });
+			return;
 		}
-	}
-	// { once: true }
+
+		resetForm({ values: getFormValues(creating ? undefined : task) });
+	},
+	{ immediate: true }
 );
 </script>
 
