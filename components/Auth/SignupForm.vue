@@ -10,7 +10,7 @@ import { SignupSchema } from "../../utils/validations";
 const { user } = storeToRefs(useStore());
 const formSchema = toTypedSchema(SignupSchema);
 
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, isSubmitting } = useForm({
 	validationSchema: formSchema,
 });
 
@@ -48,6 +48,6 @@ const onSubmit = handleSubmit(async (values) => {
 			:placeholder="field.placeholder"
 			:is-field-dirty="!isFieldDirty"
 		/>
-		<slot />
+		<slot :is-submitting="isSubmitting" />
 	</form>
 </template>

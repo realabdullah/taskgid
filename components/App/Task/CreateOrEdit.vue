@@ -28,7 +28,7 @@ const setOpen = (open: boolean) => {
 };
 
 const formSchema = toTypedSchema(taskFormSchema);
-const { isFieldDirty, handleSubmit, resetForm } = useForm({
+const { isFieldDirty, handleSubmit, resetForm, isSubmitting } = useForm({
 	validationSchema: formSchema,
 	initialValues: getFormValues(props.task),
 });
@@ -165,8 +165,8 @@ watch(
 				</div>
 
 				<DialogFooter class="flex justify-between pt-2">
-					<Button type="button" variant="outline" @click="setOpen(false)"> Cancel </Button>
-					<Button type="submit">
+					<Button type="button" variant="outline" :disabled="isSubmitting" @click="setOpen(false)"> Cancel </Button>
+					<Button type="submit" :disabled="isSubmitting" :loading="isSubmitting" :loading-label="isCreatingMode ? 'Creating task' : 'Updating task'">
 						{{ isCreatingMode ? "Create Task" : "Update Task" }}
 					</Button>
 				</DialogFooter>

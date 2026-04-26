@@ -63,11 +63,13 @@ const setMode = (nextMode: AuthMode) => {
 						<p class="text-text-primary/90 mt-1 text-sm">Sign in to pick up where your team left off.</p>
 
 						<div class="mt-6 space-y-4">
-							<AuthPasskeyLogin v-if="usingPasskeyLogin">
-								<Button type="submit" variant="secondary" class="h-10 w-full">Sign in with a passkey</Button>
+							<AuthPasskeyLogin v-if="usingPasskeyLogin" v-slot="{ isSubmitting }">
+								<Button type="submit" variant="secondary" class="h-10 w-full" :disabled="isSubmitting" :loading="isSubmitting" loading-label="Signing in">
+									Sign in with a passkey
+								</Button>
 							</AuthPasskeyLogin>
 
-							<AuthLoginForm v-else>
+							<AuthLoginForm v-else v-slot="{ isSubmitting }">
 								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-2">
 										<Checkbox id="remember" />
@@ -75,7 +77,7 @@ const setMode = (nextMode: AuthMode) => {
 									</div>
 									<NuxtLink to="/reset-password" class="text-primary text-sm hover:underline">Forgot password?</NuxtLink>
 								</div>
-								<Button type="submit" class="h-10 w-full">Sign in</Button>
+								<Button type="submit" class="h-10 w-full" :disabled="isSubmitting" :loading="isSubmitting" loading-label="Signing in">Sign in</Button>
 							</AuthLoginForm>
 
 							<div class="relative">
@@ -100,7 +102,7 @@ const setMode = (nextMode: AuthMode) => {
 						<p class="text-text-primary/90 mt-1 text-sm">Create your account and start organizing work with clarity.</p>
 
 						<div class="mt-6 space-y-4">
-							<AuthSignupForm>
+							<AuthSignupForm v-slot="{ isSubmitting }">
 								<div class="flex items-start gap-2">
 									<Checkbox id="terms" class="mt-0.5" />
 									<label for="terms" class="text-text-primary text-sm">
@@ -110,7 +112,7 @@ const setMode = (nextMode: AuthMode) => {
 										<NuxtLink to="#" class="text-accent-strong font-medium hover:underline">privacy policy</NuxtLink>
 									</label>
 								</div>
-								<Button type="submit" class="h-10 w-full">Create account</Button>
+								<Button type="submit" class="h-10 w-full" :disabled="isSubmitting" :loading="isSubmitting" loading-label="Creating account">Create account</Button>
 							</AuthSignupForm>
 
 							<p class="text-text-primary/90 text-center text-sm">

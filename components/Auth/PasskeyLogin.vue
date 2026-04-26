@@ -7,7 +7,7 @@ const { loginWithPasskey } = usePasskeys();
 const { user } = storeToRefs(useStore());
 const formSchema = toTypedSchema(PasskeyLoginSchema);
 
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, isSubmitting } = useForm({
 	validationSchema: formSchema,
 });
 
@@ -40,6 +40,6 @@ const onSubmit = handleSubmit(async (values) => {
 			:is-field-dirty="!isFieldDirty"
 		/>
 
-		<slot />
+		<slot :is-submitting="isSubmitting" />
 	</form>
 </template>

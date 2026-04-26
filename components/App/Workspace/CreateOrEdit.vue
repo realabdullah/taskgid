@@ -16,7 +16,7 @@ const setOpen = (open: boolean) => {
 };
 
 const formSchema = toTypedSchema(WorkspaceFormSchema);
-const { isFieldDirty, handleSubmit } = useForm({
+const { isFieldDirty, handleSubmit, isSubmitting } = useForm({
 	validationSchema: formSchema,
 	initialValues: {
 		title: props.workspace?.title,
@@ -69,8 +69,10 @@ const onSubmit = handleSubmit(async (values) => {
 				</div>
 
 				<DialogFooter>
-					<Button type="button" variant="outline" @click="setOpen(false)"> Cancel </Button>
-					<Button type="submit">{{ isCreating ? "Create" : "Update" }}</Button>
+					<Button type="button" variant="outline" :disabled="isSubmitting" @click="setOpen(false)"> Cancel </Button>
+					<Button type="submit" :disabled="isSubmitting" :loading="isSubmitting" :loading-label="isCreating ? 'Creating workspace' : 'Updating workspace'">
+						{{ isCreating ? "Create" : "Update" }}
+					</Button>
 				</DialogFooter>
 			</form>
 		</DialogContent>

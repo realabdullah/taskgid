@@ -17,7 +17,7 @@ const formSchema = toTypedSchema(
 	})
 );
 
-const { isFieldDirty, handleSubmit } = useForm({ validationSchema: formSchema, initialValues: { workspaceId: props.workspace.id, email: "" } });
+const { isFieldDirty, handleSubmit, isSubmitting } = useForm({ validationSchema: formSchema, initialValues: { workspaceId: props.workspace.id, email: "" } });
 
 const onSubmit = handleSubmit(async (values) => {
 	try {
@@ -63,8 +63,10 @@ const onSubmit = handleSubmit(async (values) => {
 				</div>
 
 				<DialogFooter>
-					<Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
-					<Button type="submit" class="bg-black text-white hover:bg-black/90"> Send Invitation </Button>
+					<Button type="button" variant="outline" :disabled="isSubmitting" @click="isOpen = false"> Cancel </Button>
+					<Button type="submit" class="bg-black text-white hover:bg-black/90" :disabled="isSubmitting" :loading="isSubmitting" loading-label="Sending invitation">
+						Send Invitation
+					</Button>
 				</DialogFooter>
 			</form>
 		</DialogContent>
