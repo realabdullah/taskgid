@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SidebarProps } from "@/components/ui/sidebar";
+import type { SidebarProps } from "@/components/ui/sidebar"
 
 const { collapsible = "icon", ...props } = defineProps<SidebarProps>();
 
@@ -70,8 +70,8 @@ const myWorkNav = computed(() => [
 						>
 							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
 								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
-								<Icon :name="option.icon" :size="16" />
-								<span>{{ option.title }}</span>
+								<Icon :name="option.icon" :size="16" class="shrink-0" />
+								<span class="group-data-[collapsible=icon]:hidden">{{ option.title }}</span>
 								<span class="text-2xs text-text-tertiary ml-auto group-data-[collapsible=icon]:hidden">{{ option.shortcut }}</span>
 							</NuxtLink>
 						</SidebarMenuButton>
@@ -93,8 +93,8 @@ const myWorkNav = computed(() => [
 						>
 							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
 								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
-								<Icon :name="option.icon" :size="16" />
-								<span>{{ option.title }}</span>
+								<Icon :name="option.icon" :size="16" class="shrink-0" />
+								<span class="group-data-[collapsible=icon]:hidden">{{ option.title }}</span>
 							</NuxtLink>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -105,7 +105,5 @@ const myWorkNav = computed(() => [
 		<SidebarFooter class="linear-rule border-border border-t p-2">
 			<NavUser />
 		</SidebarFooter>
-
-		<SidebarRail />
 	</Sidebar>
 </template>

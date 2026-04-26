@@ -5,6 +5,13 @@ import { toast } from "vue-sonner";
 
 definePageMeta({ layout: "auth", name: "reset-password" });
 
+// Reset links sent via email target /reset-password?token=... — redirect to the
+// confirmation page which handles the token + new password form.
+const route = useRoute();
+if (route.query.token) {
+	await navigateTo({ path: "/reset-confirmation", query: { token: route.query.token } }, { replace: true });
+}
+
 const formSchema = toTypedSchema(ResetPasswordSchema);
 
 const { isFieldDirty, handleSubmit } = useForm({
@@ -25,7 +32,7 @@ const onSubmit = handleSubmit(async (values) => {
 		}
 		toast.success(message || "If an account exists for this email, a reset link has been sent.");
 	} catch (error) {
-		toast.error(String(error));
+		toast.error(getServerError(error));
 	} finally {
 		isSubmitting.value = false;
 	}

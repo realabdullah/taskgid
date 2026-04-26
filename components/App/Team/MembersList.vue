@@ -89,7 +89,7 @@ const removeMember = async () => {
 		<AppEmptyState
 			v-else-if="isMembersError"
 			heading="Could not load team members"
-			:body="String(membersError || 'Please try again.')"
+			:body="getServerError(membersError, 'Please try again.')"
 			icon="lucide:alert-circle"
 			:action="{ label: 'Retry', onClick: () => refetchMembers(), variant: 'secondary' }"
 		/>

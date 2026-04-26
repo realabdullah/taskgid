@@ -38,16 +38,16 @@ const openAddWorkspace = () => {
 				<DropdownMenuTrigger as-child>
 					<SidebarMenuButton size="lg" class="linear-shell hover:bg-surface-2 data-[state=open]:bg-surface-2 h-10 gap-2 rounded-md px-2">
 						<div
-							class="text-accent-strong flex h-8 w-8 items-center justify-center rounded-md text-sm font-semibold"
+							class="text-accent-strong flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-sm font-semibold"
 							:style="{ backgroundColor: `${getWorkspaceSwatch(activeWorkspace?.slug || 'default')}22`, color: getWorkspaceSwatch(activeWorkspace?.slug || 'default') }"
 						>
 							{{ (activeWorkspace?.title || "WS").slice(0, 2).toUpperCase() }}
 						</div>
-						<div class="grid flex-1 text-left leading-tight">
+						<div class="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
 							<span class="text-text-primary truncate text-sm font-medium">{{ activeWorkspace?.title || "Select workspace" }}</span>
 							<span class="text-2xs text-text-tertiary truncate">{{ activeWorkspace?.slug }}</span>
 						</div>
-						<Icon name="lucide:chevrons-up-down" :size="14" class="text-text-tertiary" />
+						<Icon name="lucide:chevrons-up-down" :size="14" class="text-text-tertiary group-data-[collapsible=icon]:hidden" />
 					</SidebarMenuButton>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent

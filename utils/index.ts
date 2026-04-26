@@ -61,3 +61,15 @@ export const getStatusColor = (status: Task["status"]) => {
 export const highlightMentions = (text: string): string => {
 	return text.replace(/@(\w+)/g, "<span class='font-bold underline'>@$1</span>");
 };
+
+/**
+ * Extracts a human-readable error message from any thrown value.
+ * Handles: Error instances (including H3Error / FetchError from ofetch),
+ * plain strings, and unknown shapes.
+ */
+export const getServerError = (error: unknown, fallback = "Something went wrong. Please try again."): string => {
+	if (!error) return fallback;
+	if (typeof error === "string") return error.trim() || fallback;
+	if (error instanceof Error && error.message) return error.message;
+	return fallback;
+};

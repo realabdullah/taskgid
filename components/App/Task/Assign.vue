@@ -34,7 +34,7 @@ const onSubmit = handleSubmit(async (values) => {
 		if (!res || !res.data) throw new Error("Failed to assign tasks");
 		notify(res);
 	} catch (error) {
-		toast(String(error));
+		toast.error(getServerError(error));
 	} finally {
 		isAssigningTasks.value = false;
 	}

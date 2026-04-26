@@ -38,7 +38,7 @@ const onSubmit = handleSubmit(async (values) => {
 		toast.success(message || "Password reset successful. Sign in with your new password.");
 		await router.push("/");
 	} catch (error) {
-		toast.error(String(error));
+		toast.error(getServerError(error));
 	} finally {
 		isSubmitting.value = false;
 	}

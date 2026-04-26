@@ -155,17 +155,7 @@ const appearance = computed<InboxAppearance>(() => ({
 	},
 }));
 
-const getDisplayError = (error: unknown) => {
-	if (error instanceof Error && error.message) {
-		return error.message;
-	}
-
-	if (typeof error === "string" && error.length > 0) {
-		return error;
-	}
-
-	return "Notifications are currently unavailable.";
-};
+const getDisplayError = (error: unknown) => getServerError(error, "Notifications are currently unavailable.");
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 

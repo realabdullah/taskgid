@@ -25,7 +25,7 @@ const addComment = async () => {
 		comment.value = "";
 		toast.success("Comment added successfully");
 	} catch (error) {
-		toast.error(String(error));
+		toast.error(getServerError(error));
 	} finally {
 		isAddingComment.value = false;
 	}

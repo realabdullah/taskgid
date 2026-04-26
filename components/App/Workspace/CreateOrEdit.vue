@@ -40,7 +40,7 @@ const onSubmit = handleSubmit(async (values) => {
 		setOpen(false);
 		toast(props.isCreating ? "Workspace created successfully." : "Workspace updated successfully.");
 	} catch (error) {
-		toast(String(error));
+		toast.error(getServerError(error));
 	}
 });
 </script>

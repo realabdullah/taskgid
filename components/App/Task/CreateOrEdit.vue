@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (values) => {
 		client.invalidateQueries({ queryKey: ["workspace-tasks", workspaceSlug.value] });
 		toast(isCreatingMode.value ? "Task created successfully" : "Task updated successfully.");
 	} catch (error) {
-		toast(String(error));
+		toast.error(getServerError(error));
 	}
 });
 

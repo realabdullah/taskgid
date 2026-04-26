@@ -12,19 +12,19 @@ const openCommandPalette = () => {
 </script>
 
 <template>
-	<header class="border-border bg-surface-0 linear-rule sticky top-0 z-20 grid h-14 w-full grid-cols-3 items-center border-b px-3 md:px-4">
-		<div class="flex items-center gap-1">
+	<header class="border-border bg-surface-0 linear-rule sticky top-0 z-20 grid h-14 w-full grid-cols-[auto_1fr_auto] items-center gap-2 border-b px-3 md:px-4">
+		<div class="flex min-w-0 items-center gap-1">
 			<SidebarTrigger class="text-text-tertiary hover:text-text-primary shrink-0" />
 			<div class="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-white shadow-sm">
 				<Icon name="hugeicons:checkmark-circle-03" :size="16" />
 			</div>
-			<div class="leading-tight">
+			<div class="hidden leading-tight sm:block">
 				<span class="linear-title text-lg font-semibold">TaskGid</span>
 				<p class="text-2xs text-text-tertiary hidden md:block">Focused execution workspace</p>
 			</div>
 		</div>
 
-		<div class="flex justify-center">
+		<div class="flex justify-center px-2">
 			<Button variant="secondary" class="border-border-strong h-9 w-full max-w-md justify-between rounded-full px-3 text-sm shadow-xs" @click="openCommandPalette">
 				<span class="text-text-secondary flex items-center gap-2">
 					<Icon name="hugeicons:search-01" :size="16" />

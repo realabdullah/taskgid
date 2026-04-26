@@ -56,7 +56,7 @@ const invitationActionMutation = useMutation({
 		if (context?.previousInvites) {
 			queryClient.setQueryData(["pending-invitations"], context.previousInvites);
 		}
-		toast.error(String(error));
+		toast.error(getServerError(error));
 	},
 	onSuccess: (_, variables) => {
 		if (variables.endpoint === API_ENDPOINTS.invites.accept) {

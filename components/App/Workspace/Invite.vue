@@ -29,7 +29,7 @@ const onSubmit = handleSubmit(async (values) => {
 		toast("Invitation sent successfully.");
 		isOpen.value = false;
 	} catch (error) {
-		toast(String(error));
+		toast.error(getServerError(error));
 	}
 });
 </script>

@@ -39,10 +39,10 @@ const applyFilters = () => Object.assign(src.value, filter);
 				</Button>
 			</PopoverTrigger>
 
-			<PopoverContent class="w-[340px] p-0" align="start">
+			<PopoverContent class="border-border bg-surface-0 w-[340px] p-0" align="start">
 				<div class="space-y-2 p-4">
-					<h4 class="leading-none font-medium">Filter Team Members</h4>
-					<p class="text-muted-foreground text-sm">Showing {{ totalMembers || 0 }} team members</p>
+					<h4 class="text-text-primary text-sm leading-none font-semibold">Filter Team Members</h4>
+					<p class="text-text-tertiary text-xs">Showing {{ totalMembers || 0 }} team members</p>
 				</div>
 
 				<Separator />
@@ -135,15 +135,15 @@ const applyFilters = () => Object.assign(src.value, filter);
 						</div>
 					</div>
 
-					<div class="bg-muted/50 flex items-center justify-between p-4">
-						<Button variant="ghost" size="sm" @click="resetFilters"> Reset filters </Button>
+					<div class="border-border border-t px-4 py-3 flex items-center justify-between">
+						<Button variant="ghost" size="sm" class="text-text-secondary" @click="resetFilters"> Reset filters </Button>
 						<Button size="sm" @click="applyFilters"> Apply filters </Button>
 					</div>
 				</div>
 			</PopoverContent>
 		</Popover>
 
-		<Button v-if="activeFilterCount > 0" variant="ghost" size="sm" class="text-muted-foreground h-8 px-2" @click="resetFilters">
+		<Button v-if="activeFilterCount > 0" variant="ghost" size="sm" class="text-text-secondary h-8 px-2" @click="resetFilters">
 			<Icon name="hugeicons:cancel-01" :size="14" class="mr-1" />
 			Clear filters
 		</Button>

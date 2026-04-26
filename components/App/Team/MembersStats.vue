@@ -120,13 +120,13 @@ const metrics = computed(() => {
 			<AppEmptyState
 				v-else-if="isStatsError"
 				heading="Could not load team stats"
-				:body="String(statsError || 'Try again in a moment.')"
+				:body="getServerError(statsError, 'Try again in a moment.')"
 				icon="lucide:alert-circle"
 				:action="{ label: 'Retry', onClick: () => refetchStats(), variant: 'secondary' }"
 			/>
 
 			<template v-else-if="metrics.length">
-				<article v-for="metric in metrics" :key="metric.key" class="border-border bg-surface-0 rounded-lg border p-4">
+				<article v-for="metric in metrics" :key="metric.key" class="border-border bg-surface-1 rounded-lg border p-4">
 					<p class="text-text-tertiary text-xs">{{ metric.label }}</p>
 					<p class="text-text-primary mt-2 text-2xl font-semibold">{{ metric.value }}</p>
 					<p class="mt-2 text-xs" :class="metric.deltaTone">{{ metric.deltaLabel }}</p>

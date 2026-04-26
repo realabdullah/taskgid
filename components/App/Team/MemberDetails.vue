@@ -105,7 +105,7 @@ const viewAllTasks = () => {
 						<AppEmptyState
 							v-else-if="isTasksError"
 							heading="Could not load member tasks"
-							:body="String(tasksError || 'Try again in a moment.')"
+							:body="getServerError(tasksError, 'Try again in a moment.')"
 							icon="lucide:alert-circle"
 							:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
 						/>
@@ -133,7 +133,7 @@ const viewAllTasks = () => {
 						<AppEmptyState
 							v-else-if="isActivitiesError"
 							heading="Could not load activity"
-							:body="String(activitiesError || 'Please retry.')"
+							:body="getServerError(activitiesError, 'Please retry.')"
 							icon="lucide:alert-circle"
 							:action="{ label: 'Retry', onClick: () => refetchActivities(), variant: 'secondary' }"
 						/>

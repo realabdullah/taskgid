@@ -35,7 +35,7 @@ const onSubmit = handleSubmit(async (values) => {
 		resetForm();
 		emits("close");
 	} catch (error) {
-		toast(String(error));
+		toast.error(getServerError(error));
 	} finally {
 		isSaving.value = false;
 	}

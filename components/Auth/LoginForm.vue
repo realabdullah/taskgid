@@ -32,7 +32,7 @@ const onSubmit = handleSubmit(async (values) => {
 			navigateTo("/app");
 		}, 200);
 	} catch (error) {
-		toast.error(String(error));
+		toast.error(getServerError(error));
 	}
 });
 </script>

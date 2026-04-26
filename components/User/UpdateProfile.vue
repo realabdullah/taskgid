@@ -53,16 +53,6 @@ const normalizeForComparison = (key: keyof User, value: unknown) => {
 	return value;
 };
 
-const getErrorMessage = (error: unknown, fallback: string) => {
-	if (typeof error === "string" && error.trim()) return error;
-	if (error && typeof error === "object") {
-		const err = error as { message?: unknown; data?: { message?: unknown; success?: boolean } };
-		if (typeof err.data?.message === "string" && err.data.message.trim()) return err.data.message;
-		if (typeof err.message === "string" && err.message.trim()) return err.message;
-	}
-	return fallback;
-};
-
 const buildProfilePayload = () => {
 	const payload = {} as Partial<User>;
 
@@ -229,16 +219,16 @@ const compressCanvas = async (canvas: HTMLCanvasElement, targetBytes: number) =>
 const openCropModal = async (file: File) => {
 	if (file.size > MAX_RAW_IMAGE_BYTES) {
 		toast.error("Please upload an image smaller than 1MB.");
+		isPreparingImage.value = false;
 		return;
 	}
 
-	isPreparingImage.value = true;
 	try {
 		pendingImageFile.value = file;
 		cropImageSrc.value = await readAsDataUrl(file);
 		isCropModalOpen.value = true;
 	} catch (error) {
-		toast.error(getErrorMessage(error, "Could not open image for cropping."));
+		toast.error(getServerError(error, "Could not open image for cropping."));
 		resetCropModal();
 	} finally {
 		isPreparingImage.value = false;
@@ -286,7 +276,7 @@ const applyCroppedImage = async () => {
 		setFieldValue("profilePicture", previewUrl);
 		resetCropModal();
 	} catch (error) {
-		toast.error(getErrorMessage(error, "Failed to process avatar image."));
+		toast.error(getServerError(error, "Failed to process avatar image."));
 	} finally {
 		isPreparingImage.value = false;
 	}
@@ -353,7 +343,7 @@ const uploadFile = async (file: File) => {
 
 		throw new Error("Upload succeeded but no file URL was returned.");
 	} catch (error) {
-		throw new Error(getErrorMessage(error, "Failed to upload avatar."));
+		throw new Error(getServerError(error, "Failed to upload avatar."));
 	}
 };
 
@@ -408,7 +398,7 @@ const onSubmit = handleSubmit(async () => {
 			markSaved();
 		}
 	} catch (error) {
-		toast.error(getErrorMessage(error, "Failed to update profile."));
+		toast.error(getServerError(error, "Failed to update profile."));
 	} finally {
 		isSaving.value = false;
 	}
@@ -419,15 +409,24 @@ const handleButtonClick = () => {
 };
 
 const handleFileChange = async (event: Event) => {
+	isPreparingImage.value = true;
 	const target = event.target as HTMLInputElement;
-	if (!target.files?.length) return;
+
+	if (!target.files?.length) {
+		isPreparingImage.value = false;
+		return;
+	}
 
 	const file = target.files[0];
-	if (!file) return;
+	if (!file) {
+		isPreparingImage.value = false;
+		return;
+	}
 
 	if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
 		toast.error("Please upload a JPG, PNG or WEBP file.");
 		target.value = "";
+		isPreparingImage.value = false;
 		return;
 	}
 
@@ -468,7 +467,7 @@ watch(
 				<AvatarFallback class="bg-zinc-800 text-xl text-white"> {{ getInitials(values?.firstName, values?.lastName) }} </AvatarFallback>
 			</Avatar>
 			<div>
-				<Button type="button" variant="outline" size="sm" class="flex items-center gap-2" :disabled="isPreparingImage" @click="handleButtonClick">
+				<Button type="button" variant="outline" size="sm" class="flex items-center gap-2" :disabled="isPreparingImage" :loading="isPreparingImage" loading-label="Preparing..." @click="handleButtonClick">
 					<Icon name="hugeicons:camera-01" :size="16" />
 					Change Avatar
 				</Button>
