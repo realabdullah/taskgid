@@ -27,8 +27,10 @@ const { as = "button", loading = false, loadingLabel = "Loading", ...props } = d
 		:class="cn(buttonVariants({ variant, size }), props.class)"
 		:style="loading && props.minWidth ? { '--btn-min-w': props.minWidth, minWidth: 'var(--btn-min-w)' } : undefined"
 	>
-		<Icon v-if="loading" name="lucide:loader-circle" class="h-4 w-4 animate-spin" />
-		<span :class="['inline-flex items-center justify-center gap-2', loading ? 'opacity-0' : '']"><slot /></span>
-		<span v-if="loading" class="sr-only">{{ loadingLabel }}</span>
+		<template v-if="loading">
+			<Icon name="lucide:loader-circle" class="h-4 w-4 animate-spin" />
+			<span class="inline-flex items-center justify-center">{{ loadingLabel }}</span>
+		</template>
+		<span v-else class="inline-flex items-center justify-center gap-2"><slot /></span>
 	</Primitive>
 </template>

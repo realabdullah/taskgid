@@ -3,6 +3,7 @@ import type { GetWorkspaces } from "~/types";
 
 export const useWorkspacesStore = defineStore("workspaces", () => {
 	const { user } = storeToRefs(useStore());
+	const route = useRoute();
 	const { pagination } = usePagination();
 	const workspaceType = ref<"all" | "created" | "invited">("all");
 	const workspacesCount = ref(0);
@@ -24,7 +25,7 @@ export const useWorkspacesStore = defineStore("workspaces", () => {
 			workspacesCount.value = pagination.total;
 			return workspaces;
 		},
-		enabled: () => !!user.value?.id,
+		enabled: () => !!user.value?.id && route.path.startsWith("/app"),
 	});
 
 	return { workspaceType, workspaces, pagination, isLoadingWorkspaces: isFetching, getWorkspaces: refetch };
