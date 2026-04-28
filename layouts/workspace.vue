@@ -1,3 +1,19 @@
+<script lang="ts" setup>
+const isCreateWorkspaceOpen = useState<boolean>("create-workspace-open", () => false);
+
+const openCreateWorkspace = () => {
+	isCreateWorkspaceOpen.value = true;
+};
+
+onMounted(() => {
+	window.addEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
+});
+</script>
+
 <template>
 	<SidebarProvider class="bg-surface-1">
 		<AppSidebar />
@@ -12,6 +28,7 @@
 			</div>
 
 			<UserSettingsSheet />
+			<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
 		</SidebarInset>
 	</SidebarProvider>
 </template>

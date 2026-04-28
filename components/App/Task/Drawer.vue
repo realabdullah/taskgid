@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { toast } from "vue-sonner";
-import type { ActivityDetails, Task } from "~/types";
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import { toast } from "vue-sonner"
+import type { Task } from "~/types"
 
 const props = defineProps<{
 	open: boolean;
@@ -31,24 +31,6 @@ const {
 		const { success, data } = await useApiFetch<{ success: boolean; data: Task }>(API_ENDPOINTS.workspaces.taskById(workspaceSlug.value, props.taskId));
 		if (!success || !data) {
 			throw new Error("Failed to fetch task");
-		}
-		return data;
-	},
-});
-
-const {
-	data: activities,
-	isFetching: isActivitiesLoading,
-	isError: isActivitiesError,
-	error: activitiesError,
-	refetch: refetchActivities,
-} = useQuery({
-	queryKey: computed(() => ["task-activities", props.taskId]),
-	enabled: computed(() => props.open && Boolean(props.taskId)),
-	queryFn: async () => {
-		const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(API_ENDPOINTS.workspaces.taskActivities(workspaceSlug.value, props.taskId));
-		if (!success || !data) {
-			throw new Error("Failed to fetch task activities");
 		}
 		return data;
 	},
@@ -84,28 +66,48 @@ const deleteTask = async () => {
 
 <template>
 	<Sheet :open="props.open" @update:open="onSheetOpenChange">
-		<SheetContent side="right" class="border-border bg-surface-0 w-full border-l p-0 sm:max-w-[680px]">
-			<div class="flex h-full flex-col overflow-hidden">
+		<SheetContent side="right" :hide-close="true" class="bg-surface-0 inset-0 h-full w-full border-0 p-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:border-l sm:max-w-[600px] lg:max-w-[800px]">
+			<div class="flex h-full flex-col overflow-hidden overflow-x-hidden">
 				<header class="linear-rule border-border flex items-center justify-between border-b px-6 py-4">
 					<div class="min-w-0">
-						<p class="text-text-tertiary truncate text-xs">Workspace / Tasks / {{ task?.title || "Task" }}</p>
-						<p class="text-text-primary mt-1 text-sm font-medium">Task details</p>
+						<Button variant="ghost" class="h-11 px-2 sm:hidden" @click="emits('close')">
+							<Icon name="lucide:arrow-left" :size="16" />
+							<span>Back</span>
+						</Button>
+						<div class="hidden sm:block">
+							<p class="text-text-tertiary truncate text-xs">Workspace / Tasks / {{ task?.id || "Task" }}</p>
+							<p class="text-text-primary mt-1 text-sm font-medium">Task details</p>
+						</div>
 					</div>
 					<div class="flex items-center gap-2">
-						<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Open full page" @click="openFullPage">
-							<Icon name="lucide:external-link" :size="14" />
+						<Button variant="ghost" size="icon" class="hidden h-11 w-11 sm:inline-flex" aria-label="Open full page" @click="openFullPage">
+							<Icon name="lucide:expand" :size="16" />
 						</Button>
-						<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Close drawer" @click="emits('close')">
+
+						<DropdownMenu>
+							<DropdownMenuTrigger as-child>
+								<Button variant="ghost" size="icon" class="h-11 w-11" aria-label="More actions">
+									<Icon name="lucide:ellipsis" :size="16" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" class="border-border bg-surface-0 w-[min(20rem,calc(100vw-1rem))] border sm:w-56">
+								<DropdownMenuItem class="text-destructive focus:text-destructive" @select="isDeleteModalOpen = true">
+									<Icon name="lucide:trash-2" :size="14" />
+									<span>Delete task</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+
+						<Button variant="ghost" size="icon" class="h-11 w-11" aria-label="Close drawer" @click="emits('close')">
 							<Icon name="lucide:x" :size="14" />
 						</Button>
 					</div>
 				</header>
 
-				<div class="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_220px]">
-					<div class="min-h-0 overflow-y-auto px-6 py-5">
+				<div class="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
 						<div v-if="isTaskLoading" class="space-y-3">
 							<Skeleton class="h-8 w-3/4" />
-							<Skeleton class="h-18 w-full" />
+							<Skeleton class="h-10 w-full" />
 							<Skeleton class="h-30 w-full" />
 						</div>
 
@@ -117,77 +119,11 @@ const deleteTask = async () => {
 							:action="{ label: 'Retry', onClick: () => refetchTask(), variant: 'secondary' }"
 						/>
 
-						<div v-else-if="task" class="space-y-5">
-							<div>
-								<h2 class="text-text-primary text-xl font-semibold">{{ task.title }}</h2>
-								<p class="text-text-secondary mt-3 text-sm leading-normal whitespace-pre-wrap">{{ task.description || "No description yet." }}</p>
-							</div>
-
-							<div class="border-border bg-surface-1 rounded-lg border p-4">
-								<p class="text-text-tertiary mb-2 text-xs font-semibold tracking-widest uppercase">Activity</p>
-								<div v-if="isActivitiesLoading" class="space-y-2">
-									<Skeleton class="h-6 w-full" />
-									<Skeleton class="h-6 w-full" />
-								</div>
-								<div v-else-if="isActivitiesError" class="border-border bg-surface-0 rounded-md border p-3">
-									<p class="text-danger text-sm">{{ String(activitiesError || "Could not load activity.") }}</p>
-									<Button variant="secondary" size="sm" class="mt-2 h-7" @click="refetchActivities">Retry</Button>
-								</div>
-								<div v-else-if="activities?.length" class="space-y-3">
-									<div v-for="activity in activities" :key="activity.id" class="text-text-secondary flex items-start gap-2 text-xs">
-										<Avatar class="h-6 w-6">
-											<AvatarImage :src="activity.user.profilePicture || ''" :alt="activity.user.username" />
-											<AvatarFallback class="bg-accent-subtle text-accent-text">{{ getInitials(activity.user.firstName, activity.user.lastName) }}</AvatarFallback>
-										</Avatar>
-										<div>
-											<p class="text-text-primary text-sm">{{ activity.action.replaceAll("_", " ") }}</p>
-											<p class="text-2xs text-text-tertiary">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
-										</div>
-									</div>
-								</div>
-								<p v-else class="text-text-tertiary text-sm">No activity yet.</p>
-							</div>
-
-							<AppTaskComments />
+						<div v-else-if="task" class="space-y-6">
+							<AppTaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
+							<AppTaskMetadataHorizontal :task="task" />
+							<AppTaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" />
 						</div>
-					</div>
-
-					<aside class="border-border bg-surface-1 border-t px-5 py-5 lg:border-t-0 lg:border-l">
-						<div v-if="task" class="space-y-5">
-							<div>
-								<p class="text-text-tertiary mb-2 text-xs font-semibold tracking-widest uppercase">Status</p>
-								<BadgeStatus :status="task.status" />
-							</div>
-
-							<div>
-								<p class="text-text-tertiary mb-2 text-xs font-semibold tracking-widest uppercase">Priority</p>
-								<BadgePriority :priority="task.priority" />
-							</div>
-
-							<div>
-								<p class="text-text-tertiary mb-2 text-xs font-semibold tracking-widest uppercase">Due date</p>
-								<p class="text-text-secondary text-sm">{{ task.dueDate ? formatDate(task.dueDate, "MMM D, YYYY") : "No date" }}</p>
-							</div>
-
-							<div>
-								<p class="text-text-tertiary mb-2 text-xs font-semibold tracking-widest uppercase">Assignees</p>
-								<div v-if="task.assignees.length" class="space-y-2">
-									<div v-for="assignee in task.assignees" :key="assignee.id" class="flex items-center gap-2">
-										<Avatar class="h-6 w-6">
-											<AvatarImage :src="assignee.profilePicture || ''" :alt="assignee.username" />
-											<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(assignee.firstName, assignee.lastName) }}</AvatarFallback>
-										</Avatar>
-										<span class="text-text-secondary text-sm">{{ assignee.firstName }} {{ assignee.lastName }}</span>
-									</div>
-								</div>
-								<p v-else class="text-text-tertiary text-sm">Unassigned</p>
-							</div>
-
-							<div class="pt-3">
-								<Button variant="destructive" class="w-full" @click="isDeleteModalOpen = true">Delete task</Button>
-							</div>
-						</div>
-					</aside>
 				</div>
 			</div>
 		</SheetContent>

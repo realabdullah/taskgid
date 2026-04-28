@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { refDebounced } from "@vueuse/core";
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import { refDebounced } from "@vueuse/core"
 
-import { useApiFetch } from "~/composables/useApiFetch";
-import { useWorkspaceStore } from "~/stores/workspace";
-import type { Task, TaskFilter } from "~/types";
-import { formatDate } from "~/utils";
+import { useApiFetch } from "~/composables/useApiFetch"
+import { useWorkspaceStore } from "~/stores/workspace"
+import type { Task, TaskFilter } from "~/types"
+import { formatDate } from "~/utils"
 
 type ViewMode = "list" | "board";
 type GroupBy = "none" | "status" | "priority" | "assignee";
@@ -24,11 +24,15 @@ const triggerCreateWorkspace = () => {
 	}
 	globalThis.window.dispatchEvent(new globalThis.CustomEvent("taskgid:add-workspace-intent"));
 };
-const activeTaskId = computed(() => (typeof route.params.id === "string" ? route.params.id : null));
+const activeTaskId = computed(() => {
+	const taskId = route.query.taskId;
+	return typeof taskId === "string" && taskId.length > 0 ? taskId : null;
+});
 const isTaskDrawerOpen = computed(() => Boolean(activeTaskId.value));
 
 const isTaskModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isBulkActionMenuOpen = ref(false);
 const viewMode = ref<ViewMode>("list");
 const groupBy = ref<GroupBy>("none");
 
@@ -336,7 +340,10 @@ const saveInlineEdit = async (task: Task) => {
 
 const openTaskDetails = async (task: Task) => {
 	cancelInlineEdit();
-	await navigateTo(`/app/workspaces/${workspaceSlug.value}/tasks/${task.id}`);
+	await navigateTo({
+		path: `/app/workspaces/${workspaceSlug.value}/tasks`,
+		query: { taskId: task.id },
+	});
 };
 
 const closeTaskDrawer = async () => {
@@ -441,7 +448,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="space-y-6">
+	<div class="space-y-6 overflow-x-hidden">
 		<div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
 			<div>
 				<p class="text-2xs text-text-tertiary mb-2 font-semibold tracking-[0.12em] uppercase">Workspace queue</p>
@@ -449,11 +456,11 @@ onBeforeUnmount(() => {
 				<p class="text-text-secondary text-sm">Manage and triage work without losing context.</p>
 			</div>
 
-			<div class="flex items-center gap-2">
-				<div class="border-border bg-surface-0 inline-flex h-9 items-center rounded-md border p-1">
+			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+				<div class="border-border bg-surface-0 inline-flex h-10 w-full items-center rounded-xl border p-1 sm:h-9 sm:w-auto sm:rounded-md">
 					<button
 						type="button"
-						class="interactive rounded-md px-3 py-1 text-sm"
+						class="interactive flex-1 rounded-lg px-3 py-2 text-sm sm:flex-none sm:rounded-md sm:py-1"
 						:class="viewMode === 'list' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
 						@click="viewMode = 'list'"
 					>
@@ -461,7 +468,7 @@ onBeforeUnmount(() => {
 					</button>
 					<button
 						type="button"
-						class="interactive rounded-md px-3 py-1 text-sm"
+						class="interactive flex-1 rounded-lg px-3 py-2 text-sm sm:flex-none sm:rounded-md sm:py-1"
 						:class="viewMode === 'board' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
 						@click="viewMode = 'board'"
 					>
@@ -469,7 +476,7 @@ onBeforeUnmount(() => {
 					</button>
 				</div>
 
-				<Button class="h-9 shadow-sm" @click="openCreateTaskModal">
+				<Button class="h-11 w-full shadow-sm sm:h-9 sm:w-auto" @click="openCreateTaskModal">
 					<Icon name="lucide:plus" :size="16" />
 					New task
 				</Button>
@@ -477,11 +484,11 @@ onBeforeUnmount(() => {
 			</div>
 		</div>
 
-		<div class="linear-shell space-y-3 rounded-lg p-3">
-			<div class="flex flex-wrap items-center gap-2">
-				<div class="relative w-52 transition-all focus-within:w-72">
+		<div class="linear-shell space-y-3 rounded-2xl p-3 sm:rounded-lg">
+			<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+				<div class="relative w-full sm:w-52 sm:transition-all sm:focus-within:w-72">
 					<Icon name="lucide:search" :size="16" class="text-text-tertiary pointer-events-none absolute top-1/2 left-3 -translate-y-1/2" />
-					<Input v-model="searchInput" class="h-9 rounded-full pr-8 pl-9" placeholder="Search tasks..." />
+					<Input v-model="searchInput" class="h-11 rounded-xl pr-8 pl-9 sm:h-9 sm:rounded-full" placeholder="Search tasks..." />
 					<button
 						v-if="searchInput.length > 0"
 						type="button"
@@ -493,9 +500,10 @@ onBeforeUnmount(() => {
 					</button>
 				</div>
 
+				<div class="no-scrollbar -mx-1 flex items-center gap-2 overflow-x-auto px-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
 				<Popover>
 					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Status</button>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Status</button>
 					</PopoverTrigger>
 					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
 						<div class="space-y-1">
@@ -517,7 +525,7 @@ onBeforeUnmount(() => {
 
 				<Popover>
 					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Priority</button>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Priority</button>
 					</PopoverTrigger>
 					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
 						<div class="space-y-1">
@@ -539,7 +547,7 @@ onBeforeUnmount(() => {
 
 				<Popover>
 					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Assignee</button>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Assignee</button>
 					</PopoverTrigger>
 					<PopoverContent class="border-border bg-surface-0 w-56 border p-2">
 						<div class="space-y-1">
@@ -561,7 +569,7 @@ onBeforeUnmount(() => {
 
 				<Popover>
 					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 h-7 rounded-full border px-3 text-sm">Due date</button>
+						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Due date</button>
 					</PopoverTrigger>
 					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
 						<div class="space-y-1">
@@ -578,11 +586,12 @@ onBeforeUnmount(() => {
 						</div>
 					</PopoverContent>
 				</Popover>
+				</div>
 
-				<div class="ml-auto flex items-center gap-2">
-					<label class="text-text-secondary text-sm">Group by</label>
+				<div class="flex w-full items-center gap-2 pt-1 sm:ml-auto sm:w-auto sm:pt-0">
+					<label class="text-text-secondary shrink-0 text-sm">Group by</label>
 					<Select v-model="groupBy">
-						<SelectTrigger class="h-8 w-44">
+						<SelectTrigger class="h-11 w-full rounded-xl sm:h-8 sm:w-44 sm:rounded-md">
 							<SelectValue placeholder="None" />
 						</SelectTrigger>
 						<SelectContent>
@@ -595,7 +604,7 @@ onBeforeUnmount(() => {
 				</div>
 			</div>
 
-			<div v-if="isFilterActive" class="border-border flex flex-wrap gap-2 border-t pt-2">
+			<div v-if="isFilterActive" class="border-border flex flex-wrap gap-2 border-t pt-3">
 				<button
 					v-for="status in filter.status"
 					:key="`status-${status}`"
@@ -664,22 +673,91 @@ onBeforeUnmount(() => {
 		<div v-else-if="sortedTasks.length">
 			<div v-if="viewMode === 'list'" class="space-y-5">
 				<div v-for="group in groupedTasks" :key="group.key" class="space-y-2">
-					<div v-if="groupBy !== 'none'" class="text-text-tertiary text-xs font-semibold tracking-widest uppercase">{{ group.label }}</div>
+					<div v-if="groupBy !== 'none'" class="text-text-tertiary px-1 text-xs font-semibold tracking-widest uppercase">{{ group.label }}</div>
 
-					<div class="border-border bg-surface-0 rounded-lg border">
+					<div class="space-y-3 border-0 bg-transparent md:space-y-0 md:rounded-lg md:border md:border-border md:bg-surface-0">
 						<div
 							v-for="task in group.tasks"
 							:key="task.id"
-							class="group border-border grid h-11 grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] items-center gap-2 border-b px-3 last:border-b-0 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px]"
-							:class="{ 'bg-surface-2/60': focusedTask?.id === task.id }"
+							class="group rounded-2xl border border-border/80 bg-surface-0 px-3 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] md:grid md:h-11 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] md:items-center md:gap-2 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:border-border md:bg-transparent md:px-3 md:py-0 md:shadow-none first:md:rounded-t-lg last:md:rounded-b-lg last:md:border-b-0"
+							:class="{ 'bg-surface-2/60 ring-1 ring-accent/20 md:ring-0': focusedTask?.id === task.id }"
 						>
-							<div :class="isTaskSelected(task.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'" class="interactive">
+							<div class="space-y-3 md:hidden">
+								<div class="flex items-start justify-between gap-3">
+									<div class="flex min-w-0 items-center gap-2">
+										<Checkbox :model-value="isTaskSelected(task.id)" @update:model-value="(value) => toggleTaskSelection(task.id, Boolean(value))" />
+										<BadgeStatus :status="task.status" />
+									</div>
+
+									<div class="flex shrink-0 items-center gap-1">
+										<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-11 w-11 rounded-xl" aria-label="Open task" @click="openTaskDetails(task)">
+											<Icon name="lucide:arrow-right" :size="16" />
+										</Button>
+
+										<DropdownMenu>
+											<DropdownMenuTrigger as-child>
+												<Button variant="ghost" size="icon" class="h-11 w-11 rounded-xl" aria-label="Task actions">
+													<Icon name="lucide:ellipsis" :size="16" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end" class="border-border bg-surface-0 w-[min(18rem,calc(100vw-1rem))] border">
+												<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
+												<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
+												<DropdownMenuSeparator />
+												<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								</div>
+
+								<div class="min-w-0 space-y-2">
+										<input
+											v-if="editingTaskId === task.id"
+											v-model="editingTitle"
+											class="border-border bg-surface-0 focus-visible:ring-accent h-11 w-full rounded-xl border px-3 text-sm focus-visible:ring-2"
+											@keydown.enter.prevent="saveInlineEdit(task)"
+											@keydown.esc.prevent="cancelInlineEdit"
+											@blur="saveInlineEdit(task)"
+										/>
+										<button
+											v-else
+											type="button"
+											class="text-text-primary line-clamp-3 w-full text-left text-sm font-semibold leading-6"
+											:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
+											@click="startInlineEdit(task)"
+										>
+											{{ task.title }}
+										</button>
+
+										<div class="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
+											<div class="border-border bg-surface-1 text-text-secondary inline-flex h-8 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs">
+												<Icon name="lucide:triangle-alert" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+												<span>{{ priorityLabelMap[task.priority] }}</span>
+											</div>
+											<p class="border-border bg-surface-1 shrink-0 rounded-full border px-2.5 py-1.5 text-xs" :class="dueDateClass(task.dueDate)">{{ dueDateDisplay(task.dueDate) }}</p>
+											<div v-if="task.assignees.length" class="border-border bg-surface-1 inline-flex h-8 shrink-0 items-center gap-2 rounded-full border px-2.5 text-xs">
+												<Avatar class="h-5 w-5">
+													<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
+													<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(task.assignees[0].firstName, task.assignees[0].lastName) }}</AvatarFallback>
+												</Avatar>
+												<span>{{ task.assignees[0].firstName }}</span>
+											</div>
+											<div v-else class="border-border bg-surface-1 text-text-tertiary inline-flex h-8 shrink-0 items-center rounded-full border px-2.5 text-xs">
+												Unassigned
+											</div>
+										</div>
+								</div>
+							</div>
+
+							<div :class="isTaskSelected(task.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'" class="interactive hidden md:block">
 								<Checkbox :model-value="isTaskSelected(task.id)" @update:model-value="(value) => toggleTaskSelection(task.id, Boolean(value))" />
 							</div>
 
-							<BadgeStatus :status="task.status" />
+							<div class="hidden md:block">
+								<BadgeStatus :status="task.status" />
+							</div>
 
-							<div class="flex min-w-0 items-center gap-1">
+							<div class="hidden min-w-0 items-center gap-1 md:flex">
 								<input
 									v-if="editingTaskId === task.id"
 									v-model="editingTitle"
@@ -691,19 +769,19 @@ onBeforeUnmount(() => {
 								<button
 									v-else
 									type="button"
-									class="text-text-primary truncate text-left text-base"
+									class="text-text-primary truncate text-left text-base cursor-pointer hover:text-primary"
 									:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
 									@click="startInlineEdit(task)"
 								>
 									{{ task.title }}
 								</button>
 
-								<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-7 w-7" aria-label="Open task" @click="openTaskDetails(task)">
+								<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="cursor-pointer h-7 w-7" aria-label="Open task" @click="openTaskDetails(task)">
 									<Icon name="lucide:arrow-right" :size="14" />
 								</Button>
 							</div>
 
-							<Icon name="lucide:triangle" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+							<Icon name="lucide:triangle-alert" class="hidden md:block" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
 
 							<div class="hidden md:flex">
 								<Avatar v-if="task.assignees.length" class="h-6 w-6">
@@ -714,19 +792,21 @@ onBeforeUnmount(() => {
 
 							<p class="hidden text-xs md:block" :class="dueDateClass(task.dueDate)">{{ dueDateDisplay(task.dueDate) }}</p>
 
-							<DropdownMenu>
-								<DropdownMenuTrigger as-child>
-									<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Task actions">
-										<Icon name="lucide:ellipsis" :size="16" />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end" class="border-border bg-surface-0 border">
-									<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
-									<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
-									<DropdownMenuSeparator />
-									<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+							<div class="hidden md:block">
+								<DropdownMenu>
+									<DropdownMenuTrigger as-child>
+										<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Task actions">
+											<Icon name="lucide:ellipsis" :size="16" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end" class="border-border bg-surface-0 border">
+										<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
+										<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
+										<DropdownMenuSeparator />
+										<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -750,7 +830,7 @@ onBeforeUnmount(() => {
 								<p class="text-text-primary line-clamp-2 text-sm">{{ task.title }}</p>
 								<div class="mt-3 flex items-center justify-between">
 									<div class="flex items-center gap-2">
-										<Icon name="lucide:triangle" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+										<Icon name="lucide:triangle-alert" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
 										<Avatar v-if="task.assignees.length" class="h-6 w-6">
 											<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
 											<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{
@@ -787,17 +867,17 @@ onBeforeUnmount(() => {
 
 		<AppTaskDrawer :open="isTaskDrawerOpen" :task-id="activeTaskId" @close="closeTaskDrawer" @deleted="onTaskDeletedFromDrawer" />
 
-		<div v-if="selectedTaskIds.length > 0" class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-			<div class="bg-text-primary text-surface-0 flex h-12 items-center gap-3 rounded-full px-5 text-sm font-medium shadow-xl">
+		<div v-if="selectedTaskIds.length > 0" class="fixed inset-x-4 bottom-4 z-50 sm:left-1/2 sm:right-auto sm:bottom-6 sm:-translate-x-1/2">
+			<div class="bg-text-primary text-surface-0 flex min-h-12 flex-wrap items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl sm:h-12 sm:flex-nowrap sm:rounded-full sm:px-5 sm:py-0">
 				<button type="button" class="interactive rounded-full p-1 hover:bg-white/15" aria-label="Clear selection" @click="clearSelection">
 					<Icon name="lucide:x" :size="14" />
 				</button>
 				<span>{{ selectedTaskIds.length }} selected</span>
-				<div class="h-5 w-px bg-white/25" />
+				<div class="hidden h-5 w-px bg-white/25 sm:block" />
 
 				<DropdownMenu>
 					<DropdownMenuTrigger as-child>
-						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Assign</Button>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-9 px-2 hover:bg-white/15">Assign</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
 						<DropdownMenuItem v-for="assignee in assigneeOptions" :key="assignee.value" @select="bulkPatch({ assignees: [assignee.value] })">
@@ -808,7 +888,7 @@ onBeforeUnmount(() => {
 
 				<DropdownMenu>
 					<DropdownMenuTrigger as-child>
-						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Set status</Button>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-9 px-2 hover:bg-white/15">Set status</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
 						<DropdownMenuItem v-for="status in STATUS_ORDER" :key="status" @select="bulkPatch({ status })">{{ statusLabelMap[status] }}</DropdownMenuItem>
@@ -817,14 +897,22 @@ onBeforeUnmount(() => {
 
 				<DropdownMenu>
 					<DropdownMenuTrigger as-child>
-						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15">Set priority</Button>
+						<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-9 px-2 hover:bg-white/15">Set priority</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="center" class="border-border bg-surface-0 border">
 						<DropdownMenuItem v-for="priority in PRIORITY_ORDER" :key="priority" @select="bulkPatch({ priority })">{{ priorityLabelMap[priority] }}</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 
-				<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-8 px-2 hover:bg-white/15" @click="bulkDelete">Delete</Button>
+				<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-9 px-2 hover:bg-white/15" @click="isBulkActionMenuOpen = true">Delete</Button>
+
+					<AppDeleteAction
+						v-model="isBulkActionMenuOpen"
+						:title="selectedTaskIds.length > 1 ? 'Delete tasks?' : 'Delete task?'"
+						:description="selectedTaskIds.length > 1 ? 'Are you sure you want to delete these tasks? This action cannot be undone.' : 'Are you sure you want to delete this task? This action cannot be undone.'"
+						@cancel="isBulkActionMenuOpen = false"
+						@confirm="bulkDelete"
+					/>
 			</div>
 		</div>
 	</div>

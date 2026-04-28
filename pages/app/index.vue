@@ -15,7 +15,7 @@ const { user } = storeToRefs(useStore());
 const { workspaces } = storeToRefs(useWorkspacesStore());
 
 const isInviteOpen = ref(false);
-const isCreateWorkspaceOpen = ref(false);
+const isCreateWorkspaceOpen = useState<boolean>("create-workspace-open", () => false);
 
 const selectedWorkspace = computed(() => workspaces.value?.[0]);
 
@@ -50,13 +50,6 @@ const openCreateWorkspace = () => {
 	isCreateWorkspaceOpen.value = true;
 };
 
-onMounted(() => {
-	window.addEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener("taskgid:add-workspace-intent", openCreateWorkspace);
-});
 </script>
 
 <template>
@@ -108,6 +101,5 @@ onBeforeUnmount(() => {
 			class="mt-8"
 		/>
 
-		<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
 	</div>
 </template>

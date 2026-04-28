@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar"
 
 const route = useRoute();
 const { workspaces } = storeToRefs(useWorkspacesStore());
@@ -27,7 +27,7 @@ const switchWorkspace = (slug: string) => {
 };
 
 const openAddWorkspace = () => {
-	window.dispatchEvent(new CustomEvent("taskgid:add-workspace-intent"));
+	globalThis.window.dispatchEvent(new globalThis.CustomEvent("taskgid:add-workspace-intent"));
 };
 </script>
 
@@ -61,7 +61,7 @@ const openAddWorkspace = () => {
 						v-for="workspace in workspaces"
 						:key="workspace.title"
 						class="text-text-secondary hover:bg-surface-2 hover:text-text-primary h-8 gap-2 rounded-md px-2 text-sm"
-						@click="switchWorkspace(workspace.slug)"
+						@select="switchWorkspace(workspace.slug)"
 					>
 						<div
 							class="text-2xs flex h-5 w-5 items-center justify-center rounded font-semibold"
@@ -73,7 +73,7 @@ const openAddWorkspace = () => {
 						<Icon v-if="workspace.slug === activeWorkspace?.slug" name="lucide:check" :size="14" class="text-primary" />
 					</DropdownMenuItem>
 					<DropdownMenuSeparator class="border-border my-1" />
-					<DropdownMenuItem class="text-primary hover:bg-accent-subtle h-8 gap-2 rounded-md px-2" @click="openAddWorkspace">
+					<DropdownMenuItem class="text-primary hover:bg-accent-subtle h-8 gap-2 rounded-md px-2" @select="openAddWorkspace">
 						<Icon name="lucide:plus" :size="14" />
 						<div class="font-medium">Add workspace</div>
 					</DropdownMenuItem>

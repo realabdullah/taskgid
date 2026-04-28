@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery } from "@tanstack/vue-query"
 
-import type { Task } from "~/types";
-import { useApiFetch } from "../../composables/useApiFetch";
-import { useStore } from "../../stores";
-import { useWorkspacesStore } from "../../stores/workspaces";
-import { formatDate } from "../../utils";
+import type { Task } from "~/types"
+import { useApiFetch } from "../../composables/useApiFetch"
+import { useStore } from "../../stores"
+import { useWorkspacesStore } from "../../stores/workspaces"
+import { formatDate } from "../../utils"
 
 type DashboardTask = Task & {
 	workspaceTitle: string;
@@ -230,7 +230,7 @@ const openTask = async (task: DashboardTask) => {
 				<BadgeStatus :status="task.status" />
 				<p class="text-xs" :class="dueDateClass(task.dueDate)">{{ dueDateText(task.dueDate) }}</p>
 				<Icon
-					name="lucide:triangle"
+					name="lucide:triangle-alert"
 					class="h-3 w-3 fill-current"
 					:class="{
 						'text-priority-high': task.priority === 'high',
