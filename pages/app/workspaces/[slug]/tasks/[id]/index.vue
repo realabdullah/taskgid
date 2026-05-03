@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { toast } from "vue-sonner"
-import type { Task } from "~/types"
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { toast } from "vue-sonner";
+import type { Task } from "~/types";
 
 definePageMeta({ name: "task-id", layout: "workspace" });
 

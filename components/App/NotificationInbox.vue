@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { Novu, type NovuOptions, type Subscriber } from "@novu/js"
-import { NovuUI, type InboxAppearance } from "@novu/js/ui"
-import { storeToRefs } from "pinia"
-import { useStore } from "~/stores"
+import { Novu, type NovuOptions, type Subscriber } from "@novu/js";
+import { NovuUI, type InboxAppearance } from "@novu/js/ui";
+import { storeToRefs } from "pinia";
+import { useStore } from "~/stores";
 
 const { user } = storeToRefs(useStore());
 const router = useRouter();
@@ -159,7 +159,7 @@ const getDisplayError = (error: unknown) => getServerError(error, "Notifications
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 
-const unwrapNovuResult = async <T>(value: unknown): Promise<T | null> => {
+const unwrapNovuResult = async <T,>(value: unknown): Promise<T | null> => {
 	const resolved = await Promise.resolve(value);
 
 	if (isRecord(resolved)) {
@@ -367,18 +367,8 @@ onBeforeUnmount(() => {
 			</Button>
 		</PopoverTrigger>
 		<PopoverContent align="end" class="border-border bg-surface-0 w-[360px] border p-0">
-			<AppEmptyState
-				v-if="!hasApplicationIdentifier"
-				:heading="missingConfigurationHeading"
-				:body="missingConfigurationBody"
-				icon="lucide:bell-off"
-			/>
-			<AppEmptyState
-				v-else-if="mountError"
-				heading="Could not load notifications"
-				:body="inboxErrorBody"
-				icon="lucide:alert-circle"
-			/>
+			<AppEmptyState v-if="!hasApplicationIdentifier" :heading="missingConfigurationHeading" :body="missingConfigurationBody" icon="lucide:bell-off" />
+			<AppEmptyState v-else-if="mountError" heading="Could not load notifications" :body="inboxErrorBody" icon="lucide:alert-circle" />
 			<div v-else ref="inboxMountTarget" class="min-h-[340px]" />
 		</PopoverContent>
 	</Popover>

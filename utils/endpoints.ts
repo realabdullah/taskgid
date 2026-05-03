@@ -1,4 +1,4 @@
-const toPath = (value: unknown) => encodeURIComponent(String(value ?? ""))
+const toPath = (value: unknown) => encodeURIComponent(String(value ?? ""));
 
 export const API_ENDPOINTS = {
 	auth: {
@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
 	users: {
 		profile: "/users/profile",
 		authn: "/users/authn",
+		authnById: (id: unknown) => `/users/authn/${toPath(id)}`,
 		authnOptions: "/users/authn/options",
 		authnVerify: "/users/authn/verify",
 	},
@@ -22,6 +23,7 @@ export const API_ENDPOINTS = {
 		pending: "/invite/pending",
 		accept: "/invite/accept",
 		decline: "/invite/decline",
+		bulk: "/invites/bulk",
 	},
 	notifications: {
 		byUser: (userId: unknown) => `/api/notifications/${toPath(userId)}`,
@@ -46,4 +48,4 @@ export const API_ENDPOINTS = {
 		memberActivities: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/activities`,
 		batchAssignTasks: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/batch-assign`,
 	},
-} as const
+} as const;

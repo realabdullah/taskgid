@@ -49,7 +49,6 @@ const openInvite = () => {
 const openCreateWorkspace = () => {
 	isCreateWorkspaceOpen.value = true;
 };
-
 </script>
 
 <template>
@@ -100,6 +99,5 @@ const openCreateWorkspace = () => {
 			}"
 			class="mt-8"
 		/>
-
 	</div>
 </template>

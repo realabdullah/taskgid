@@ -1,4 +1,4 @@
-import * as z from "zod"
+import * as z from "zod";
 
 export const SignupSchema = z.object({
 	firstName: z
@@ -33,20 +33,20 @@ export const SignupSchema = z.object({
 		.regex(/[^a-zA-Z0-9]/, {
 			message: "Password must contain at least one special character",
 		}),
-})
+});
 
 export const LoginSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
 	password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-})
+});
 
 export const PasskeyLoginSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
-})
+});
 
 export const ResetPasswordSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }).max(100, { message: "Email must be less than 100 characters" }),
-})
+});
 
 export const ResetPasswordConfirmationSchema = z
 	.object({
@@ -65,7 +65,30 @@ export const ResetPasswordConfirmationSchema = z
 	.refine((data) => data.password === data.confirmPassword, {
 		path: ["confirmPassword"],
 		message: "Passwords do not match",
-	})
+	});
+
+export const InviteSchema = z.object({
+	workspaceId: z.string().uuid("Invalid workspace ID"),
+	email: z.string().email("Invalid email address").max(100, { message: "Email must be less than 100 characters" }),
+	role: z.enum(["member", "admin"]).optional(),
+});
+
+export const BulkInviteSchema = z.object({
+	emails: z
+		.string()
+		.min(1, { message: "Enter at least one email address" })
+		.refine(
+			(val) => {
+				const emails = val
+					.split(/[\n,]+/)
+					.map((e) => e.trim())
+					.filter(Boolean);
+				return emails.length > 0 && emails.every((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+			},
+			{ message: "All entries must be valid email addresses (one per line or comma-separated)" }
+		),
+	role: z.enum(["member", "admin"]).optional(),
+});
 
 export const WorkspaceFormSchema = z.object({
 	title: z
@@ -90,7 +113,7 @@ export const WorkspaceFormSchema = z.object({
 		.regex(/^[a-zA-Z0-9-]+$/, {
 			message: "Slug can only contain letters, numbers, and hyphens.",
 		}),
-})
+});
 
 export const updateProfileSchema = z.object({
 	firstName: z
@@ -116,7 +139,7 @@ export const updateProfileSchema = z.object({
 	about: z.string().optional(),
 	location: z.string().optional(),
 	title: z.string().optional(),
-})
+});
 
 export const updateAccountSchema = z
 	.object({
@@ -127,18 +150,13 @@ export const updateAccountSchema = z
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		path: ["confirmPassword"],
 		message: "Passwords do not match",
-	})
+	});
 
 export const taskFormSchema = z.object({
-	title: z
-		.string()
-		.min(3, { message: "Title must be at least 3 characters" })
-		.max(150, { message: "Title must be less than 50 characters" }),
-	description: z
-		.string()
-		.min(10, { message: "Description must be at least 10 characters" }),
+	title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(150, { message: "Title must be less than 50 characters" }),
+	description: z.string().min(10, { message: "Description must be at least 10 characters" }),
 	dueDate: z.date().optional(),
 	priority: z.enum(["high", "medium", "low"]).optional(),
 	assignees: z.array(z.string()).optional(),
 	status: z.enum(["todo", "in_progress", "done"]).optional(),
-})
+});

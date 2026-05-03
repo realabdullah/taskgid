@@ -135,7 +135,7 @@ const applyFilters = () => Object.assign(src.value, filter);
 						</div>
 					</div>
 
-					<div class="border-border border-t px-4 py-3 flex items-center justify-between">
+					<div class="border-border flex items-center justify-between border-t px-4 py-3">
 						<Button variant="ghost" size="sm" class="text-text-secondary" @click="resetFilters"> Reset filters </Button>
 						<Button size="sm" @click="applyFilters"> Apply filters </Button>
 					</div>

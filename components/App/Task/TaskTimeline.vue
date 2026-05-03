@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { toast } from "vue-sonner"
-import type { ActivityDetails, Comment } from "~/types"
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { toast } from "vue-sonner";
+import type { ActivityDetails, Comment } from "~/types";
 
 const props = defineProps<{
 	workspaceSlug: string;
@@ -54,10 +54,7 @@ const {
 });
 
 const timelineItems = computed(() => {
-	const items: Array<
-		| { type: "activity"; id: string; createdAt: string; activity: ActivityDetails }
-		| { type: "comment"; id: string; createdAt: string; comment: Comment }
-	> = [];
+	const items: Array<{ type: "activity"; id: string; createdAt: string; activity: ActivityDetails } | { type: "comment"; id: string; createdAt: string; comment: Comment }> = [];
 
 	for (const activity of activities.value ?? []) {
 		items.push({ type: "activity", id: activity.id, createdAt: activity.createdAt, activity });
@@ -133,7 +130,14 @@ const addComment = async () => {
 			heading="Could not load timeline"
 			:body="String(activitiesError || commentsError || 'Please try again.')"
 			icon="lucide:alert-circle"
-			:action="{ label: 'Retry', onClick: () => { refetchActivities(); refetchComments(); }, variant: 'secondary' }"
+			:action="{
+				label: 'Retry',
+				onClick: () => {
+					refetchActivities();
+					refetchComments();
+				},
+				variant: 'secondary',
+			}"
 		/>
 
 		<div v-else class="space-y-4">
@@ -166,7 +170,7 @@ const addComment = async () => {
 			<p v-else class="text-text-tertiary text-sm">{{ showActivity ? "No comments or activity yet." : "No comments yet." }}</p>
 		</div>
 
-		<div class="border-border bg-surface-0/85 sticky bottom-0 z-20 border-t pt-3 backdrop-blur pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+		<div class="border-border bg-surface-0/85 sticky bottom-0 z-20 border-t pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur">
 			<div class="relative">
 				<AppTaskMentionTextarea v-model="commentDraft" />
 				<div class="absolute right-3 bottom-3">

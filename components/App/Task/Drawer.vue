@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { toast } from "vue-sonner"
-import type { Task } from "~/types"
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { toast } from "vue-sonner";
+import type { Task } from "~/types";
 
 const props = defineProps<{
 	open: boolean;
@@ -66,7 +66,7 @@ const deleteTask = async () => {
 
 <template>
 	<Sheet :open="props.open" @update:open="onSheetOpenChange">
-		<SheetContent side="right" :hide-close="true" class="bg-surface-0 inset-0 h-full w-full border-0 p-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:border-l sm:max-w-[600px] lg:max-w-[800px]">
+		<SheetContent side="right" :hide-close="true" class="bg-surface-0 inset-0 h-full w-full border-0 p-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:max-w-[600px] sm:border-l lg:max-w-[800px]">
 			<div class="flex h-full flex-col overflow-hidden overflow-x-hidden">
 				<header class="linear-rule border-border flex items-center justify-between border-b px-6 py-4">
 					<div class="min-w-0">
@@ -105,25 +105,25 @@ const deleteTask = async () => {
 				</header>
 
 				<div class="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
-						<div v-if="isTaskLoading" class="space-y-3">
-							<Skeleton class="h-8 w-3/4" />
-							<Skeleton class="h-10 w-full" />
-							<Skeleton class="h-30 w-full" />
-						</div>
+					<div v-if="isTaskLoading" class="space-y-3">
+						<Skeleton class="h-8 w-3/4" />
+						<Skeleton class="h-10 w-full" />
+						<Skeleton class="h-30 w-full" />
+					</div>
 
-						<AppEmptyState
-							v-else-if="isTaskError"
-							heading="Could not load task"
-							:body="String(taskError || 'Please try again.')"
-							icon="lucide:alert-circle"
-							:action="{ label: 'Retry', onClick: () => refetchTask(), variant: 'secondary' }"
-						/>
+					<AppEmptyState
+						v-else-if="isTaskError"
+						heading="Could not load task"
+						:body="String(taskError || 'Please try again.')"
+						icon="lucide:alert-circle"
+						:action="{ label: 'Retry', onClick: () => refetchTask(), variant: 'secondary' }"
+					/>
 
-						<div v-else-if="task" class="space-y-6">
-							<AppTaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
-							<AppTaskMetadataHorizontal :task="task" />
-							<AppTaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" />
-						</div>
+					<div v-else-if="task" class="space-y-6">
+						<AppTaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
+						<AppTaskMetadataHorizontal :task="task" />
+						<AppTaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" />
+					</div>
 				</div>
 			</div>
 		</SheetContent>

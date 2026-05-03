@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import TipTapEditor from "@/components/ui/tiptap/TipTapEditor.vue"
-import { vAutoAnimate } from "@formkit/auto-animate/vue"
+import TipTapEditor from "@/components/ui/tiptap/TipTapEditor.vue";
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
 
 interface AuthFormFieldProps {
 	name: string;

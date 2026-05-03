@@ -41,8 +41,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
 	}
 
 	const isAuthRoute = to.meta.layout === "auth" || ["/", "/reset-password", "/reset-confirmation"].includes(to.path);
+	const isPublicRoute = to.path.startsWith("/accept-invite");
 	const isAppRoute = to.path.startsWith("/app");
 
+	if (isPublicRoute) return;
 	if (isAuthenticated && isAuthRoute) return navigateTo("/app");
 	else if (!isAuthenticated && isAppRoute) return navigateTo("/");
 	if (isAuthenticated && isAppRoute) {

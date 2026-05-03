@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useQueryClient } from "@tanstack/vue-query"
-import { toTypedSchema } from "@vee-validate/zod"
-import { useForm } from "vee-validate"
-import { toast } from "vue-sonner"
-import type { Task, Team } from "~/types"
+import { useQueryClient } from "@tanstack/vue-query";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import type { Task, Team } from "~/types";
 
 const props = defineProps<{ isCreating?: boolean; task?: Task; hideTrigger?: boolean }>();
 const emits = defineEmits<(event: "close") => void>();

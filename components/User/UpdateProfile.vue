@@ -1,10 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <!-- eslint-disable @typescript-eslint/ban-ts-comment -->
 <script lang="ts" setup>
-import { toTypedSchema } from "@vee-validate/zod"
-import { useForm } from "vee-validate"
-import { toast } from "vue-sonner"
-import type { User } from "~/types"
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import type { User } from "~/types";
 
 const props = withDefaults(
 	defineProps<{
@@ -191,13 +191,17 @@ const readAsDataUrl = (file: File) =>
 
 const canvasToBlob = (canvas: HTMLCanvasElement, type: string, quality?: number) =>
 	new Promise<Blob>((resolve, reject) => {
-		canvas.toBlob((blob) => {
-			if (!blob) {
-				reject(new Error("Failed to process image."));
-				return;
-			}
-			resolve(blob);
-		}, type, quality);
+		canvas.toBlob(
+			(blob) => {
+				if (!blob) {
+					reject(new Error("Failed to process image."));
+					return;
+				}
+				resolve(blob);
+			},
+			type,
+			quality
+		);
 	});
 
 const compressCanvas = async (canvas: HTMLCanvasElement, targetBytes: number) => {
@@ -349,13 +353,8 @@ const uploadFile = async (file: File) => {
 		throw new Error("Upload succeeded but no file URL was returned.");
 	} catch (error) {
 		// Raw $fetch puts the server error body in error.data — prefer that over the generic HTTP status message
-		const apiMessage =
-			error && typeof error === "object" && "data" in error
-				? ((error as { data?: { message?: string } }).data?.message ?? (error as { data?: string }).data)
-				: undefined;
-		const message = typeof apiMessage === "string" && apiMessage.trim()
-			? apiMessage
-			: getServerError(error, "Failed to upload avatar.");
+		const apiMessage = error && typeof error === "object" && "data" in error ? ((error as { data?: { message?: string } }).data?.message ?? (error as { data?: string }).data) : undefined;
+		const message = typeof apiMessage === "string" && apiMessage.trim() ? apiMessage : getServerError(error, "Failed to upload avatar.");
 		throw new Error(message);
 	}
 };
@@ -490,7 +489,16 @@ watch(
 				<AvatarFallback class="bg-zinc-800 text-xl text-white"> {{ getInitials(values?.firstName, values?.lastName) }} </AvatarFallback>
 			</Avatar>
 			<div>
-				<Button type="button" variant="outline" size="sm" class="flex items-center gap-2" :disabled="isPreparingImage" :loading="isPreparingImage" loading-label="Preparing..." @click="handleButtonClick">
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					class="flex items-center gap-2"
+					:disabled="isPreparingImage"
+					:loading="isPreparingImage"
+					loading-label="Preparing..."
+					@click="handleButtonClick"
+				>
 					<Icon name="hugeicons:camera-01" :size="16" />
 					Change Avatar
 				</Button>
@@ -534,7 +542,9 @@ watch(
 						:class="isCropDragging ? 'cursor-grabbing' : 'cursor-grab'"
 						:style="cropImageStyle"
 						draggable="false"
-						@load="onCropImageLoad"					@error="onCropImageError"						@pointerdown="onCropPointerDown"
+						@load="onCropImageLoad"
+						@error="onCropImageError"
+						@pointerdown="onCropPointerDown"
 					/>
 				</div>
 

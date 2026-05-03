@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { refDebounced } from "@vueuse/core"
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { refDebounced } from "@vueuse/core";
 
-import { useApiFetch } from "~/composables/useApiFetch"
-import { useWorkspaceStore } from "~/stores/workspace"
-import type { Task, TaskFilter } from "~/types"
-import { formatDate } from "~/utils"
+import { useApiFetch } from "~/composables/useApiFetch";
+import { useWorkspaceStore } from "~/stores/workspace";
+import type { Task, TaskFilter } from "~/types";
+import { formatDate } from "~/utils";
 
 type ViewMode = "list" | "board";
 type GroupBy = "none" | "status" | "priority" | "assignee";
@@ -501,91 +501,111 @@ onBeforeUnmount(() => {
 				</div>
 
 				<div class="no-scrollbar -mx-1 flex items-center gap-2 overflow-x-auto px-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-				<Popover>
-					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Status</button>
-					</PopoverTrigger>
-					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
-						<div class="space-y-1">
-							<label v-for="status in STATUS_ORDER" :key="status" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
-								<Checkbox
-									:model-value="filter.status.includes(status)"
-									@update:model-value="
-										(value) => {
-											if (value) filter.status = [...filter.status, status];
-											else filter.status = filter.status.filter((item) => item !== status);
-										}
-									"
-								/>
-								<span>{{ statusLabelMap[status] }}</span>
-							</label>
-						</div>
-					</PopoverContent>
-				</Popover>
-
-				<Popover>
-					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Priority</button>
-					</PopoverTrigger>
-					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
-						<div class="space-y-1">
-							<label v-for="priority in PRIORITY_ORDER" :key="priority" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
-								<Checkbox
-									:model-value="filter.priority.includes(priority)"
-									@update:model-value="
-										(value) => {
-											if (value) filter.priority = [...filter.priority, priority];
-											else filter.priority = filter.priority.filter((item) => item !== priority);
-										}
-									"
-								/>
-								<span>{{ priorityLabelMap[priority] }}</span>
-							</label>
-						</div>
-					</PopoverContent>
-				</Popover>
-
-				<Popover>
-					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Assignee</button>
-					</PopoverTrigger>
-					<PopoverContent class="border-border bg-surface-0 w-56 border p-2">
-						<div class="space-y-1">
-							<label v-for="assignee in assigneeOptions" :key="assignee.value" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
-								<Checkbox
-									:model-value="filter.assignee.includes(assignee.value)"
-									@update:model-value="
-										(value) => {
-											if (value) filter.assignee = [...filter.assignee, assignee.value];
-											else filter.assignee = filter.assignee.filter((item) => item !== assignee.value);
-										}
-									"
-								/>
-								<span>{{ assignee.label }}</span>
-							</label>
-						</div>
-					</PopoverContent>
-				</Popover>
-
-				<Popover>
-					<PopoverTrigger as-child>
-						<button type="button" class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3">Due date</button>
-					</PopoverTrigger>
-					<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
-						<div class="space-y-1">
+					<Popover>
+						<PopoverTrigger as-child>
 							<button
-								v-for="option in dueDateOptions"
-								:key="option.value"
 								type="button"
-								class="interactive hover:bg-surface-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm"
-								@click="dueDateFilter = option.value"
+								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
 							>
-								<span>{{ option.label }}</span>
-								<Icon v-if="dueDateFilter === option.value" name="lucide:check" :size="14" class="text-primary" />
+								Status
 							</button>
-						</div>
-					</PopoverContent>
-				</Popover>
+						</PopoverTrigger>
+						<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+							<div class="space-y-1">
+								<label v-for="status in STATUS_ORDER" :key="status" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+									<Checkbox
+										:model-value="filter.status.includes(status)"
+										@update:model-value="
+											(value) => {
+												if (value) filter.status = [...filter.status, status];
+												else filter.status = filter.status.filter((item) => item !== status);
+											}
+										"
+									/>
+									<span>{{ statusLabelMap[status] }}</span>
+								</label>
+							</div>
+						</PopoverContent>
+					</Popover>
+
+					<Popover>
+						<PopoverTrigger as-child>
+							<button
+								type="button"
+								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+							>
+								Priority
+							</button>
+						</PopoverTrigger>
+						<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+							<div class="space-y-1">
+								<label v-for="priority in PRIORITY_ORDER" :key="priority" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+									<Checkbox
+										:model-value="filter.priority.includes(priority)"
+										@update:model-value="
+											(value) => {
+												if (value) filter.priority = [...filter.priority, priority];
+												else filter.priority = filter.priority.filter((item) => item !== priority);
+											}
+										"
+									/>
+									<span>{{ priorityLabelMap[priority] }}</span>
+								</label>
+							</div>
+						</PopoverContent>
+					</Popover>
+
+					<Popover>
+						<PopoverTrigger as-child>
+							<button
+								type="button"
+								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+							>
+								Assignee
+							</button>
+						</PopoverTrigger>
+						<PopoverContent class="border-border bg-surface-0 w-56 border p-2">
+							<div class="space-y-1">
+								<label v-for="assignee in assigneeOptions" :key="assignee.value" class="hover:bg-surface-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
+									<Checkbox
+										:model-value="filter.assignee.includes(assignee.value)"
+										@update:model-value="
+											(value) => {
+												if (value) filter.assignee = [...filter.assignee, assignee.value];
+												else filter.assignee = filter.assignee.filter((item) => item !== assignee.value);
+											}
+										"
+									/>
+									<span>{{ assignee.label }}</span>
+								</label>
+							</div>
+						</PopoverContent>
+					</Popover>
+
+					<Popover>
+						<PopoverTrigger as-child>
+							<button
+								type="button"
+								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+							>
+								Due date
+							</button>
+						</PopoverTrigger>
+						<PopoverContent class="border-border bg-surface-0 w-48 border p-2">
+							<div class="space-y-1">
+								<button
+									v-for="option in dueDateOptions"
+									:key="option.value"
+									type="button"
+									class="interactive hover:bg-surface-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm"
+									@click="dueDateFilter = option.value"
+								>
+									<span>{{ option.label }}</span>
+									<Icon v-if="dueDateFilter === option.value" name="lucide:check" :size="14" class="text-primary" />
+								</button>
+							</div>
+						</PopoverContent>
+					</Popover>
 				</div>
 
 				<div class="flex w-full items-center gap-2 pt-1 sm:ml-auto sm:w-auto sm:pt-0">
@@ -675,12 +695,12 @@ onBeforeUnmount(() => {
 				<div v-for="group in groupedTasks" :key="group.key" class="space-y-2">
 					<div v-if="groupBy !== 'none'" class="text-text-tertiary px-1 text-xs font-semibold tracking-widest uppercase">{{ group.label }}</div>
 
-					<div class="space-y-3 border-0 bg-transparent md:space-y-0 md:rounded-lg md:border md:border-border md:bg-surface-0">
+					<div class="md:border-border md:bg-surface-0 space-y-3 border-0 bg-transparent md:space-y-0 md:rounded-lg md:border">
 						<div
 							v-for="task in group.tasks"
 							:key="task.id"
-							class="group rounded-2xl border border-border/80 bg-surface-0 px-3 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] md:grid md:h-11 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] md:items-center md:gap-2 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:border-border md:bg-transparent md:px-3 md:py-0 md:shadow-none first:md:rounded-t-lg last:md:rounded-b-lg last:md:border-b-0"
-							:class="{ 'bg-surface-2/60 ring-1 ring-accent/20 md:ring-0': focusedTask?.id === task.id }"
+							class="group border-border/80 bg-surface-0 md:border-border rounded-2xl border px-3 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] md:grid md:h-11 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] md:items-center md:gap-2 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:bg-transparent md:px-3 md:py-0 md:shadow-none first:md:rounded-t-lg last:md:rounded-b-lg last:md:border-b-0"
+							:class="{ 'bg-surface-2/60 ring-accent/20 ring-1 md:ring-0': focusedTask?.id === task.id }"
 						>
 							<div class="space-y-3 md:hidden">
 								<div class="flex items-start justify-between gap-3">
@@ -711,41 +731,43 @@ onBeforeUnmount(() => {
 								</div>
 
 								<div class="min-w-0 space-y-2">
-										<input
-											v-if="editingTaskId === task.id"
-											v-model="editingTitle"
-											class="border-border bg-surface-0 focus-visible:ring-accent h-11 w-full rounded-xl border px-3 text-sm focus-visible:ring-2"
-											@keydown.enter.prevent="saveInlineEdit(task)"
-											@keydown.esc.prevent="cancelInlineEdit"
-											@blur="saveInlineEdit(task)"
-										/>
-										<button
-											v-else
-											type="button"
-											class="text-text-primary line-clamp-3 w-full text-left text-sm font-semibold leading-6"
-											:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
-											@click="startInlineEdit(task)"
-										>
-											{{ task.title }}
-										</button>
+									<input
+										v-if="editingTaskId === task.id"
+										v-model="editingTitle"
+										class="border-border bg-surface-0 focus-visible:ring-accent h-11 w-full rounded-xl border px-3 text-sm focus-visible:ring-2"
+										@keydown.enter.prevent="saveInlineEdit(task)"
+										@keydown.esc.prevent="cancelInlineEdit"
+										@blur="saveInlineEdit(task)"
+									/>
+									<button
+										v-else
+										type="button"
+										class="text-text-primary line-clamp-3 w-full text-left text-sm leading-6 font-semibold"
+										:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
+										@click="startInlineEdit(task)"
+									>
+										{{ task.title }}
+									</button>
 
-										<div class="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
-											<div class="border-border bg-surface-1 text-text-secondary inline-flex h-8 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs">
-												<Icon name="lucide:triangle-alert" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
-												<span>{{ priorityLabelMap[task.priority] }}</span>
-											</div>
-											<p class="border-border bg-surface-1 shrink-0 rounded-full border px-2.5 py-1.5 text-xs" :class="dueDateClass(task.dueDate)">{{ dueDateDisplay(task.dueDate) }}</p>
-											<div v-if="task.assignees.length" class="border-border bg-surface-1 inline-flex h-8 shrink-0 items-center gap-2 rounded-full border px-2.5 text-xs">
-												<Avatar class="h-5 w-5">
-													<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
-													<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(task.assignees[0].firstName, task.assignees[0].lastName) }}</AvatarFallback>
-												</Avatar>
-												<span>{{ task.assignees[0].firstName }}</span>
-											</div>
-											<div v-else class="border-border bg-surface-1 text-text-tertiary inline-flex h-8 shrink-0 items-center rounded-full border px-2.5 text-xs">
-												Unassigned
-											</div>
+									<div class="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
+										<div class="border-border bg-surface-1 text-text-secondary inline-flex h-8 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs">
+											<Icon name="lucide:triangle-alert" :class="['h-3 w-3 fill-current', priorityIconClass(task.priority)]" />
+											<span>{{ priorityLabelMap[task.priority] }}</span>
 										</div>
+										<p class="border-border bg-surface-1 shrink-0 rounded-full border px-2.5 py-1.5 text-xs" :class="dueDateClass(task.dueDate)">
+											{{ dueDateDisplay(task.dueDate) }}
+										</p>
+										<div v-if="task.assignees.length" class="border-border bg-surface-1 inline-flex h-8 shrink-0 items-center gap-2 rounded-full border px-2.5 text-xs">
+											<Avatar class="h-5 w-5">
+												<AvatarImage :src="task.assignees[0].profilePicture || ''" :alt="task.assignees[0].username" />
+												<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{
+													getInitials(task.assignees[0].firstName, task.assignees[0].lastName)
+												}}</AvatarFallback>
+											</Avatar>
+											<span>{{ task.assignees[0].firstName }}</span>
+										</div>
+										<div v-else class="border-border bg-surface-1 text-text-tertiary inline-flex h-8 shrink-0 items-center rounded-full border px-2.5 text-xs">Unassigned</div>
+									</div>
 								</div>
 							</div>
 
@@ -769,14 +791,14 @@ onBeforeUnmount(() => {
 								<button
 									v-else
 									type="button"
-									class="text-text-primary truncate text-left text-base cursor-pointer hover:text-primary"
+									class="text-text-primary hover:text-primary cursor-pointer truncate text-left text-base"
 									:class="task.status === 'done' ? 'text-text-tertiary line-through' : ''"
 									@click="startInlineEdit(task)"
 								>
 									{{ task.title }}
 								</button>
 
-								<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="cursor-pointer h-7 w-7" aria-label="Open task" @click="openTaskDetails(task)">
+								<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-7 w-7 cursor-pointer" aria-label="Open task" @click="openTaskDetails(task)">
 									<Icon name="lucide:arrow-right" :size="14" />
 								</Button>
 							</div>
@@ -867,8 +889,10 @@ onBeforeUnmount(() => {
 
 		<AppTaskDrawer :open="isTaskDrawerOpen" :task-id="activeTaskId" @close="closeTaskDrawer" @deleted="onTaskDeletedFromDrawer" />
 
-		<div v-if="selectedTaskIds.length > 0" class="fixed inset-x-4 bottom-4 z-50 sm:left-1/2 sm:right-auto sm:bottom-6 sm:-translate-x-1/2">
-			<div class="bg-text-primary text-surface-0 flex min-h-12 flex-wrap items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl sm:h-12 sm:flex-nowrap sm:rounded-full sm:px-5 sm:py-0">
+		<div v-if="selectedTaskIds.length > 0" class="fixed inset-x-4 bottom-4 z-50 sm:right-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2">
+			<div
+				class="bg-text-primary text-surface-0 flex min-h-12 flex-wrap items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl sm:h-12 sm:flex-nowrap sm:rounded-full sm:px-5 sm:py-0"
+			>
 				<button type="button" class="interactive rounded-full p-1 hover:bg-white/15" aria-label="Clear selection" @click="clearSelection">
 					<Icon name="lucide:x" :size="14" />
 				</button>
@@ -906,13 +930,17 @@ onBeforeUnmount(() => {
 
 				<Button variant="ghost" size="sm" class="text-surface-0 hover:text-surface-0 h-9 px-2 hover:bg-white/15" @click="isBulkActionMenuOpen = true">Delete</Button>
 
-					<AppDeleteAction
-						v-model="isBulkActionMenuOpen"
-						:title="selectedTaskIds.length > 1 ? 'Delete tasks?' : 'Delete task?'"
-						:description="selectedTaskIds.length > 1 ? 'Are you sure you want to delete these tasks? This action cannot be undone.' : 'Are you sure you want to delete this task? This action cannot be undone.'"
-						@cancel="isBulkActionMenuOpen = false"
-						@confirm="bulkDelete"
-					/>
+				<AppDeleteAction
+					v-model="isBulkActionMenuOpen"
+					:title="selectedTaskIds.length > 1 ? 'Delete tasks?' : 'Delete task?'"
+					:description="
+						selectedTaskIds.length > 1
+							? 'Are you sure you want to delete these tasks? This action cannot be undone.'
+							: 'Are you sure you want to delete this task? This action cannot be undone.'
+					"
+					@cancel="isBulkActionMenuOpen = false"
+					@confirm="bulkDelete"
+				/>
 			</div>
 		</div>
 	</div>

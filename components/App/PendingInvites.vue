@@ -26,6 +26,13 @@ const {
 
 const inviteCount = computed(() => pendingInvites.value?.length ?? 0);
 type InvitationEndpoint = typeof API_ENDPOINTS.invites.accept | typeof API_ENDPOINTS.invites.decline;
+type InvitationActionResponse = {
+	success: boolean;
+	message?: string;
+	error?: string;
+	isNewUser?: boolean;
+	resetToken?: string;
+};
 
 type MutationContext = {
 	previousInvites: PendingInvitation[];
@@ -33,7 +40,7 @@ type MutationContext = {
 
 const invitationActionMutation = useMutation({
 	mutationFn: async ({ endpoint, invitation }: { endpoint: InvitationEndpoint; invitation: PendingInvitation }) => {
-		const response = await useApiFetch<{ success: boolean; message?: string; error?: string }>(endpoint, {
+		const response = await useApiFetch<InvitationActionResponse>(endpoint, {
 			method: "POST",
 			body: { token: invitation.token },
 		});
@@ -58,8 +65,13 @@ const invitationActionMutation = useMutation({
 		}
 		toast.error(getServerError(error));
 	},
-	onSuccess: (_, variables) => {
+	onSuccess: async (response, variables) => {
 		if (variables.endpoint === API_ENDPOINTS.invites.accept) {
+			if (response.isNewUser && response.resetToken) {
+				toast.success("Invitation accepted. Set your password to continue.");
+				await navigateTo(`/reset-confirmation?token=${encodeURIComponent(response.resetToken)}`);
+				return;
+			}
 			toast.success("Invitation accepted successfully");
 		} else {
 			toast.success("Invitation declined");

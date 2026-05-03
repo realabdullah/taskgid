@@ -18,7 +18,15 @@ export const resetConfirmationFields = [
 	{ id: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "••••••••" },
 ];
 
-export const inviteFormFields = [{ id: "email", label: "Email Address", type: "email", placeholder: "colleague@example.com" }];
+export const inviteRoleOptions = [
+	{ label: "Member", value: "member" },
+	{ label: "Admin", value: "admin" },
+];
+
+export const inviteFormFields = [
+	{ id: "email", label: "Email Address", type: "email", placeholder: "colleague@example.com" },
+	{ id: "role", label: "Role", type: "select", placeholder: "Select a role (optional)", options: inviteRoleOptions },
+];
 
 export const profileUpdateFields = [
 	{ id: "firstName", label: "First Name", type: "text", placeholder: "John" },

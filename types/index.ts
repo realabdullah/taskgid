@@ -24,6 +24,16 @@ export interface User extends BaseUser {
 	createdAt: string;
 }
 
+export interface SentInvitation {
+	id: string;
+	email: string;
+	role: string;
+	status: "pending" | "accepted" | "expired" | "declined";
+	invitedAt: string;
+	expiresAt: string;
+	invitedBy: BaseUser;
+}
+
 export interface PendingInvitation {
 	invitationId: string;
 	token: string;

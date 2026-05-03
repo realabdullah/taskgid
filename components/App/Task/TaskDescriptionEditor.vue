@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useQueryClient } from "@tanstack/vue-query"
-import { toast } from "vue-sonner"
-import type { Task } from "~/types"
+import { useQueryClient } from "@tanstack/vue-query";
+import { toast } from "vue-sonner";
+import type { Task } from "~/types";
 
 const props = defineProps<{
 	task: Task;
@@ -28,10 +28,7 @@ watch(
 );
 
 const invalidateTask = async () => {
-	await Promise.all([
-		client.invalidateQueries({ queryKey: ["task", props.task.id] }),
-		client.invalidateQueries({ queryKey: ["workspace-tasks", props.workspaceSlug] }),
-	]);
+	await Promise.all([client.invalidateQueries({ queryKey: ["task", props.task.id] }), client.invalidateQueries({ queryKey: ["workspace-tasks", props.workspaceSlug] })]);
 };
 
 const patchTask = async (body: Partial<Pick<Task, "title" | "description">>) => {
@@ -88,12 +85,7 @@ const saveDescription = async () => {
 				@keydown.enter.prevent="saveTitle"
 				@keydown.esc.prevent="isEditingTitle = false"
 			/>
-			<button
-				v-else
-				type="button"
-				class="text-text-primary hover:bg-surface-1 min-h-11 w-full rounded-md px-2 py-1 text-left text-2xl font-semibold"
-				@click="isEditingTitle = true"
-			>
+			<button v-else type="button" class="text-text-primary hover:bg-surface-1 min-h-11 w-full rounded-md px-2 py-1 text-left text-2xl font-semibold" @click="isEditingTitle = true">
 				{{ props.task.title }}
 			</button>
 		</div>
@@ -102,19 +94,8 @@ const saveDescription = async () => {
 			<div class="flex items-center justify-between">
 				<p class="text-text-tertiary text-xs font-semibold tracking-widest uppercase">Description</p>
 				<div class="flex items-center gap-2">
-					<Button v-if="isEditingDescription" type="button" variant="ghost" size="sm" class="h-11 px-3" :disabled="isSaving" @click="isEditingDescription = false">
-						Cancel
-					</Button>
-					<Button
-						v-if="isEditingDescription"
-						type="button"
-						size="sm"
-						class="h-11 px-3"
-						:disabled="isSaving"
-						@click="saveDescription"
-					>
-						Save
-					</Button>
+					<Button v-if="isEditingDescription" type="button" variant="ghost" size="sm" class="h-11 px-3" :disabled="isSaving" @click="isEditingDescription = false"> Cancel </Button>
+					<Button v-if="isEditingDescription" type="button" size="sm" class="h-11 px-3" :disabled="isSaving" @click="saveDescription"> Save </Button>
 					<Button v-else type="button" variant="ghost" size="sm" class="h-11 px-3" @click="isEditingDescription = true">Edit</Button>
 				</div>
 			</div>

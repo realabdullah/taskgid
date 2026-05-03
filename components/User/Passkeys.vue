@@ -1,9 +1,9 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
-import { toast } from "vue-sonner";
 import type { Passkey } from "~/types";
 
-const { passkeys, addingPasskey, handleAddPasskey } = usePasskeys();
+const { passkeys, addingPasskey, handleAddPasskey, handleRemovePasskey } = usePasskeys();
+const isRemovingPasskey = ref(false);
 
 const { status } = useAsyncData(
 	"passkeys",
@@ -24,10 +24,18 @@ const requestRemove = (passkey: Passkey) => {
 	removeCandidate.value = passkey;
 };
 
-const confirmRemove = () => {
-	if (!removeCandidate.value) return;
-	toast.info("Passkey removal is coming soon.");
-	removeCandidate.value = null;
+const confirmRemove = async () => {
+	if (!removeCandidate.value || isRemovingPasskey.value) return;
+
+	try {
+		isRemovingPasskey.value = true;
+		const didRemove = await handleRemovePasskey(removeCandidate.value);
+		if (didRemove) {
+			removeCandidate.value = null;
+		}
+	} finally {
+		isRemovingPasskey.value = false;
+	}
 };
 </script>
 
@@ -75,10 +83,12 @@ const confirmRemove = () => {
 							</PopoverTrigger>
 							<PopoverContent align="end" class="border-border bg-surface-0 w-64 border p-3">
 								<p class="text-text-primary text-sm font-medium">Remove this passkey?</p>
-								<p class="text-text-tertiary mt-1 text-xs">This action is not available yet and will be added in a future update.</p>
+								<p class="text-text-tertiary mt-1 text-xs">This action removes the passkey from your account and cannot be undone.</p>
 								<div class="mt-3 flex justify-end gap-2">
-									<Button variant="secondary" size="sm" @click="removeCandidate = null">Cancel</Button>
-									<Button variant="destructive" size="sm" @click="confirmRemove">Remove</Button>
+									<Button variant="secondary" size="sm" :disabled="isRemovingPasskey" @click="removeCandidate = null">Cancel</Button>
+									<Button variant="destructive" size="sm" :loading="isRemovingPasskey" loading-label="Removing passkey" :disabled="isRemovingPasskey" @click="confirmRemove">
+										Remove
+									</Button>
 								</div>
 							</PopoverContent>
 						</Popover>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SidebarProps } from "@/components/ui/sidebar"
+import type { SidebarProps } from "@/components/ui/sidebar";
 
 const { collapsible = "icon", ...props } = defineProps<SidebarProps>();
 

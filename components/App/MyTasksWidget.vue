@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query"
+import { useQuery } from "@tanstack/vue-query";
 
-import type { Task } from "~/types"
-import { useApiFetch } from "../../composables/useApiFetch"
-import { useStore } from "../../stores"
-import { useWorkspacesStore } from "../../stores/workspaces"
-import { formatDate } from "../../utils"
+import type { Task } from "~/types";
+import { useApiFetch } from "../../composables/useApiFetch";
+import { useStore } from "../../stores";
+import { useWorkspacesStore } from "../../stores/workspaces";
+import { formatDate } from "../../utils";
 
 type DashboardTask = Task & {
 	workspaceTitle: string;
