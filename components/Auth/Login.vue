@@ -22,40 +22,35 @@ const setMode = (nextMode: AuthMode) => {
 </script>
 
 <template>
-	<section class="bg-canvas grid min-h-screen grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(420px,0.85fr)]">
-		<div class="bg-rail relative hidden overflow-hidden px-10 py-10 lg:flex lg:flex-col lg:justify-between xl:px-16">
-			<div class="relative z-10 flex items-center gap-3 text-white">
-				<AppBrandMark size="md" show-name inverted />
+	<section class="bg-canvas grid min-h-screen grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
+		<div class="bg-rail relative hidden min-h-screen overflow-hidden px-10 py-10 lg:flex lg:flex-col xl:px-16 xl:py-12">
+			<svg aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full opacity-10" viewBox="0 0 980 1080" fill="none" preserveAspectRatio="xMidYMid slice">
+				<path d="M-120 52 342 52 512 142 950 142" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-90 160 312 160 482 250 920 250" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-160 268 282 268 452 358 890 358" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-100 376 252 376 422 466 860 466" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-130 484 222 484 392 574 830 574" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-70 592 192 592 362 682 800 682" stroke="currentColor" class="text-primary" stroke-width="6" />
+				<path d="M-110 700 162 700 332 790 770 790" stroke="currentColor" class="text-primary" stroke-width="6" />
+			</svg>
+
+			<div class="relative z-10 flex items-baseline justify-between text-white">
+				<p class="font-mono text-sm font-bold tracking-[0.12em] uppercase">Taskgid</p>
+				<p class="text-sidebar-foreground/55 text-xs">Task, get it done.</p>
 			</div>
 
-			<div class="relative z-10 max-w-xl pb-8">
-				<p class="text-sidebar-foreground/55 text-sm font-semibold">The focused workspace for product teams</p>
-				<h1 class="mt-5 max-w-lg text-5xl leading-[0.98] font-extrabold tracking-[-0.065em] text-white xl:text-6xl">Make the next move obvious.</h1>
-				<p class="text-sidebar-foreground/70 mt-6 max-w-md text-base leading-7">
-					Taskgid brings priorities, ownership, and progress into one calm place—so teams can spend less time coordinating and more time moving.
-				</p>
-				<div class="border-sidebar-border mt-10 grid max-w-md grid-cols-3 divide-x overflow-hidden rounded-xl border bg-white/5 text-center">
-					<div class="px-3 py-4">
-						<p class="text-lg font-bold text-white">Focus</p>
-						<p class="text-sidebar-foreground/55 mt-1 text-xs">what matters</p>
-					</div>
-					<div class="px-3 py-4">
-						<p class="text-lg font-bold text-white">Flow</p>
-						<p class="text-sidebar-foreground/55 mt-1 text-xs">keep moving</p>
-					</div>
-					<div class="px-3 py-4">
-						<p class="text-lg font-bold text-white">Clarity</p>
-						<p class="text-sidebar-foreground/55 mt-1 text-xs">shared context</p>
-					</div>
-				</div>
+			<div class="relative z-10 mt-auto max-w-lg pb-8">
+				<p class="text-primary font-mono text-[11px] font-semibold tracking-[0.16em] uppercase">Task management for teams</p>
+				<h1 class="mt-4 text-5xl leading-[0.94] font-extrabold tracking-[-0.035em] text-white xl:text-6xl">Keep tasks moving.</h1>
+				<p class="text-sidebar-foreground/70 mt-5 max-w-sm text-sm leading-6">A focused place to decide, assign, and finish what matters.</p>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
+		<div class="relative flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
 			<div class="w-full max-w-[380px]">
-				<div class="mb-8 text-center lg:hidden">
-					<AppBrandMark class="text-primary mx-auto mb-3" size="md" />
-					<p class="brand-wordmark text-text-primary">Taskgid</p>
+				<div class="mb-10 flex items-baseline justify-between lg:hidden">
+					<p class="font-mono text-sm font-bold tracking-[0.12em] uppercase">Taskgid</p>
+					<p class="text-text-tertiary text-xs">Task, get it done.</p>
 				</div>
 
 				<Transition
