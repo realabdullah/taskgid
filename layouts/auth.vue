@@ -8,7 +8,7 @@ const pageMap: { [key: string]: { title: string; description: string } } = {
 
 const route = useRoute();
 const page = computed(() => pageMap[route.name as keyof typeof pageMap]);
-const isSplitAuthPage = computed(() => route.path === "/");
+const isSplitAuthPage = computed(() => route.path === "/login" || route.path === "/signup");
 </script>
 
 <template>
