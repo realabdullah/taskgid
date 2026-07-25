@@ -24,7 +24,6 @@ const setMode = (nextMode: AuthMode) => {
 <template>
 	<section class="bg-canvas grid min-h-screen grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(420px,0.85fr)]">
 		<div class="bg-rail relative hidden overflow-hidden px-10 py-10 lg:flex lg:flex-col lg:justify-between xl:px-16">
-			<div class="pointer-events-none absolute inset-y-0 right-[14%] w-px bg-white/10" />
 			<div class="relative z-10 flex items-center gap-3 text-white">
 				<AppBrandMark size="md" show-name inverted />
 			</div>
