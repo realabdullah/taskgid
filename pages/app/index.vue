@@ -7,7 +7,7 @@ import { formatDate } from "../../utils";
 definePageMeta({
 	name: "app",
 	title: "Dashboard",
-	description: "TaskGid - Dashboard",
+	description: "Taskgid — Tasks, in view.",
 	layout: "workspace",
 });
 
@@ -52,30 +52,19 @@ const openCreateWorkspace = () => {
 </script>
 
 <template>
-	<div class="space-y-8 pb-4">
-		<section class="linear-shell rounded-xl p-6">
-			<div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-				<div>
-					<p class="text-2xs text-text-tertiary mb-2 font-semibold tracking-[0.12em] uppercase">My workspace</p>
-					<h1 class="linear-title text-2xl font-semibold">{{ greeting }}, {{ user?.firstName }}.</h1>
-					<p class="text-text-tertiary mt-1 text-sm">{{ currentDate }}</p>
-				</div>
-
-				<section class="flex flex-wrap items-center gap-3">
-					<Button class="h-9 shadow-sm" @click="openNewTask">
-						<Icon name="lucide:plus" :size="16" />
-						New task
-					</Button>
-					<Button variant="secondary" class="h-9" @click="openInvite">
-						<Icon name="lucide:user-plus" :size="16" />
-						Invite teammate
-					</Button>
-					<Button variant="secondary" class="h-9" @click="openCreateWorkspace">
-						<Icon name="lucide:folder-plus" :size="16" />
-						New workspace
-					</Button>
-				</section>
+	<div class="space-y-8 pb-8">
+		<section class="border-border flex flex-col gap-5 border-b pb-6 lg:flex-row lg:items-end lg:justify-between">
+			<div>
+				<p class="text-text-tertiary text-sm font-semibold">{{ currentDate }}</p>
+				<h1 class="page-heading mt-2">{{ greeting }}, {{ user?.firstName }}.</h1>
+				<p class="page-intro mt-3">Start with the tasks that need a decision, an owner, or an update.</p>
 			</div>
+
+			<section class="flex flex-wrap items-center gap-2 lg:justify-end">
+				<Button class="focus-ring h-10 px-4 shadow-xs" @click="openNewTask"><Icon name="lucide:plus" :size="16" />New task</Button>
+				<Button variant="secondary" class="h-10" @click="openInvite"><Icon name="lucide:user-plus" :size="16" />Invite teammate</Button>
+				<Button variant="secondary" class="h-10" @click="openCreateWorkspace"><Icon name="lucide:folder-plus" :size="16" />New workspace</Button>
+			</section>
 		</section>
 
 		<AppPendingInvites />
@@ -89,7 +78,7 @@ const openCreateWorkspace = () => {
 		<AppEmptyState
 			v-else
 			heading="Create your first workspace"
-			subheading="Welcome to TaskGid"
+			subheading="Welcome to Taskgid"
 			body="You need a workspace to structure your team, create tasks, and start collaborating."
 			icon="hugeicons:folder-add"
 			:action="{

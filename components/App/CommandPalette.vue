@@ -96,7 +96,7 @@ const openTask = async (task: Task) => {
 
 <template>
 	<CommandDialog v-model:open="isOpen" title="Command Palette" description="Search tasks, workspaces, and quick actions">
-		<Command class="border-border bg-surface-0 max-h-[70vh] rounded-xl border">
+		<Command class="command-surface max-h-[70vh] rounded-lg">
 			<CommandInput v-model="search" placeholder="Search tasks and workspaces..." />
 			<CommandList>
 				<CommandEmpty>No results found.</CommandEmpty>

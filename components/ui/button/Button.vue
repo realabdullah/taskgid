@@ -10,11 +10,12 @@ interface Props extends PrimitiveProps {
 	loading?: boolean;
 	loadingLabel?: string;
 	minWidth?: string;
+	contentClass?: HTMLAttributes["class"];
 	class?: HTMLAttributes["class"];
 	disabled?: boolean;
 }
 
-const { as = "button", loading = false, loadingLabel = "Loading", ...props } = defineProps<Props>();
+const { as = "button", loading = false, loadingLabel = "Loading", contentClass, ...props } = defineProps<Props>();
 </script>
 
 <template>
@@ -31,6 +32,6 @@ const { as = "button", loading = false, loadingLabel = "Loading", ...props } = d
 			<Icon name="lucide:loader-circle" class="h-4 w-4 animate-spin" />
 			<span class="inline-flex items-center justify-center">{{ loadingLabel }}</span>
 		</template>
-		<span v-else class="inline-flex items-center justify-center gap-2"><slot /></span>
+		<span v-else :class="cn('inline-flex items-center justify-center gap-2', contentClass)"><slot /></span>
 	</Primitive>
 </template>

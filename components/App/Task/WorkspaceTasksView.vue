@@ -79,7 +79,7 @@ const emptyStateCopy = computed(() => {
 	} else {
 		return {
 			heading: "No tasks yet",
-			body: "Create your first one to start moving work forward.",
+			body: "Create your first task to start organizing tasks in this workspace.",
 			actionLabel: "New task",
 		};
 	}
@@ -448,35 +448,35 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="space-y-6 overflow-x-hidden">
-		<div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+	<div class="mx-auto max-w-[1220px] space-y-6 overflow-x-hidden">
+		<div class="bg-rail flex flex-col gap-5 rounded-md p-5 text-white sm:p-6 lg:flex-row lg:items-end lg:justify-between">
 			<div>
-				<p class="text-2xs text-text-tertiary mb-2 font-semibold tracking-[0.12em] uppercase">Workspace queue</p>
-				<h1 class="linear-title text-xl font-semibold">Tasks</h1>
-				<p class="text-text-secondary text-sm">Manage and triage work without losing context.</p>
+				<p class="text-sidebar-foreground/55 text-sm font-semibold">Workspace tasks</p>
+				<h1 class="mt-2 text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Manage tasks with clarity.</h1>
+				<p class="text-sidebar-foreground/70 mt-2 max-w-xl text-sm leading-6">Create tasks, assign owners, and track progress in one place.</p>
 			</div>
 
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-				<div class="border-border bg-surface-0 inline-flex h-10 w-full items-center rounded-xl border p-1 sm:h-9 sm:w-auto sm:rounded-md">
+				<div class="inline-flex h-10 w-full items-center rounded-sm bg-white/10 p-1 sm:h-9 sm:w-auto">
 					<button
 						type="button"
-						class="interactive flex-1 rounded-lg px-3 py-2 text-sm sm:flex-none sm:rounded-md sm:py-1"
-						:class="viewMode === 'list' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive flex-1 rounded-md px-3 py-2 text-xs font-semibold sm:flex-none sm:py-1"
+						:class="viewMode === 'list' ? 'text-rail bg-white shadow-xs' : 'text-sidebar-foreground/65 hover:bg-white/10'"
 						@click="viewMode = 'list'"
 					>
 						List
 					</button>
 					<button
 						type="button"
-						class="interactive flex-1 rounded-lg px-3 py-2 text-sm sm:flex-none sm:rounded-md sm:py-1"
-						:class="viewMode === 'board' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive flex-1 rounded-md px-3 py-2 text-xs font-semibold sm:flex-none sm:py-1"
+						:class="viewMode === 'board' ? 'text-rail bg-white shadow-xs' : 'text-sidebar-foreground/65 hover:bg-white/10'"
 						@click="viewMode = 'board'"
 					>
 						Board
 					</button>
 				</div>
 
-				<Button class="h-11 w-full shadow-sm sm:h-9 sm:w-auto" @click="openCreateTaskModal">
+				<Button class="focus-ring bg-primary hover:bg-accent-hover h-11 w-full shadow-none sm:h-9 sm:w-auto" @click="openCreateTaskModal">
 					<Icon name="lucide:plus" :size="16" />
 					New task
 				</Button>
@@ -484,11 +484,11 @@ onBeforeUnmount(() => {
 			</div>
 		</div>
 
-		<div class="linear-shell space-y-3 rounded-2xl p-3 sm:rounded-lg">
+		<div class="border-border border-y py-4">
 			<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
 				<div class="relative w-full sm:w-52 sm:transition-all sm:focus-within:w-72">
 					<Icon name="lucide:search" :size="16" class="text-text-tertiary pointer-events-none absolute top-1/2 left-3 -translate-y-1/2" />
-					<Input v-model="searchInput" class="h-11 rounded-xl pr-8 pl-9 sm:h-9 sm:rounded-full" placeholder="Search tasks..." />
+					<Input v-model="searchInput" class="h-11 rounded-lg pr-8 pl-9 sm:h-10" placeholder="Search tasks..." />
 					<button
 						v-if="searchInput.length > 0"
 						type="button"
@@ -500,12 +500,12 @@ onBeforeUnmount(() => {
 					</button>
 				</div>
 
-				<div class="no-scrollbar -mx-1 flex items-center gap-2 overflow-x-auto px-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+				<div class="flex flex-wrap items-center gap-2">
 					<Popover>
 						<PopoverTrigger as-child>
 							<button
 								type="button"
-								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+								class="interactive focus-ring border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-lg border px-4 text-xs font-semibold sm:h-9 sm:min-h-0 sm:px-3"
 							>
 								Status
 							</button>
@@ -532,7 +532,7 @@ onBeforeUnmount(() => {
 						<PopoverTrigger as-child>
 							<button
 								type="button"
-								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+								class="interactive focus-ring border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-lg border px-4 text-xs font-semibold sm:h-9 sm:min-h-0 sm:px-3"
 							>
 								Priority
 							</button>
@@ -559,7 +559,7 @@ onBeforeUnmount(() => {
 						<PopoverTrigger as-child>
 							<button
 								type="button"
-								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+								class="interactive focus-ring border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-lg border px-4 text-xs font-semibold sm:h-9 sm:min-h-0 sm:px-3"
 							>
 								Assignee
 							</button>
@@ -586,7 +586,7 @@ onBeforeUnmount(() => {
 						<PopoverTrigger as-child>
 							<button
 								type="button"
-								class="interactive border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-full border px-4 text-sm sm:h-7 sm:min-h-0 sm:px-3"
+								class="interactive focus-ring border-border bg-surface-0 text-text-secondary hover:bg-surface-2 min-h-11 shrink-0 rounded-lg border px-4 text-xs font-semibold sm:h-9 sm:min-h-0 sm:px-3"
 							>
 								Due date
 							</button>
@@ -609,9 +609,9 @@ onBeforeUnmount(() => {
 				</div>
 
 				<div class="flex w-full items-center gap-2 pt-1 sm:ml-auto sm:w-auto sm:pt-0">
-					<label class="text-text-secondary shrink-0 text-sm">Group by</label>
+					<label class="text-text-tertiary shrink-0 text-xs font-semibold">Group by</label>
 					<Select v-model="groupBy">
-						<SelectTrigger class="h-11 w-full rounded-xl sm:h-8 sm:w-44 sm:rounded-md">
+						<SelectTrigger class="h-11 w-full rounded-sm sm:h-8 sm:w-44 sm:rounded-sm">
 							<SelectValue placeholder="None" />
 						</SelectTrigger>
 						<SelectContent>
@@ -624,12 +624,12 @@ onBeforeUnmount(() => {
 				</div>
 			</div>
 
-			<div v-if="isFilterActive" class="border-border flex flex-wrap gap-2 border-t pt-3">
+			<div v-if="isFilterActive" class="border-border mt-4 flex flex-wrap gap-2 border-t pt-3">
 				<button
 					v-for="status in filter.status"
 					:key="`status-${status}`"
 					type="button"
-					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[10px] font-medium uppercase"
 					@click="filter.status = filter.status.filter((item) => item !== status)"
 				>
 					Status: {{ statusLabelMap[status as Task["status"]] }}
@@ -639,7 +639,7 @@ onBeforeUnmount(() => {
 					v-for="priority in filter.priority"
 					:key="`priority-${priority}`"
 					type="button"
-					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[10px] font-medium uppercase"
 					@click="filter.priority = filter.priority.filter((item) => item !== priority)"
 				>
 					Priority: {{ priorityLabelMap[priority as Task["priority"]] }}
@@ -649,7 +649,7 @@ onBeforeUnmount(() => {
 					v-for="assignee in filter.assignee"
 					:key="`assignee-${assignee}`"
 					type="button"
-					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[10px] font-medium uppercase"
 					@click="filter.assignee = filter.assignee.filter((item) => item !== assignee)"
 				>
 					Assignee: {{ assignee }}
@@ -658,7 +658,7 @@ onBeforeUnmount(() => {
 				<button
 					v-if="dueDateFilter !== 'all'"
 					type="button"
-					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
+					class="interactive border-accent/30 bg-accent-subtle text-accent-text inline-flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[10px] font-medium uppercase"
 					@click="dueDateFilter = 'all'"
 				>
 					Due: {{ dueDateOptions.find((item) => item.value === dueDateFilter)?.label }}
@@ -676,10 +676,10 @@ onBeforeUnmount(() => {
 			:action="{ label: 'Create workspace', onClick: triggerCreateWorkspace }"
 		/>
 
-		<div v-else-if="isFetching" class="space-y-2">
-			<Skeleton class="h-11 w-full" />
-			<Skeleton class="h-11 w-full" />
-			<Skeleton class="h-11 w-full" />
+		<div v-else-if="isFetching" class="space-y-3 border-t pt-4">
+			<Skeleton class="h-20 w-full rounded-sm" />
+			<Skeleton class="h-14 w-full rounded-sm" />
+			<Skeleton class="h-14 w-full rounded-sm" />
 		</div>
 
 		<AppEmptyState
@@ -690,16 +690,21 @@ onBeforeUnmount(() => {
 			:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
 		/>
 
-		<div v-else-if="sortedTasks.length">
+		<div v-else-if="sortedTasks.length" class="border-border border-t pt-4">
 			<div v-if="viewMode === 'list'" class="space-y-5">
 				<div v-for="group in groupedTasks" :key="group.key" class="space-y-2">
-					<div v-if="groupBy !== 'none'" class="text-text-tertiary px-1 text-xs font-semibold tracking-widest uppercase">{{ group.label }}</div>
+					<div v-if="groupBy !== 'none'" class="text-text-secondary px-2 text-sm font-bold">{{ group.label }}</div>
 
-					<div class="md:border-border md:bg-surface-0 space-y-3 border-0 bg-transparent md:space-y-0 md:rounded-lg md:border">
+					<div class="border-border overflow-hidden rounded-md border md:space-y-0">
+						<div
+							class="text-text-tertiary bg-surface-1 border-border hidden h-10 grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] items-center gap-2 border-b px-4 text-[10px] font-bold tracking-[0.06em] uppercase md:grid"
+						>
+							<span /><span>Status</span><span>Task</span><span>Priority</span><span>Owner</span><span>Due</span><span />
+						</div>
 						<div
 							v-for="task in group.tasks"
 							:key="task.id"
-							class="group border-border/80 bg-surface-0 md:border-border rounded-2xl border px-3 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] md:grid md:h-11 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] md:items-center md:gap-2 md:rounded-none md:border-x-0 md:border-t-0 md:border-b md:bg-transparent md:px-3 md:py-0 md:shadow-none first:md:rounded-t-lg last:md:rounded-b-lg last:md:border-b-0"
+							class="group focus-within:bg-accent-soft hover:bg-accent-soft border-border bg-surface-1 md:grid md:h-14 md:grid-cols-[24px_88px_minmax(0,1fr)_56px_64px_96px_32px] md:items-center md:gap-2 md:border-x-0 md:border-t-0 md:border-b md:bg-transparent md:px-4 md:py-0 last:md:border-b-0"
 							:class="{ 'bg-surface-2/60 ring-accent/20 ring-1 md:ring-0': focusedTask?.id === task.id }"
 						>
 							<div class="space-y-3 md:hidden">
@@ -710,13 +715,13 @@ onBeforeUnmount(() => {
 									</div>
 
 									<div class="flex shrink-0 items-center gap-1">
-										<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-11 w-11 rounded-xl" aria-label="Open task" @click="openTaskDetails(task)">
+										<Button v-if="editingTaskId !== task.id" variant="ghost" size="icon" class="h-11 w-11 rounded-sm" aria-label="Open task" @click="openTaskDetails(task)">
 											<Icon name="lucide:arrow-right" :size="16" />
 										</Button>
 
 										<DropdownMenu>
 											<DropdownMenuTrigger as-child>
-												<Button variant="ghost" size="icon" class="h-11 w-11 rounded-xl" aria-label="Task actions">
+												<Button variant="ghost" size="icon" class="h-11 w-11 rounded-sm" aria-label="Task actions">
 													<Icon name="lucide:ellipsis" :size="16" />
 												</Button>
 											</DropdownMenuTrigger>
@@ -724,7 +729,7 @@ onBeforeUnmount(() => {
 												<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
 												<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
 												<DropdownMenuSeparator />
-												<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
+												<DropdownMenuItem variant="destructive" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
 											</DropdownMenuContent>
 										</DropdownMenu>
 									</div>
@@ -734,7 +739,7 @@ onBeforeUnmount(() => {
 									<input
 										v-if="editingTaskId === task.id"
 										v-model="editingTitle"
-										class="border-border bg-surface-0 focus-visible:ring-accent h-11 w-full rounded-xl border px-3 text-sm focus-visible:ring-2"
+										class="border-border bg-surface-0 focus-visible:ring-accent h-11 w-full rounded-sm border px-3 text-sm focus-visible:ring-2"
 										@keydown.enter.prevent="saveInlineEdit(task)"
 										@keydown.esc.prevent="cancelInlineEdit"
 										@blur="saveInlineEdit(task)"
@@ -825,7 +830,7 @@ onBeforeUnmount(() => {
 										<DropdownMenuItem @select="setSelectedTask(task, 'update')">Edit</DropdownMenuItem>
 										<DropdownMenuItem @select="openTaskDetails(task)">Open</DropdownMenuItem>
 										<DropdownMenuSeparator />
-										<DropdownMenuItem class="text-danger" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
+										<DropdownMenuItem variant="destructive" @select="setSelectedTask(task, 'delete')">Delete</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
 							</div>
@@ -836,7 +841,7 @@ onBeforeUnmount(() => {
 
 			<div v-else class="overflow-x-auto pb-2">
 				<div class="flex min-w-[760px] snap-x snap-mandatory gap-4">
-					<section v-for="column in statusColumns" :key="column.key" class="border-border bg-surface-0 w-full min-w-[240px] snap-start rounded-lg border p-3">
+					<section v-for="column in statusColumns" :key="column.key" class="border-border bg-surface-0 w-full min-w-[260px] snap-start border p-3">
 						<div class="mb-3 flex items-center justify-between">
 							<p class="text-text-primary text-sm font-medium">{{ column.label }}</p>
 							<span class="border-border text-2xs text-text-tertiary rounded-full border px-2 py-0.5">{{ column.tasks.length }}</span>
@@ -846,7 +851,7 @@ onBeforeUnmount(() => {
 							<article
 								v-for="task in column.tasks"
 								:key="task.id"
-								class="interactive border-border bg-surface-0 hover:bg-surface-1 cursor-pointer rounded-lg border p-3"
+								class="interactive border-border bg-surface-1 hover:bg-surface-2 cursor-pointer border p-3"
 								@click="openTaskDetails(task)"
 							>
 								<p class="text-text-primary line-clamp-2 text-sm">{{ task.title }}</p>
@@ -891,7 +896,7 @@ onBeforeUnmount(() => {
 
 		<div v-if="selectedTaskIds.length > 0" class="fixed inset-x-4 bottom-4 z-50 sm:right-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2">
 			<div
-				class="bg-text-primary text-surface-0 flex min-h-12 flex-wrap items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl sm:h-12 sm:flex-nowrap sm:rounded-full sm:px-5 sm:py-0"
+				class="bg-rail text-sidebar-foreground border-sidebar-border flex min-h-12 flex-wrap items-center gap-3 border px-4 py-3 text-sm font-medium shadow-xl sm:h-12 sm:flex-nowrap sm:px-5 sm:py-0"
 			>
 				<button type="button" class="interactive rounded-full p-1 hover:bg-white/15" aria-label="Clear selection" @click="clearSelection">
 					<Icon name="lucide:x" :size="14" />

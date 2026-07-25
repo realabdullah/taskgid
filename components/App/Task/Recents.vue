@@ -69,7 +69,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="space-y-4">
+	<div class="border-border border-y">
 		<AppEmptyState
 			v-if="!hasWorkspaceContext"
 			heading="Create a workspace first"
@@ -78,10 +78,10 @@ onBeforeUnmount(() => {
 			:action="{ label: 'Create workspace', onClick: triggerCreateWorkspace }"
 		/>
 
-		<div v-else-if="isRecentTasksLoading" class="space-y-2">
-			<Skeleton class="h-20 w-full" />
-			<Skeleton class="h-20 w-full" />
-			<Skeleton class="h-20 w-full" />
+		<div v-else-if="isRecentTasksLoading" class="space-y-px py-2">
+			<Skeleton class="h-16 w-full" />
+			<Skeleton class="h-16 w-full" />
+			<Skeleton class="h-16 w-full" />
 		</div>
 
 		<AppEmptyState
@@ -96,12 +96,7 @@ onBeforeUnmount(() => {
 			<AppTaskCard v-for="task in recentTasks" :key="task.id" :task="task" @edit="setSelectedTask(task, 'update')" @delete="setSelectedTask(task, 'delete')" />
 		</template>
 
-		<AppEmptyState
-			v-else
-			heading="No tasks yet"
-			body="Create your first task to start organizing work and moving things forward."
-			:action="{ label: 'Create task', onClick: openCreateTaskModal }"
-		/>
+		<AppEmptyState v-else heading="No tasks yet" body="Create your first task to start organizing tasks in this workspace." :action="{ label: 'Create task', onClick: openCreateTaskModal }" />
 
 		<AppDeleteAction
 			v-model="isDeleteModalOpen"

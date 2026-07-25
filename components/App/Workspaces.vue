@@ -6,7 +6,7 @@ const { isLoadingWorkspaces, workspaceType, workspaces, pagination } = storeToRe
 
 const tabs = [
 	{ value: "all", label: "All Workspaces" },
-	{ value: "created", label: "My Workspaces" },
+	{ value: "created", label: "Created by me" },
 	{ value: "invited", label: "Shared With Me" },
 ];
 

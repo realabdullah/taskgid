@@ -65,11 +65,11 @@ const removeMember = async () => {
 </script>
 
 <template>
-	<section class="border-border bg-surface-0 space-y-4 rounded-lg border p-4">
+	<section class="space-y-5">
 		<div class="flex flex-col justify-between gap-3 md:flex-row md:items-center">
 			<div>
-				<p class="text-text-primary text-sm font-semibold">Members</p>
-				<p class="text-text-tertiary text-xs">Team directory with assignment and performance details.</p>
+				<p class="text-text-primary text-2xl font-bold tracking-[-0.035em]">Roster</p>
+				<p class="text-text-secondary mt-1 text-sm">Team directory with assignment and performance details.</p>
 			</div>
 			<div class="flex items-center gap-2">
 				<div class="relative">
@@ -94,11 +94,9 @@ const removeMember = async () => {
 			:action="{ label: 'Retry', onClick: () => refetchMembers(), variant: 'secondary' }"
 		/>
 
-		<div v-else-if="members && members.length" class="overflow-x-auto">
+		<div v-else-if="members && members.length" class="border-border overflow-x-auto border-y">
 			<div class="min-w-[760px]">
-				<div
-					class="border-border text-2xs text-text-tertiary grid h-10 grid-cols-[minmax(240px,1.4fr)_120px_120px_120px_120px_56px] items-center border-b px-3 font-semibold tracking-widest uppercase"
-				>
+				<div class="text-2xs text-text-tertiary grid h-12 grid-cols-[minmax(240px,1.4fr)_120px_120px_120px_120px_56px] items-center border-b px-5 font-semibold tracking-widest uppercase">
 					<span>Member</span>
 					<span>Assigned</span>
 					<span>Completed</span>
@@ -110,7 +108,7 @@ const removeMember = async () => {
 				<div
 					v-for="member in members"
 					:key="member.id"
-					class="border-border/70 hover:bg-surface-2/40 grid h-12 grid-cols-[minmax(240px,1.4fr)_120px_120px_120px_120px_56px] items-center border-b px-3 text-sm last:border-b-0"
+					class="border-border/70 hover:bg-accent-soft grid h-16 grid-cols-[minmax(240px,1.4fr)_120px_120px_120px_120px_56px] items-center border-b px-5 text-sm last:border-b-0"
 				>
 					<button type="button" class="flex items-center gap-3 text-left" @click="openMemberDetails(member)">
 						<Avatar class="h-8 w-8">
@@ -139,7 +137,7 @@ const removeMember = async () => {
 								<DropdownMenuItem @select="setMember(member, 'view-details')">View details</DropdownMenuItem>
 								<DropdownMenuItem @select="setMember(member, 'assign-task')">Assign tasks</DropdownMenuItem>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem class="text-danger" @select="removeMember">Remove member</DropdownMenuItem>
+								<DropdownMenuItem variant="destructive" @select="removeMember">Remove member</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>

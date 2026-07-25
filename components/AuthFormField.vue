@@ -45,9 +45,10 @@ const togglePasswordVisibility = () => {
 				</FormControl>
 				<SelectContent>
 					<SelectGroup>
-						<template v-if="options">
+						<template v-if="options?.length">
 							<SelectItem v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</SelectItem>
 						</template>
+						<SelectLabel v-else class="text-text-tertiary py-3 text-center text-xs font-medium">No options available</SelectLabel>
 					</SelectGroup>
 				</SelectContent>
 			</Select>

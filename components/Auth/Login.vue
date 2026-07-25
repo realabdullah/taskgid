@@ -22,33 +22,41 @@ const setMode = (nextMode: AuthMode) => {
 </script>
 
 <template>
-	<section class="bg-surface-1 grid min-h-screen grid-cols-1 lg:grid-cols-2">
-		<div class="bg-primary relative hidden overflow-hidden px-10 py-12 lg:flex lg:flex-col lg:justify-between">
-			<div class="absolute inset-0 bg-black/10" />
-			<div
-				class="absolute inset-0 opacity-55"
-				style="background-image: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25), transparent 45%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.2), transparent 40%)"
-			/>
-			<div class="relative z-10 flex items-center gap-2 text-white">
-				<div class="flex h-8 w-8 items-center justify-center rounded-md bg-white/15">
-					<Icon name="hugeicons:checkmark-circle-03" :size="18" />
-				</div>
-				<span class="font-display text-lg font-semibold">TaskGid</span>
+	<section class="bg-canvas grid min-h-screen grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(420px,0.85fr)]">
+		<div class="bg-rail relative hidden overflow-hidden px-10 py-10 lg:flex lg:flex-col lg:justify-between xl:px-16">
+			<div class="pointer-events-none absolute inset-y-0 right-[14%] w-px bg-white/10" />
+			<div class="relative z-10 flex items-center gap-3 text-white">
+				<AppBrandMark size="md" show-name inverted />
 			</div>
 
-			<div class="relative z-10 max-w-md">
-				<p class="font-display text-3xl leading-tight font-semibold text-white drop-shadow-sm">Your team's work, in one clear view.</p>
-				<p class="mt-4 text-sm leading-normal text-white/95 drop-shadow-sm">Plan, prioritize, and deliver with less switching and clearer momentum.</p>
+			<div class="relative z-10 max-w-xl pb-8">
+				<p class="text-sidebar-foreground/55 text-sm font-semibold">The focused workspace for product teams</p>
+				<h1 class="mt-5 max-w-lg text-5xl leading-[0.98] font-extrabold tracking-[-0.065em] text-white xl:text-6xl">Make the next move obvious.</h1>
+				<p class="text-sidebar-foreground/70 mt-6 max-w-md text-base leading-7">
+					Taskgid brings priorities, ownership, and progress into one calm place—so teams can spend less time coordinating and more time moving.
+				</p>
+				<div class="border-sidebar-border mt-10 grid max-w-md grid-cols-3 divide-x overflow-hidden rounded-xl border bg-white/5 text-center">
+					<div class="px-3 py-4">
+						<p class="text-lg font-bold text-white">Focus</p>
+						<p class="text-sidebar-foreground/55 mt-1 text-xs">what matters</p>
+					</div>
+					<div class="px-3 py-4">
+						<p class="text-lg font-bold text-white">Flow</p>
+						<p class="text-sidebar-foreground/55 mt-1 text-xs">keep moving</p>
+					</div>
+					<div class="px-3 py-4">
+						<p class="text-lg font-bold text-white">Clarity</p>
+						<p class="text-sidebar-foreground/55 mt-1 text-xs">shared context</p>
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-center px-5 py-10 sm:px-8">
+		<div class="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
 			<div class="w-full max-w-[380px]">
 				<div class="mb-8 text-center lg:hidden">
-					<div class="bg-primary mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white">
-						<Icon name="hugeicons:checkmark-circle-03" :size="20" />
-					</div>
-					<p class="font-display text-text-primary text-xl font-semibold">TaskGid</p>
+					<AppBrandMark class="text-primary mx-auto mb-3" size="md" />
+					<p class="brand-wordmark text-text-primary">Taskgid</p>
 				</div>
 
 				<Transition
@@ -59,8 +67,9 @@ const setMode = (nextMode: AuthMode) => {
 					leave-to-class="opacity-0 translate-y-2"
 				>
 					<div v-if="mode === 'login'" key="login">
-						<h1 class="font-display text-text-primary text-xl font-semibold">Welcome back</h1>
-						<p class="text-text-primary/90 mt-1 text-sm">Sign in to pick up where your team left off.</p>
+						<p class="editorial-kicker">Welcome back</p>
+						<h1 class="text-text-primary mt-2 text-3xl font-extrabold tracking-[-0.05em]">Your tasks are waiting.</h1>
+						<p class="text-text-secondary mt-3 text-sm leading-6">Sign in to see what needs your attention now.</p>
 
 						<div class="mt-6 space-y-4">
 							<AuthPasskeyLogin v-if="usingPasskeyLogin" v-slot="{ isSubmitting }">
@@ -82,7 +91,7 @@ const setMode = (nextMode: AuthMode) => {
 
 							<div class="relative">
 								<div class="absolute inset-0 flex items-center"><span class="border-border w-full border-t" /></div>
-								<div class="relative flex justify-center text-xs uppercase"><span class="bg-surface-1 text-text-tertiary px-2">or continue with</span></div>
+								<div class="relative flex justify-center text-xs uppercase"><span class="bg-canvas text-text-tertiary px-2 font-mono tracking-[0.08em]">or continue with</span></div>
 							</div>
 
 							<Button variant="secondary" class="h-10 w-full" @click="usingPasskeyLogin = !usingPasskeyLogin">
@@ -98,8 +107,9 @@ const setMode = (nextMode: AuthMode) => {
 					</div>
 
 					<div v-else key="signup">
-						<h1 class="font-display text-text-primary text-xl font-semibold">Create your account</h1>
-						<p class="text-text-primary/90 mt-1 text-sm">Create your account and start organizing work with clarity.</p>
+						<p class="editorial-kicker">Create your account</p>
+						<h1 class="text-text-primary mt-2 text-3xl font-extrabold tracking-[-0.05em]">Bring your tasks into focus.</h1>
+						<p class="text-text-secondary mt-3 text-sm leading-6">Create your account and give your team a clear shared view of every task.</p>
 
 						<div class="mt-6 space-y-4">
 							<AuthSignupForm v-slot="{ isSubmitting }">

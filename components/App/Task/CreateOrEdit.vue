@@ -138,18 +138,17 @@ watch(
 			</Button>
 		</DialogTrigger>
 
-		<DialogContent class="border-border bg-surface-0 max-h-[90vh] space-y-6 overflow-y-auto rounded-lg border p-6 shadow-md sm:max-w-[500px]">
-			<DialogHeader class="space-y-1">
-				<DialogTitle class="text-text-primary text-xl font-semibold">
-					{{ isCreatingMode ? "Create New Task" : "Update Task" }}
-				</DialogTitle>
-				<DialogDescription class="text-text-secondary text-sm">
-					{{ isCreatingMode ? "Add a new task to your workspace. Fill out the details below." : "Edit your task details below to update it in your workspace." }}
-				</DialogDescription>
+		<DialogContent class="border-border bg-surface-0 max-h-[calc(100dvh-1rem)] gap-0 overflow-x-hidden overflow-y-auto rounded-none border p-0 shadow-lg sm:max-w-[720px]">
+			<DialogHeader class="bg-rail px-6 py-4 pr-14 text-white sm:px-8">
+				<p class="text-sidebar-foreground/55 font-mono text-[10px] font-semibold tracking-[0.14em] uppercase">{{ isCreatingMode ? "New task" : "Edit task" }}</p>
+				<DialogTitle class="mt-1 text-2xl font-bold tracking-[-0.03em]">{{ isCreatingMode ? "Create a task." : "Update this task." }}</DialogTitle>
+				<DialogDescription class="text-sidebar-foreground/65 mt-2 max-w-md text-sm leading-6">{{
+					isCreatingMode ? "Add the details, owner, priority, and due date your team needs." : "Keep the task details accurate for everyone involved."
+				}}</DialogDescription>
 			</DialogHeader>
 
-			<form class="space-y-6" @submit="onSubmit">
-				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+			<form class="space-y-5 p-5 sm:p-6" @submit="onSubmit">
+				<div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
 					<AuthFormField
 						v-for="field in fields"
 						:key="field.id"
@@ -164,7 +163,7 @@ watch(
 					/>
 				</div>
 
-				<DialogFooter class="flex justify-between pt-2">
+				<DialogFooter class="border-border flex justify-between border-t pt-5">
 					<Button type="button" variant="outline" :disabled="isSubmitting" @click="setOpen(false)"> Cancel </Button>
 					<Button type="submit" :disabled="isSubmitting" :loading="isSubmitting" :loading-label="isCreatingMode ? 'Creating task' : 'Updating task'">
 						{{ isCreatingMode ? "Create Task" : "Update Task" }}

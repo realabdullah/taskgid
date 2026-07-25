@@ -509,7 +509,7 @@ watch(
 			</div>
 		</div>
 
-		<div class="grid gap-4">
+		<div class="border-border mt-6 grid gap-4 border-t pt-6">
 			<AuthFormField
 				v-for="(field, index) in profileUpdateFields"
 				:key="index"

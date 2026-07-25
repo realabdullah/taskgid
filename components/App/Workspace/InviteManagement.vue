@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Pagination, PendingInvitation, Workspace } from "~/types";
-
-const props = defineProps<{ workspace: Workspace }>();
+import type { Pagination, PendingInvitation } from "~/types";
 
 const queryClient = useQueryClient();
 

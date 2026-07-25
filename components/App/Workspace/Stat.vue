@@ -4,14 +4,6 @@ import type { ActivityDetails, StatisticsResponse } from "~/types";
 
 const props = defineProps<{ stats?: StatisticsResponse["statistics"] }>();
 
-const tabs = [
-	{ value: "tasks", label: "Tasks" },
-	{ value: "activity", label: "Activity" },
-	{ value: "members", label: "Members" },
-];
-
-const activeTab = ref("tasks");
-
 const tasksStats = computed(() => {
 	const breakdown = props.stats?.statusBreakdown || ({} as StatisticsResponse["statistics"]["statusBreakdown"]);
 	const statusColorMap: { [key: string]: string } = { todo: "bg-slate-500", in_progress: "bg-amber-500", done: "bg-green-500" };
@@ -59,82 +51,43 @@ const {
 </script>
 
 <template>
-	<Card>
-		<CardHeader>
-			<CardTitle>Workspace Statistics</CardTitle>
-			<CardDescription>Task completion and activity metrics for the current workspace</CardDescription>
-		</CardHeader>
-
-		<CardContent>
-			<Tabs v-model="activeTab">
-				<TabsList class="grid w-full grid-cols-3">
-					<TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">{{ tab.label }}</TabsTrigger>
-				</TabsList>
-
-				<TabsContent :value="activeTab" class="space-y-4">
-					<div v-if="activeTab === 'tasks'" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-						<div v-for="item in tasksStats" :key="item.title" class="space-y-2">
-							<div class="text-sm font-medium">{{ item.title }}</div>
-							<div v-for="summary in item.summary" :key="summary.key" class="space-y-2">
-								<div class="flex items-center justify-between">
-									<div class="text-sm">{{ summary.label }}</div>
-									<div class="text-sm font-medium">{{ summary.count }} ({{ summary.percentage }}%)</div>
-								</div>
-								<div class="bg-muted h-2 w-full overflow-hidden rounded-full">
-									<div class="h-full" :class="[summary.color]" :style="{ width: `${summary.percentage}%` }" />
-								</div>
-							</div>
-						</div>
+	<aside class="border-border border-l pl-6 lg:pl-8">
+		<div>
+			<h2 class="text-xl font-bold tracking-[-0.025em]">Workspace summary</h2>
+			<p class="text-text-secondary mt-1 text-sm">A compact view of task status and ownership.</p>
+		</div>
+		<section v-for="item in tasksStats" :key="item.title" class="border-border mt-6 border-t pt-4">
+			<h3 class="text-text-primary text-sm font-bold">{{ item.title }}</h3>
+			<div class="mt-3 space-y-3">
+				<div v-for="summary in item.summary" :key="summary.key">
+					<div class="flex items-center justify-between gap-3 text-xs">
+						<span class="text-text-secondary">{{ summary.label }}</span
+						><span class="text-text-primary font-mono font-semibold tabular-nums">{{ summary.count }} · {{ summary.percentage }}%</span>
 					</div>
+					<div class="bg-surface-2 mt-1.5 h-1.5 overflow-hidden"><div class="h-full" :class="[summary.color]" :style="{ width: `${summary.percentage}%` }" /></div>
+				</div>
+			</div>
+		</section>
 
-					<div v-else-if="activeTab === 'activity'" class="mt-4 space-y-4">
-						<div class="text-sm font-medium">Recent Activity</div>
-						<div v-if="isActivitiesLoading" class="space-y-2">
-							<Skeleton class="h-8 w-full" />
-							<Skeleton class="h-8 w-full" />
-							<Skeleton class="h-8 w-full" />
-						</div>
-
-						<AppEmptyState
-							v-else-if="isActivitiesError"
-							heading="Could not load activity"
-							:body="String(activitiesError || 'Please try again.')"
-							icon="lucide:alert-circle"
-							:action="{ label: 'Retry', onClick: () => refetchActivities(), variant: 'secondary' }"
-						/>
-
-						<div v-else-if="activities?.length" class="space-y-4">
-							<div v-for="activity in activities" :key="activity.id" class="flex items-start gap-4">
-								<div class="bg-primary mt-2 h-2 w-2 rounded-full" />
-								<div class="space-y-1">
-									<p class="text-sm font-medium">{{ getLabel(activity) }}</p>
-									<p class="text-muted-foreground text-sm" v-html="getDescription(activity)"></p>
-									<p class="text-muted-foreground text-xs">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
-								</div>
-							</div>
-						</div>
-
-						<AppEmptyState v-else heading="No activities yet" body="No activity recorded yet. Once you start managing tasks, your team's progress will appear here." />
-					</div>
-
-					<div v-else-if="activeTab === 'members'" class="mt-4 space-y-4">
-						<div class="text-sm font-medium">Member Activity</div>
-						<div v-if="stats?.memberActivity" class="space-y-4">
-							<div v-for="activity in stats?.memberActivity" :key="activity.user.username" class="space-y-2">
-								<div class="flex items-center justify-between">
-									<div class="text-sm">{{ activity.user.firstName }} {{ activity.user.lastName }}</div>
-									<div class="text-sm font-medium">{{ activity.assigned + activity.completed }} tasks</div>
-								</div>
-								<div class="bg-muted h-2 w-full overflow-hidden rounded-full">
-									<div class="bg-primary h-full" :style="{ width: `${activity.percentage}%` }" />
-								</div>
-							</div>
-						</div>
-
-						<AppEmptyState v-else heading="No member activity yet" body="Member activity will appear here after task updates and assignments." icon="lucide:users" />
-					</div>
-				</TabsContent>
-			</Tabs>
-		</CardContent>
-	</Card>
+		<section class="border-border mt-6 border-t pt-4">
+			<h3 class="text-text-primary text-sm font-bold">Latest activity</h3>
+			<div v-if="isActivitiesLoading" class="mt-3 space-y-2"><Skeleton class="h-10 w-full" /><Skeleton class="h-10 w-full" /></div>
+			<AppEmptyState
+				v-else-if="isActivitiesError"
+				class="mt-3"
+				heading="Activity is unavailable"
+				:body="String(activitiesError || 'Please try again.')"
+				icon="lucide:alert-circle"
+				:action="{ label: 'Retry', onClick: () => refetchActivities(), variant: 'secondary' }"
+			/>
+			<div v-else-if="activities?.length" class="divide-border mt-3 divide-y">
+				<div v-for="activity in activities.slice(0, 4)" :key="activity.id" class="py-3 first:pt-0">
+					<p class="text-text-primary text-xs font-semibold">{{ getLabel(activity) }}</p>
+					<p class="text-text-secondary mt-1 text-xs leading-5" v-html="getDescription(activity)"></p>
+					<p class="text-text-tertiary mt-1 font-mono text-[10px]">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
+				</div>
+			</div>
+			<p v-else class="text-text-tertiary mt-3 text-xs">No activity has been recorded yet.</p>
+		</section>
+	</aside>
 </template>

@@ -15,20 +15,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<SidebarProvider class="bg-surface-1">
-		<AppSidebar />
-
-		<SidebarInset class="bg-surface-1 relative">
-			<div class="from-brand-hero-start pointer-events-none absolute inset-x-0 top-0 h-44 bg-linear-to-b to-transparent" />
-			<AppHeader />
-			<div class="bg-surface-1 relative z-10 flex-1 overflow-auto">
-				<div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-					<slot />
-				</div>
-			</div>
-
-			<UserSettingsSheet />
-			<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
-		</SidebarInset>
-	</SidebarProvider>
+	<div class="bg-canvas min-h-svh">
+		<AppHeader />
+		<main class="relative z-10 mx-auto w-full max-w-[1540px] px-5 py-7 pb-24 sm:px-8 lg:px-12 lg:py-10"><slot /></main>
+		<AppWorkspaceSwitchboard />
+		<AppMobileDock />
+		<UserSettingsSheet />
+		<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
+	</div>
 </template>

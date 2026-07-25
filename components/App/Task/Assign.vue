@@ -63,15 +63,16 @@ const notify = (res: AssignmentResponse) => {
 		<DialogTrigger as-child>
 			<slot />
 		</DialogTrigger>
-		<DialogContent class="sm:max-w-[550px]">
-			<DialogHeader>
-				<DialogTitle>Assign Tasks</DialogTitle>
-				<DialogDescription>
-					{{ member ? `Assign tasks to ${member.firstName} ${member.lastName}` : "Select tasks and assign them to a team member" }}
-				</DialogDescription>
+		<DialogContent class="border-border w-[calc(100vw-1rem)] max-w-[620px] overflow-x-hidden rounded-none border p-0">
+			<DialogHeader class="bg-rail px-6 py-5 pr-14 text-white">
+				<p class="text-sidebar-foreground/55 font-mono text-[10px] tracking-[0.14em] uppercase">Assignment</p>
+				<DialogTitle class="mt-2 text-2xl font-bold">Assign tasks.</DialogTitle>
+				<DialogDescription class="text-sidebar-foreground/65 mt-2">{{
+					member ? `Select tasks to assign to ${member.firstName}.` : "Select tasks and assign them to a team member."
+				}}</DialogDescription>
 			</DialogHeader>
 
-			<form class="space-y-6 pt-4" @submit="onSubmit">
+			<form class="space-y-5 p-6" @submit="onSubmit">
 				<FormField name="tasks">
 					<FormItem>
 						<FormLabel>Select Tasks</FormLabel>
@@ -86,7 +87,7 @@ const notify = (res: AssignmentResponse) => {
 				<!-- TODO: SELECT TEAM MEMBER TO ASSIGN TO -->
 
 				<!-- ASSIGN TO SELECTED TEAM MEMBER -->
-				<div v-if="member" class="flex items-center gap-3 rounded-md border p-4">
+				<div v-if="member" class="border-border bg-surface-1 flex items-center gap-3 border p-4">
 					<Avatar class="h-10 w-10">
 						<AvatarImage :src="member.profilePicture" :alt="member.firstName" />
 						<AvatarFallback>{{ getInitials(member.firstName, member.lastName) }}</AvatarFallback>

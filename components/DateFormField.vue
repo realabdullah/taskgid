@@ -39,8 +39,16 @@ const minDate = computed(() => {
 	<Popover>
 		<PopoverTrigger as-child>
 			<FormControl>
-				<Button variant="outline" :class="cn('!w-full ps-3 text-start font-normal', !value && 'text-muted-foreground')">
-					<span>{{ value ? formatDate(value, "MMMM D, YYYY") : "Pick a date" }}</span>
+				<Button
+					variant="outline"
+					:class="
+						cn(
+							'!border-border !bg-surface-0 hover:!border-border hover:!bg-surface-0 !w-full !justify-start ps-3 text-start font-normal !transition-none focus-visible:!ring-0 focus-visible:!outline-none active:!scale-100',
+							!value && 'text-muted-foreground'
+						)
+					"
+				>
+					<span class="flex-1 text-left">{{ value ? formatDate(value, "MMMM D, YYYY") : "Pick a date" }}</span>
 					<Icon name="hugeicons:calendar-03" :size="16" class="ms-auto opacity-50" />
 				</Button>
 				<input hidden />

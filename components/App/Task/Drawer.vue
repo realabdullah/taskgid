@@ -68,15 +68,15 @@ const deleteTask = async () => {
 	<Sheet :open="props.open" @update:open="onSheetOpenChange">
 		<SheetContent side="right" :hide-close="true" class="bg-surface-0 inset-0 h-full w-full border-0 p-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:max-w-[600px] sm:border-l lg:max-w-[800px]">
 			<div class="flex h-full flex-col overflow-hidden overflow-x-hidden">
-				<header class="linear-rule border-border flex items-center justify-between border-b px-6 py-4">
+				<header class="border-border bg-surface-0 flex items-center justify-between border-b px-6 py-4">
 					<div class="min-w-0">
 						<Button variant="ghost" class="h-11 px-2 sm:hidden" @click="emits('close')">
 							<Icon name="lucide:arrow-left" :size="16" />
 							<span>Back</span>
 						</Button>
 						<div class="hidden sm:block">
-							<p class="text-text-tertiary truncate text-xs">Workspace / Tasks / {{ task?.id || "Task" }}</p>
-							<p class="text-text-primary mt-1 text-sm font-medium">Task details</p>
+							<p class="editorial-kicker truncate">Task details · {{ task?.id || "Task" }}</p>
+							<p class="text-text-primary mt-2 text-lg font-semibold tracking-tight">{{ task?.title || "Task details" }}</p>
 						</div>
 					</div>
 					<div class="flex items-center gap-2">
@@ -91,7 +91,7 @@ const deleteTask = async () => {
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end" class="border-border bg-surface-0 w-[min(20rem,calc(100vw-1rem))] border sm:w-56">
-								<DropdownMenuItem class="text-destructive focus:text-destructive" @select="isDeleteModalOpen = true">
+								<DropdownMenuItem variant="destructive" @select="isDeleteModalOpen = true">
 									<Icon name="lucide:trash-2" :size="14" />
 									<span>Delete task</span>
 								</DropdownMenuItem>

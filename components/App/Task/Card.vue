@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { getStatusIcon } from "#imports";
-import { Card } from "@/components/ui/card";
 import { AvatarGroup } from "~/components/ui/avatar";
 import type { Task } from "~/types";
 
@@ -12,64 +11,45 @@ const taskUrl = computed(() => {
 });
 
 const taskIcon = computed(() => getStatusIcon(props.task.status));
+const description = computed(() =>
+	props.task.description
+		?.replace(/<[^>]*>/g, " ")
+		.replace(/\s+/g, " ")
+		.trim()
+);
+const dueLabel = computed(() => (props.task.dueDate ? `Due ${getTimeAgo(new Date(props.task.dueDate))}` : "No due date"));
 </script>
 
 <template>
-	<NuxtLink :to="taskUrl" class="block">
-		<Card class="overflow-hidden transition-shadow hover:shadow-sm">
-			<CardHeader class="p-4 pb-0">
-				<div class="flex items-start justify-between">
-					<div class="space-y-1">
-						<CardTitle class="text-lg">{{ task.title }}</CardTitle>
-						<CardDescription class="line-clamp-2">{{ task.description }}</CardDescription>
-					</div>
-					<DropdownMenu>
-						<DropdownMenuTrigger as-child>
-							<Button variant="ghost" size="icon" class="h-8 w-8">
-								<Icon name="hugeicons:more-horizontal-circle-01" size="16" />
-								<span class="sr-only">Task menu</span>
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem @select="emits('edit')">Edit Task</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem class="text-rose-500" @select="emits('delete')">Delete Task</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div>
-			</CardHeader>
-
-			<CardContent class="p-4">
-				<div class="flex flex-col space-y-4">
-					<div class="flex flex-wrap items-center gap-2 text-sm">
-						<div class="flex items-center gap-1">
-							<Icon :name="taskIcon.icon" :size="16" :class="taskIcon.class" />
-							<span class="capitalize">{{ task.status.replace("_", " ") }}</span>
-						</div>
-						<div class="text-muted-foreground">•</div>
-						<Badge variant="outline" :class="[getPriorityColor(task.priority)]"> {{ task.priority }} priority </Badge>
-						<div class="text-muted-foreground">•</div>
-						<div class="text-muted-foreground">Due {{ getTimeAgo(new Date(task.dueDate || "")) }}</div>
-					</div>
-
-					<div class="flex items-center justify-between">
-						<div class="flex items-center gap-2">
-							<div v-if="task.assignees.length > 0" class="relative flex items-center gap-2">
-								<AvatarGroup :users="task.assignees" :max-displayed="3" size="sm" class-name="border-background border-2 dark:border-gray-800" />
-							</div>
-
-							<Button v-else variant="outline" size="sm" class="h-7 text-xs">Not assigned yet</Button>
-						</div>
-
-						<div class="text-muted-foreground flex items-center text-sm">
-							<Icon name="hugeicons:comment-02" size="16" class="mr-1" />
-							{{ task.commentCount || 0 }} comment{{ task.commentCount !== 1 ? "s" : "" }}
-						</div>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-	</NuxtLink>
+	<article
+		class="interactive group border-border hover:bg-surface-1 grid min-h-18 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b px-1 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_110px_180px_104px] sm:px-3"
+	>
+		<NuxtLink :to="taskUrl" class="max-w-[420px] min-w-0">
+			<div class="flex min-w-0 items-center gap-2">
+				<Icon :name="taskIcon.icon" :size="15" :class="taskIcon.class" />
+				<p class="text-text-primary truncate text-sm font-bold">{{ task.title }}</p>
+			</div>
+			<p v-if="description" class="text-text-tertiary mt-1 truncate text-xs">{{ description }}</p>
+		</NuxtLink>
+		<div class="hidden sm:block">
+			<Badge variant="outline" :class="[getPriorityColor(task.priority), 'rounded-sm']">{{ task.priority }}</Badge>
+		</div>
+		<p class="text-text-secondary hidden truncate text-xs sm:block">{{ dueLabel }}</p>
+		<div class="flex items-center justify-end gap-2">
+			<AvatarGroup v-if="task.assignees.length > 0" :users="task.assignees" :max-displayed="3" size="sm" />
+			<DropdownMenu @click.prevent>
+				<DropdownMenuTrigger as-child>
+					<Button variant="ghost" size="icon" class="h-9 w-9 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+						<Icon name="hugeicons:more-horizontal-circle-01" size="16" />
+						<span class="sr-only">Task menu</span>
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					<DropdownMenuItem @select="emits('edit')">Edit task</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem variant="destructive" @select="emits('delete')">Delete task</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</div>
+	</article>
 </template>

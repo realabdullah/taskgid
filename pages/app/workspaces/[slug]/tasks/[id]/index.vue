@@ -11,6 +11,7 @@ const client = useQueryClient();
 const workspaceSlug = computed(() => String(route.params.slug ?? ""));
 const taskId = computed(() => String(route.params.id ?? ""));
 const isDeleteModalOpen = ref(false);
+const isTaskEditorOpen = ref(false);
 
 const {
 	data: task,
@@ -47,29 +48,40 @@ const deleteTask = async () => {
 	toast.success("Task deleted successfully.");
 	await goBackToList();
 };
+
+const openTaskEditor = () => {
+	// Let the action menu finish closing before the dialog takes focus.
+	// This avoids Reka restoring focus to the menu trigger and immediately dismissing the editor.
+	window.setTimeout(() => {
+		isTaskEditorOpen.value = true;
+	}, 0);
+};
 </script>
 
 <template>
-	<div class="mx-auto w-full max-w-[1200px] overflow-x-hidden px-4 py-4 sm:px-6 lg:px-8">
-		<header class="mb-5 flex items-center justify-between">
+	<div class="mx-auto w-full max-w-[1440px] overflow-x-hidden px-4 py-5 sm:px-6 lg:px-10 lg:py-8">
+		<header class="border-border mb-10 flex items-center justify-between border-b pb-4">
 			<Button variant="ghost" class="h-11 px-2" @click="goBackToList">
 				<Icon name="lucide:arrow-left" :size="16" />
-				<span>Back to list</span>
+				<span>All tasks</span>
 			</Button>
 
-			<DropdownMenu>
-				<DropdownMenuTrigger as-child>
-					<Button variant="ghost" size="icon" class="h-11 w-11" aria-label="More actions">
-						<Icon name="lucide:ellipsis" :size="16" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end" class="border-border bg-surface-0 w-[min(20rem,calc(100vw-1rem))] border sm:w-56">
-					<DropdownMenuItem class="text-destructive focus:text-destructive" @select="isDeleteModalOpen = true">
-						<Icon name="lucide:trash-2" :size="14" />
-						<span>Delete task</span>
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
+			<div class="flex items-center gap-2">
+				<Button variant="secondary" class="h-10" :disabled="!task" @click="openTaskEditor"><Icon name="lucide:pencil" :size="15" /> Edit task</Button>
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button variant="ghost" size="icon" class="h-10 w-10" aria-label="More actions">
+							<Icon name="lucide:ellipsis" :size="16" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end" class="border-border bg-surface-0 w-[min(20rem,calc(100vw-1rem))] border sm:w-56">
+						<DropdownMenuItem variant="destructive" :disabled="!task" @select="isDeleteModalOpen = true">
+							<Icon name="lucide:trash-2" :size="14" />
+							<span>Delete task</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 		</header>
 
 		<div v-if="isTaskLoading" class="space-y-4">
@@ -86,27 +98,37 @@ const deleteTask = async () => {
 			:action="{ label: 'Retry', onClick: () => refetchTask(), variant: 'secondary' }"
 		/>
 
-		<div v-else-if="task" class="flex flex-col gap-8 lg:flex-row lg:items-start">
-			<main class="min-w-0 flex-1 space-y-6 lg:basis-[70%]">
-				<div class="lg:hidden">
+		<div v-else-if="task" class="grid gap-y-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14">
+			<main class="min-w-0">
+				<section class="border-border border-y py-8 sm:py-10">
+					<div class="mb-7 flex items-center justify-between gap-4">
+						<p class="editorial-kicker">Task · {{ task.id }}</p>
+						<BadgeStatus :status="task.status" />
+					</div>
+					<AppTaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
+				</section>
+
+				<div class="py-6 lg:hidden">
 					<AppTaskMetadataHorizontal :task="task" />
 				</div>
 
-				<AppTaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
-				<AppTaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" />
+				<section class="border-border border-t pt-8 sm:pt-10">
+					<AppTaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" />
+				</section>
 			</main>
 
-			<aside class="border-border lg:sticky lg:top-6 lg:basis-[30%] lg:border-l lg:pl-6">
-				<div class="hidden lg:block">
-					<AppTaskMetadataVertical :task="task" />
-				</div>
-
-				<div class="border-border mt-4 space-y-3 border-t pt-5 lg:hidden">
-					<p class="text-text-tertiary text-xs font-semibold tracking-widest uppercase">Advanced</p>
-					<p class="text-text-tertiary text-sm">Attachments and subtasks are coming soon.</p>
+			<aside class="border-border bg-surface-1 self-start border-y lg:sticky lg:top-6 lg:border-y-0 lg:border-l">
+				<div class="p-6 lg:p-7">
+					<p class="editorial-kicker mb-7">Task details</p>
+					<div class="hidden lg:block">
+						<AppTaskMetadataVertical :task="task" />
+					</div>
+					<p class="text-text-tertiary text-sm lg:mt-10">All task updates and comments are recorded in the activity section.</p>
 				</div>
 			</aside>
 		</div>
+
+		<AppTaskCreateOrEdit v-if="task" v-model="isTaskEditorOpen" :task="task" hide-trigger />
 
 		<AppDeleteAction
 			v-model="isDeleteModalOpen"

@@ -38,13 +38,20 @@ const addOrRemoveTask = (task: Task) => {
 	<div class="space-y-2">
 		<Popover>
 			<PopoverTrigger as-child>
-				<Button variant="outline" role="combobox" aria-expanded="{open}" class="w-full justify-between">
-					{{ flattendSelected.length > 0 ? `${flattendSelected.length} task${flattendSelected.length > 1 ? "s" : ""} selected` : placeholder }}
-					<Icon name="lucide:chevrons-up-down" :size="16" class="ml-2 shrink-0 opacity-50" />
+				<Button
+					variant="outline"
+					role="combobox"
+					class="h-12 w-full !justify-start !transition-none focus-visible:!ring-0 active:!scale-100"
+					content-class="grid w-full grid-cols-[minmax(0,1fr)_1rem] gap-3"
+				>
+					<span class="min-w-0 truncate text-left">{{
+						flattendSelected.length > 0 ? `${flattendSelected.length} task${flattendSelected.length > 1 ? "s" : ""} selected` : placeholder
+					}}</span>
+					<Icon name="lucide:chevron-down" :size="16" class="justify-self-end opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent class="w-[400px] p-0">
-				<Command>
+			<PopoverContent align="start" :side-offset="8" class="w-[min(32rem,calc(100vw-2rem))] p-0">
+				<Command class="rounded-none border-0 shadow-none">
 					<CommandInput placeholder="Search tasks..." />
 					<CommandList>
 						<div v-if="isTasksLoading" class="space-y-2 p-3">
@@ -65,12 +72,21 @@ const addOrRemoveTask = (task: Task) => {
 							<CommandEmpty>No tasks found.</CommandEmpty>
 							<CommandGroup>
 								<template v-if="tasks && tasks.length">
-									<CommandItem v-for="task in tasks" :key="task.id" :value="task.title" class="flex items-center justify-between" @select="addOrRemoveTask(task)">
-										<div class="flex items-center">
-											<Icon name="lucide:check" :size="16" :class="cn('mr-2', flattendSelected.includes(task.id) ? 'opacity-100' : 'opacity-0')" />
-											<span>{{ task.title }}</span>
+									<CommandItem
+										v-for="task in tasks"
+										:key="task.id"
+										:value="task.title"
+										class="grid h-auto min-h-16 grid-cols-[1rem_minmax(0,1fr)_auto] items-center gap-3 px-3 py-3"
+										@select="addOrRemoveTask(task)"
+									>
+										<Icon name="lucide:check" :size="16" :class="cn(flattendSelected.includes(task.id) ? 'text-primary opacity-100' : 'opacity-0')" />
+										<div class="min-w-0">
+											<p class="text-text-primary truncate text-sm font-semibold">{{ task.title }}</p>
+											<p class="text-text-tertiary mt-1 truncate text-xs">
+												{{ task.assignees.length ? `${task.assignees.length} assignee${task.assignees.length > 1 ? "s" : ""}` : "Unassigned" }}
+											</p>
 										</div>
-										<Badge variant="outline" :class="getPriorityColor(task.priority)"> {{ task.priority }} </Badge>
+										<span class="font-mono text-[10px] font-semibold tracking-[0.08em] uppercase" :class="getPriorityColor(task.priority)">{{ task.priority }}</span>
 									</CommandItem>
 								</template>
 							</CommandGroup>

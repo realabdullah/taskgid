@@ -56,9 +56,9 @@ const viewAllTasks = () => {
 
 <template>
 	<Sheet :open="isOpen" @update:open="(value) => (isOpen = value)">
-		<SheetContent side="right" class="border-border bg-surface-0 w-full border-l p-0 sm:max-w-[420px]">
+		<SheetContent side="right" class="border-border bg-surface-0 w-full border-l p-0 sm:max-w-[500px]">
 			<div class="flex h-full flex-col overflow-hidden">
-				<header class="border-border border-b px-5 py-4">
+				<header class="bg-rail px-6 py-6 text-white">
 					<div class="flex items-start justify-between gap-3">
 						<div class="flex items-center gap-3">
 							<Avatar class="h-10 w-10">
@@ -66,25 +66,25 @@ const viewAllTasks = () => {
 								<AvatarFallback class="bg-accent-subtle text-accent-text">{{ getInitials(member.firstName, member.lastName) }}</AvatarFallback>
 							</Avatar>
 							<div>
-								<p class="text-text-primary text-sm font-semibold">{{ member.firstName }} {{ member.lastName }}</p>
-								<p class="text-text-tertiary text-xs">{{ member.title || "Team member" }}</p>
+								<p class="text-lg font-bold">{{ member.firstName }} {{ member.lastName }}</p>
+								<p class="text-sidebar-foreground/60 text-xs">{{ member.title || "Team member" }}</p>
 							</div>
 						</div>
-						<Badge variant="outline" class="capitalize">{{ member.role }}</Badge>
+						<Badge variant="outline" class="border-white/30 text-white capitalize">{{ member.role }}</Badge>
 					</div>
 				</header>
 
 				<div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
-					<div class="grid grid-cols-3 gap-2">
-						<div class="border-border bg-surface-1 rounded-md border p-2">
+					<div class="divide-border border-border grid grid-cols-3 divide-x border-y">
+						<div class="px-3 py-3">
 							<p class="text-2xs text-text-tertiary">Assigned</p>
 							<p class="text-text-primary mt-1 text-sm font-semibold">{{ member.taskStats.assigned }}</p>
 						</div>
-						<div class="border-border bg-surface-1 rounded-md border p-2">
+						<div class="px-3 py-3">
 							<p class="text-2xs text-text-tertiary">Completed</p>
 							<p class="text-text-primary mt-1 text-sm font-semibold">{{ member.taskStats.completed }}</p>
 						</div>
-						<div class="border-border bg-surface-1 rounded-md border p-2">
+						<div class="px-3 py-3">
 							<p class="text-2xs text-text-tertiary">Completion</p>
 							<p class="text-text-primary mt-1 text-sm font-semibold">{{ completionRate }}%</p>
 						</div>

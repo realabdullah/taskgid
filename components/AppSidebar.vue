@@ -49,14 +49,16 @@ const myWorkNav = computed(() => [
 </script>
 
 <template>
-	<Sidebar :collapsible="collapsible" v-bind="props" class="border-border bg-surface-1 border-r">
-		<SidebarHeader class="linear-rule border-border border-b p-2">
+	<Sidebar :collapsible="collapsible" v-bind="props" class="border-sidebar-border bg-sidebar text-sidebar-foreground border-r">
+		<SidebarHeader class="border-sidebar-border border-b px-3 py-4">
+			<div class="hidden justify-center group-data-[collapsible=icon]:flex"><AppBrandMark size="sm" /></div>
+			<div class="mb-4 px-1 group-data-[collapsible=icon]:hidden"><AppBrandMark size="sm" show-name inverted /></div>
 			<WorkspaceSwitcher />
 		</SidebarHeader>
 
-		<SidebarContent class="gap-4 px-2 py-3">
+		<SidebarContent class="gap-6 px-2.5 py-5">
 			<SidebarGroup>
-				<SidebarGroupLabel class="text-2xs text-text-tertiary px-2 font-semibold tracking-widest uppercase">
+				<SidebarGroupLabel class="text-2xs text-rail-muted px-2 text-[11px] font-semibold group-data-[collapsible=icon]:hidden">
 					<span>Workspace</span>
 				</SidebarGroupLabel>
 
@@ -66,10 +68,10 @@ const myWorkNav = computed(() => [
 							:tooltip="option.disabled ? 'Create a workspace first' : option.title"
 							as-child
 							:is-active="option.isActive"
-							class="text-text-secondary hover:bg-surface-2 hover:text-text-primary data-[active=true]:bg-accent-soft data-[active=true]:text-accent-strong h-8 rounded-md px-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-medium"
+							class="focus-ring text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground h-11 rounded-xl px-3 text-sm group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-semibold"
 						>
 							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
-								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
+								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-3 h-6 w-1 -translate-y-1/2 rounded-r-full" />
 								<Icon :name="option.icon" :size="16" class="shrink-0" />
 								<span class="group-data-[collapsible=icon]:hidden">{{ option.title }}</span>
 								<span class="text-2xs text-text-tertiary ml-auto group-data-[collapsible=icon]:hidden">{{ option.shortcut }}</span>
@@ -80,8 +82,8 @@ const myWorkNav = computed(() => [
 			</SidebarGroup>
 
 			<SidebarGroup>
-				<SidebarGroupLabel class="text-2xs text-text-tertiary px-2 font-semibold tracking-widest uppercase">
-					<span>My Work</span>
+				<SidebarGroupLabel class="text-2xs text-rail-muted px-2 text-[11px] font-semibold group-data-[collapsible=icon]:hidden">
+					<span>My tasks</span>
 				</SidebarGroupLabel>
 				<SidebarMenu>
 					<SidebarMenuItem v-for="option in myWorkNav" :key="option.title">
@@ -89,10 +91,10 @@ const myWorkNav = computed(() => [
 							:tooltip="option.disabled ? 'Create a workspace first' : option.title"
 							as-child
 							:is-active="option.isActive"
-							class="text-text-secondary hover:bg-surface-2 hover:text-text-primary data-[active=true]:bg-accent-soft data-[active=true]:text-accent-strong h-8 rounded-md px-2 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-medium"
+							class="focus-ring text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground h-11 rounded-xl px-3 text-sm group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-transparent data-[active=true]:font-semibold"
 						>
 							<NuxtLink :to="option.disabled ? '' : option.url" class="relative" :aria-disabled="option.disabled" :tabindex="option.disabled ? -1 : undefined">
-								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-2.5 h-4 w-0.5 -translate-y-1/2 rounded-full" />
+								<span v-if="option.isActive" class="bg-primary absolute top-1/2 -left-3 h-6 w-1 -translate-y-1/2 rounded-r-full" />
 								<Icon :name="option.icon" :size="16" class="shrink-0" />
 								<span class="group-data-[collapsible=icon]:hidden">{{ option.title }}</span>
 							</NuxtLink>
@@ -102,7 +104,7 @@ const myWorkNav = computed(() => [
 			</SidebarGroup>
 		</SidebarContent>
 
-		<SidebarFooter class="linear-rule border-border border-t p-2">
+		<SidebarFooter class="border-sidebar-border border-t p-3">
 			<NavUser />
 		</SidebarFooter>
 	</Sidebar>

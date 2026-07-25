@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
+import TaskRichTextEditor from "@/components/ui/tiptap/TipTapEditor.vue";
 import type { Task } from "~/types";
 
 const props = defineProps<{
@@ -78,14 +79,14 @@ const saveDescription = async () => {
 			<input
 				v-if="isEditingTitle"
 				v-model="titleDraft"
-				class="border-border bg-surface-0 text-text-primary h-12 w-full rounded-md border px-3 text-2xl font-semibold focus-visible:ring-2 focus-visible:outline-none"
+				class="border-border bg-surface-0 text-text-primary focus-visible:border-primary h-14 w-full border px-3 text-3xl font-bold tracking-[-0.03em] focus-visible:outline-none"
 				:disabled="isSaving"
 				autofocus
 				@blur="saveTitle"
 				@keydown.enter.prevent="saveTitle"
 				@keydown.esc.prevent="isEditingTitle = false"
 			/>
-			<button v-else type="button" class="text-text-primary hover:bg-surface-1 min-h-11 w-full rounded-md px-2 py-1 text-left text-2xl font-semibold" @click="isEditingTitle = true">
+			<button v-else type="button" class="text-text-primary hover:bg-surface-1 min-h-14 w-full px-2 py-1 text-left text-3xl font-bold tracking-[-0.03em]" @click="isEditingTitle = true">
 				{{ props.task.title }}
 			</button>
 		</div>
@@ -100,13 +101,7 @@ const saveDescription = async () => {
 				</div>
 			</div>
 
-			<textarea
-				v-if="isEditingDescription"
-				v-model="descriptionDraft"
-				class="border-border bg-surface-0 text-text-secondary min-h-44 w-full rounded-md border px-3 py-3 text-sm leading-7 focus-visible:ring-2 focus-visible:outline-none"
-				:disabled="isSaving"
-				placeholder="Add a description..."
-			/>
+			<component :is="TaskRichTextEditor" v-if="isEditingDescription" v-model="descriptionDraft" placeholder="Add the context your team needs..." />
 			<div v-else class="text-text-secondary text-sm leading-7 whitespace-pre-wrap" v-html="props.task.description || 'No description yet.'"></div>
 		</div>
 	</section>

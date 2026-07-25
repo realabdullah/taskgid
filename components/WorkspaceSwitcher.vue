@@ -5,7 +5,7 @@ const route = useRoute();
 const { workspaces } = storeToRefs(useWorkspacesStore());
 const { isMobile } = useSidebar();
 
-const swatchPool = ["#4f46e5", "#7c3aed", "#0f766e", "#b45309", "#e11d48", "#0284c7"];
+const swatchPool = ["#7687ff", "#f97352", "#5ac292", "#f0bc58", "#dd7cae", "#5da9d8"];
 
 const getWorkspaceSwatch = (seed: string) => {
 	let hash = 0;
@@ -36,7 +36,7 @@ const openAddWorkspace = () => {
 		<SidebarMenuItem>
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>
-					<SidebarMenuButton size="lg" class="linear-shell hover:bg-surface-2 data-[state=open]:bg-surface-2 h-10 gap-2 rounded-md px-2">
+					<SidebarMenuButton size="lg" class="hover:bg-sidebar-accent data-[state=open]:bg-sidebar-accent h-10 gap-2 rounded-md px-2">
 						<div
 							class="text-accent-strong flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-sm font-semibold"
 							:style="{ backgroundColor: `${getWorkspaceSwatch(activeWorkspace?.slug || 'default')}22`, color: getWorkspaceSwatch(activeWorkspace?.slug || 'default') }"
@@ -44,10 +44,10 @@ const openAddWorkspace = () => {
 							{{ (activeWorkspace?.title || "WS").slice(0, 2).toUpperCase() }}
 						</div>
 						<div class="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
-							<span class="text-text-primary truncate text-sm font-medium">{{ activeWorkspace?.title || "Select workspace" }}</span>
-							<span class="text-2xs text-text-tertiary truncate">{{ activeWorkspace?.slug }}</span>
+							<span class="text-sidebar-foreground truncate text-sm font-medium">{{ activeWorkspace?.title || "Select workspace" }}</span>
+							<span class="text-2xs text-sidebar-foreground/50 truncate font-mono">{{ activeWorkspace?.slug }}</span>
 						</div>
-						<Icon name="lucide:chevrons-up-down" :size="14" class="text-text-tertiary group-data-[collapsible=icon]:hidden" />
+						<Icon name="lucide:chevrons-up-down" :size="14" class="text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden" />
 					</SidebarMenuButton>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent

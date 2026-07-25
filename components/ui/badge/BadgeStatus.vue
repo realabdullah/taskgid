@@ -23,8 +23,8 @@ const meta = computed(() => statusMeta[props.status]);
 </script>
 
 <template>
-	<div class="border-border bg-surface-0 text-text-primary inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium">
-		<span :class="['h-1.5 w-1.5 rounded-full', meta.color]" aria-hidden="true" />
+	<div class="text-text-secondary inline-flex w-fit items-center gap-1.5 rounded-sm border border-transparent px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase">
+		<span :class="['h-1.5 w-1.5 rounded-sm', meta.color]" aria-hidden="true" />
 		{{ meta.label }}
 	</div>
 </template>

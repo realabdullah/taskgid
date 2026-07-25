@@ -68,35 +68,35 @@ const metrics = computed(() => {
 </script>
 
 <template>
-	<section class="border-border bg-surface-0 space-y-3 rounded-lg border p-4">
+	<section class="border-border border-y py-5">
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<div>
-				<p class="text-text-primary text-sm font-semibold">Team performance</p>
-				<p class="text-text-tertiary text-xs">Track delivery health and capacity trends.</p>
+				<p class="text-lg font-bold tracking-[-0.025em]">The team, at a glance.</p>
+				<p class="text-text-secondary text-sm">Activity recorded in the selected period.</p>
 			</div>
 
 			<div class="flex items-center gap-2">
-				<div class="border-border bg-surface-1 inline-flex items-center rounded-full border p-1">
+				<div class="border-border inline-flex items-center border p-0.5">
 					<button
 						type="button"
-						class="interactive rounded-full px-2.5 py-1 text-xs"
-						:class="period === '7d' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive rounded-sm px-2.5 py-1 text-xs"
+						:class="period === '7d' ? 'bg-primary text-primary-foreground' : 'text-text-tertiary hover:bg-surface-2'"
 						@click="period = '7d'"
 					>
 						7d
 					</button>
 					<button
 						type="button"
-						class="interactive rounded-full px-2.5 py-1 text-xs"
-						:class="period === '30d' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive rounded-sm px-2.5 py-1 text-xs"
+						:class="period === '30d' ? 'bg-primary text-primary-foreground' : 'text-text-tertiary hover:bg-surface-2'"
 						@click="period = '30d'"
 					>
 						30d
 					</button>
 					<button
 						type="button"
-						class="interactive rounded-full px-2.5 py-1 text-xs"
-						:class="period === '90d' ? 'bg-accent-subtle text-accent-text' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive rounded-sm px-2.5 py-1 text-xs"
+						:class="period === '90d' ? 'bg-primary text-primary-foreground' : 'text-text-tertiary hover:bg-surface-2'"
 						@click="period = '90d'"
 					>
 						90d
@@ -109,8 +109,8 @@ const metrics = computed(() => {
 			</div>
 		</div>
 
-		<div v-if="statsOpen" class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-			<div v-if="isStatsLoading" class="col-span-full grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+		<div v-if="statsOpen" class="divide-border mt-5 grid divide-y md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
+			<div v-if="isStatsLoading" class="divide-border col-span-full grid grid-cols-1 divide-y md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
 				<Skeleton class="h-24 w-full" />
 				<Skeleton class="h-24 w-full" />
 				<Skeleton class="h-24 w-full" />
@@ -126,9 +126,9 @@ const metrics = computed(() => {
 			/>
 
 			<template v-else-if="metrics.length">
-				<article v-for="metric in metrics" :key="metric.key" class="border-border bg-surface-1 rounded-lg border p-4">
-					<p class="text-text-tertiary text-xs">{{ metric.label }}</p>
-					<p class="text-text-primary mt-2 text-2xl font-semibold">{{ metric.value }}</p>
+				<article v-for="metric in metrics" :key="metric.key" class="px-1 py-3 md:px-5">
+					<p class="text-text-tertiary text-xs font-semibold">{{ metric.label }}</p>
+					<p class="mt-2 font-mono text-3xl font-semibold tracking-[-0.03em] tabular-nums">{{ metric.value }}</p>
 					<p class="mt-2 text-xs" :class="metric.deltaTone">{{ metric.deltaLabel }}</p>
 				</article>
 			</template>

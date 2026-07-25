@@ -4,32 +4,25 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
 	modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/image", "@nuxt/scripts", "shadcn-nuxt", "@vueuse/nuxt", "@formkit/auto-animate/nuxt", "@pinia/nuxt", "@nuxt/fonts"],
 	ssr: false,
-	devtools: { enabled: true },
+	devtools: { enabled: process.env.NODE_ENV === "development" },
 	app: {
 		head: {
 			charset: "utf-8",
 			viewport: "width=device-width, initial-scale=1",
-			title: "TaskGid — Organize Work. Get Things Done.",
-			link: [
-				{ rel: "preconnect", href: "https://fonts.googleapis.com" },
-				{ rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-				{
-					rel: "stylesheet",
-					href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap",
-				},
-			],
+			title: "Taskgid — Make the next move obvious.",
+			link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
 			meta: [
 				{ name: "viewport", content: "width=device-width, initial-scale=1" },
-				{ name: "description", content: "Stay on top of your work. View and manage tasks, priorities, and progress in your TaskGid dashboard." },
-				{ name: "author", content: "TaskGid" },
-				{ name: "keywords", content: "task dashboard, task manager, team collaboration, project tracking, productivity, TaskGid" },
-				{ name: "theme-color", content: "#ffffff" },
-				{ property: "og:title", content: "TaskGid — Organize Work. Get Things Done." },
-				{ property: "og:description", content: "Plan, assign, and complete tasks effortlessly. TaskGid keeps your team aligned and focused." },
+				{ name: "description", content: "Taskgid gives product teams a shared signal for what moves next." },
+				{ name: "author", content: "Taskgid" },
+				{ name: "keywords", content: "Taskgid, product team, task management, team execution, project coordination" },
+				{ name: "theme-color", content: "#126c5a" },
+				{ property: "og:title", content: "Taskgid — Make the next move obvious." },
+				{ property: "og:description", content: "A focused workspace that helps product teams move work forward." },
 				{ property: "og:type", content: "website" },
 				{ property: "og:url", content: "https://tasks.abdspace.xyz" },
-				{ name: "twitter:title", content: "TaskGid — Organize Work. Get Things Done." },
-				{ name: "twitter:description", content: "Collaborate, assign, and track tasks easily with TaskGid." },
+				{ name: "twitter:title", content: "Taskgid — Make the next move obvious." },
+				{ name: "twitter:description", content: "A focused workspace that helps product teams move work forward." },
 			],
 		},
 	},
@@ -45,6 +38,9 @@ export default defineNuxtConfig({
 	compatibilityDate: "2025-04-26",
 	vite: { plugins: [tailwindcss()] },
 	eslint: { config: { stylistic: true }, checker: true },
+	fonts: {
+		families: [{ name: "Manrope", provider: "google", weights: [400, 500, 600, 700, 800] }],
+	},
 	shadcn: {
 		/**
 		 * Prefix for all the imported component

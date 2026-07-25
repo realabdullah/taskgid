@@ -13,7 +13,7 @@ const { getLabel, getDescription } = useActivityLabel();
 
 const commentDraft = ref("");
 const isAddingComment = ref(false);
-const showActivity = ref(false);
+const activeStream = ref<"comments" | "history">("comments");
 
 const {
 	data: activities,
@@ -53,27 +53,8 @@ const {
 	enabled: computed(() => Boolean(props.workspaceSlug && props.taskId)),
 });
 
-const timelineItems = computed(() => {
-	const items: Array<{ type: "activity"; id: string; createdAt: string; activity: ActivityDetails } | { type: "comment"; id: string; createdAt: string; comment: Comment }> = [];
-
-	for (const activity of activities.value ?? []) {
-		items.push({ type: "activity", id: activity.id, createdAt: activity.createdAt, activity });
-	}
-
-	for (const comment of commentsResponse.value?.comments ?? []) {
-		items.push({ type: "comment", id: comment.id, createdAt: comment.createdAt, comment });
-	}
-
-	return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-});
-
-const visibleTimelineItems = computed(() => {
-	if (showActivity.value) {
-		return timelineItems.value;
-	}
-
-	return timelineItems.value.filter((item) => item.type === "comment");
-});
+const sortedActivities = computed(() => [...(activities.value ?? [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+const sortedComments = computed(() => [...(commentsResponse.value?.comments ?? [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 
 const addComment = async () => {
 	const content = commentDraft.value.trim();
@@ -108,15 +89,26 @@ const addComment = async () => {
 
 <template>
 	<section class="space-y-4">
-		<div class="flex items-center justify-between">
-			<p class="text-text-tertiary text-xs font-semibold tracking-widest uppercase">Comments</p>
-			<div class="flex items-center gap-2">
-				<p class="text-text-tertiary text-xs">{{ commentsResponse?.pagination?.total || 0 }} comments</p>
-				<Button variant="ghost" size="sm" class="text-text-tertiary h-8 px-2 text-xs" @click="showActivity = !showActivity">
-					<Icon :name="showActivity ? 'lucide:eye-off' : 'lucide:history'" :size="14" />
-					<span>{{ showActivity ? "Hide history" : "Show history" }}</span>
-				</Button>
+		<div class="border-border flex items-center justify-between border-b pb-3">
+			<div class="flex items-center gap-4">
+				<button
+					type="button"
+					class="interactive border-b-2 pb-2 text-sm font-semibold"
+					:class="activeStream === 'comments' ? 'border-primary text-text-primary' : 'text-text-tertiary border-transparent'"
+					@click="activeStream = 'comments'"
+				>
+					Comments <span class="ml-1 font-mono text-xs">{{ commentsResponse?.pagination?.total || 0 }}</span>
+				</button>
+				<button
+					type="button"
+					class="interactive border-b-2 pb-2 text-sm font-semibold"
+					:class="activeStream === 'history' ? 'border-primary text-text-primary' : 'text-text-tertiary border-transparent'"
+					@click="activeStream = 'history'"
+				>
+					Activity <span class="ml-1 font-mono text-xs">{{ sortedActivities.length }}</span>
+				</button>
 			</div>
+			<p class="text-text-tertiary hidden text-xs sm:block">{{ activeStream === "comments" ? "Task comments" : "Task activity" }}</p>
 		</div>
 
 		<div v-if="isActivitiesLoading || isCommentsLoading" class="space-y-3">
@@ -141,33 +133,36 @@ const addComment = async () => {
 		/>
 
 		<div v-else class="space-y-4">
-			<div v-if="visibleTimelineItems.length" class="flex flex-col gap-4">
-				<article v-for="item in visibleTimelineItems" :key="`${item.type}-${item.id}`" class="border-border border-b pb-4 last:border-b-0">
-					<div v-if="item.type === 'comment'" class="flex items-start gap-3">
+			<div v-if="activeStream === 'comments' && sortedComments.length" class="flex flex-col gap-4">
+				<article v-for="comment in sortedComments" :key="comment.id" class="border-border border-b pb-4 last:border-b-0">
+					<div class="flex items-start gap-3">
 						<Avatar class="h-8 w-8">
-							<AvatarImage :src="item.comment.user.profilePicture || ''" :alt="item.comment.user.username" />
-							<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(item.comment.user.firstName, item.comment.user.lastName) }}</AvatarFallback>
+							<AvatarImage :src="comment.user.profilePicture || ''" :alt="comment.user.username" />
+							<AvatarFallback class="bg-accent-subtle text-accent-text text-2xs">{{ getInitials(comment.user.firstName, comment.user.lastName) }}</AvatarFallback>
 						</Avatar>
 						<div class="min-w-0 flex-1 space-y-1">
-							<p class="text-text-primary text-sm font-medium">{{ item.comment.user.firstName }} {{ item.comment.user.lastName }}</p>
-							<p class="text-text-secondary text-sm leading-6" v-html="highlightMentions(item.comment.content)"></p>
-							<p class="text-text-tertiary text-2xs">{{ getTimeAgo(new Date(item.comment.createdAt)) }}</p>
-						</div>
-					</div>
-
-					<div v-else class="flex items-start gap-3">
-						<div class="bg-surface-1 text-text-tertiary flex h-8 w-8 items-center justify-center rounded-full border">
-							<Icon name="lucide:history" :size="14" />
-						</div>
-						<div class="min-w-0 flex-1 space-y-1">
-							<p class="text-text-primary text-sm">{{ getLabel(item.activity) }}</p>
-							<p v-if="getDescription(item.activity)" class="text-text-secondary text-sm leading-6" v-html="getDescription(item.activity) || ''"></p>
-							<p class="text-text-tertiary text-2xs">{{ getTimeAgo(new Date(item.activity.createdAt)) }}</p>
+							<p class="text-text-primary text-sm font-medium">{{ comment.user.firstName }} {{ comment.user.lastName }}</p>
+							<p class="text-text-secondary text-sm leading-6" v-html="highlightMentions(comment.content)"></p>
+							<p class="text-text-tertiary text-2xs">{{ getTimeAgo(new Date(comment.createdAt)) }}</p>
 						</div>
 					</div>
 				</article>
 			</div>
-			<p v-else class="text-text-tertiary text-sm">{{ showActivity ? "No comments or activity yet." : "No comments yet." }}</p>
+			<div v-else-if="activeStream === 'history' && sortedActivities.length" class="flex flex-col gap-4">
+				<article v-for="activity in sortedActivities" :key="activity.id" class="border-border border-b pb-4 last:border-b-0">
+					<div class="flex items-start gap-3">
+						<div class="bg-surface-1 text-text-tertiary flex h-8 w-8 items-center justify-center border">
+							<Icon name="lucide:history" :size="14" />
+						</div>
+						<div class="min-w-0 flex-1 space-y-1">
+							<p class="text-text-primary text-sm">{{ getLabel(activity) }}</p>
+							<p v-if="getDescription(activity)" class="text-text-secondary text-sm leading-6" v-html="getDescription(activity) || ''"></p>
+							<p class="text-text-tertiary text-2xs">{{ getTimeAgo(new Date(activity.createdAt)) }}</p>
+						</div>
+					</div>
+				</article>
+			</div>
+			<p v-else class="text-text-tertiary text-sm">{{ activeStream === "comments" ? "No comments yet." : "No history recorded yet." }}</p>
 		</div>
 
 		<div class="border-border bg-surface-0/85 sticky bottom-0 z-20 border-t pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur">

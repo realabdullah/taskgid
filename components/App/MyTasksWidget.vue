@@ -120,6 +120,23 @@ const visibleTasks = computed(() => {
 });
 
 const hasMore = computed(() => filteredTasks.value.length > 8);
+const openTasks = computed(() => (tasks.value ?? []).filter((task) => task.status !== "done" && task.status !== "cancelled"));
+const completedTasks = computed(() => (tasks.value ?? []).filter((task) => task.status === "done").length);
+const focusTask = computed(() => {
+	return (
+		openTasks.value.find((task) => isOverdue(task.dueDate)) ??
+		openTasks.value.find((task) => isDueToday(task.dueDate)) ??
+		openTasks.value.find((task) => task.status === "in_progress") ??
+		openTasks.value[0]
+	);
+});
+const focusLabel = computed(() => {
+	if (!focusTask.value) return "You’re clear for now";
+	if (isOverdue(focusTask.value.dueDate)) return "Needs attention";
+	if (isDueToday(focusTask.value.dueDate)) return "Due today";
+	if (focusTask.value.status === "in_progress") return "In progress";
+	return "Up next";
+});
 
 const dueDateClass = (date: string | null) => {
 	if (!date) {
@@ -149,12 +166,10 @@ const dueDateText = (date: string | null) => {
 
 const workspaceAccent = (slug: string) => {
 	const palette = [
-		"bg-indigo-500/15 text-indigo-700 border-indigo-200",
-		"bg-violet-500/15 text-violet-700 border-violet-200",
-		"bg-teal-500/15 text-teal-700 border-teal-200",
-		"bg-amber-500/15 text-amber-700 border-amber-200",
-		"bg-rose-500/15 text-rose-700 border-rose-200",
-		"bg-sky-500/15 text-sky-700 border-sky-200",
+		"bg-accent-subtle text-accent-text border-accent/30",
+		"bg-signal-subtle text-danger border-danger/25",
+		"bg-success-subtle text-success border-success/25",
+		"bg-warning-subtle text-warning border-warning/25",
 	];
 	const hash = Array.from(slug).reduce((acc, char) => acc + char.charCodeAt(0), 0);
 	return palette[hash % palette.length];
@@ -174,11 +189,15 @@ const openTask = async (task: DashboardTask) => {
 </script>
 
 <template>
-	<section class="linear-shell rounded-xl p-5">
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div class="flex items-center gap-3">
-				<h2 class="linear-title text-lg font-semibold">My tasks</h2>
-				<div class="border-border bg-surface-1 hidden items-center gap-1 rounded-full border p-1 md:flex">
+	<section class="border-border border-b pb-8">
+		<div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+			<div>
+				<p class="editorial-kicker">Your day</p>
+				<h2 class="linear-title mt-1 text-3xl">Focus</h2>
+				<p class="text-text-secondary mt-2 text-sm">One clear place to decide what deserves your attention next.</p>
+			</div>
+			<div class="flex items-center gap-4">
+				<div class="border-border bg-surface-0 hidden items-center gap-1 rounded-lg border p-1 md:flex">
 					<button
 						v-for="filter in [
 							{ value: 'all', label: 'All' },
@@ -188,22 +207,49 @@ const openTask = async (task: DashboardTask) => {
 						]"
 						:key="filter.value"
 						type="button"
-						class="interactive rounded-full px-2.5 py-1 text-xs font-medium"
-						:class="activeFilter === filter.value ? 'bg-accent-soft text-accent-strong' : 'text-text-secondary hover:bg-surface-2'"
+						class="interactive rounded-md px-3 py-1.5 text-xs font-semibold"
+						:class="activeFilter === filter.value ? 'bg-primary text-primary-foreground shadow-sm' : 'text-text-secondary hover:bg-surface-2'"
 						@click="activeFilter = filter.value as TaskFilter"
 					>
 						{{ filter.label }}
 					</button>
 				</div>
+				<button type="button" class="text-primary shrink-0 text-sm font-semibold hover:underline" @click="goToAllTasks">View all tasks</button>
 			</div>
-
-			<button type="button" class="text-primary text-sm font-medium hover:underline" @click="goToAllTasks">View all</button>
 		</div>
 
-		<div v-if="isFetching" class="mt-4 space-y-2">
-			<Skeleton class="h-11 w-full" />
-			<Skeleton class="h-11 w-full" />
-			<Skeleton class="h-11 w-full" />
+		<button
+			v-if="focusTask && !isFetching"
+			type="button"
+			class="interactive focus-ring border-border bg-surface-0 hover:border-accent/40 hover:bg-accent-subtle/35 mt-5 grid w-full gap-4 rounded-xl border p-4 text-left shadow-xs md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"
+			@click="openTask(focusTask)"
+		>
+			<div class="bg-primary text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full">
+				<Icon name="lucide:crosshair" :size="18" />
+			</div>
+			<div class="min-w-0">
+				<p class="text-primary text-xs font-bold">{{ focusLabel }}</p>
+				<p class="text-text-primary mt-1 truncate text-base font-bold tracking-[-0.02em]">{{ focusTask.title }}</p>
+				<p class="text-text-secondary mt-1 text-sm">{{ focusTask.workspaceTitle }} · {{ dueDateText(focusTask.dueDate) }}</p>
+			</div>
+			<div class="text-text-secondary flex items-center gap-3 text-sm font-semibold">
+				<span>{{ openTasks.length }} open</span>
+				<Icon name="lucide:arrow-up-right" :size="18" />
+			</div>
+		</button>
+
+		<div v-else-if="!isFetching" class="border-border bg-success-subtle/45 mt-7 flex items-center gap-3 rounded-xl border p-5">
+			<div class="bg-success text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full"><Icon name="lucide:check" :size="18" /></div>
+			<div>
+				<p class="text-text-primary font-bold">Your queue is clear.</p>
+				<p class="text-text-secondary mt-0.5 text-sm">{{ completedTasks }} task{{ completedTasks === 1 ? "" : "s" }} completed. Enjoy the breathing room.</p>
+			</div>
+		</div>
+
+		<div v-if="isFetching" class="mt-5 space-y-3">
+			<Skeleton class="h-24 w-full rounded-xl" />
+			<Skeleton class="h-14 w-full rounded-xl" />
+			<Skeleton class="h-14 w-full rounded-xl" />
 		</div>
 
 		<AppEmptyState
@@ -214,18 +260,25 @@ const openTask = async (task: DashboardTask) => {
 			:action="{ label: 'Retry', onClick: () => refetchTasks(), variant: 'secondary' }"
 		/>
 
-		<div v-else-if="visibleTasks.length" class="mt-4 overflow-x-auto">
+		<div v-else-if="visibleTasks.length" class="mt-6 overflow-x-auto">
+			<div class="mb-3 flex items-center justify-between">
+				<p class="text-text-primary text-sm font-bold">Up next</p>
+				<p class="text-text-tertiary text-xs">{{ filteredTasks.length }} task{{ filteredTasks.length === 1 ? "" : "s" }}</p>
+			</div>
+			<div class="text-text-tertiary mb-2 hidden grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-3 px-3 text-[11px] font-semibold md:grid">
+				<span>Task</span><span>Status</span><span>Due</span><span>Priority</span>
+			</div>
 			<div
 				v-for="task in visibleTasks"
 				:key="task.id"
-				class="interactive hover:border-border hover:bg-surface-1 grid min-h-11 cursor-pointer grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-3 rounded-md border border-transparent px-3 py-2"
+				class="interactive focus-ring border-border hover:bg-surface-0 grid min-h-14 cursor-pointer grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-3 border-t px-3 py-2 first:border-t-0"
 				@click="openTask(task)"
 			>
 				<div class="flex min-w-0 items-center gap-2">
-					<span class="rounded-full border px-2 py-0.5 text-xs font-medium" :class="workspaceAccent(task.workspaceSlug)">
+					<span class="rounded-md border px-1.5 py-0.5 text-[10px] font-bold" :class="workspaceAccent(task.workspaceSlug)">
 						{{ task.workspaceTitle }}
 					</span>
-					<p class="text-text-primary truncate text-sm">{{ task.title }}</p>
+					<p class="text-text-primary truncate text-sm font-semibold">{{ task.title }}</p>
 				</div>
 				<BadgeStatus :status="task.status" />
 				<p class="text-xs" :class="dueDateClass(task.dueDate)">{{ dueDateText(task.dueDate) }}</p>

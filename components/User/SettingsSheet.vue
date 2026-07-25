@@ -12,6 +12,7 @@ const sections: Array<{ key: SettingsSection; label: string; description: string
 ];
 
 const { theme: currentTheme, setTheme } = useTheme();
+const { user } = storeToRefs(useStore());
 
 const themeOptions = [
 	{ value: "light" as const, label: "Light", icon: "lucide:sun", previewClass: "bg-white border border-border" },
@@ -48,28 +49,39 @@ onBeforeUnmount(() => {
 	<Sheet v-model:open="isOpen">
 		<SheetContent side="right" class="border-border bg-surface-0 inset-y-0 w-full max-w-2xl border-l p-0 sm:max-w-2xl">
 			<div class="flex h-full min-h-0">
-				<aside class="border-border bg-surface-1 hidden w-56 border-r p-4 md:block">
-					<p class="text-2xs text-text-tertiary mb-3 font-semibold tracking-widest uppercase">Settings</p>
+				<aside class="border-border bg-rail hidden w-64 border-r p-5 text-white md:block">
+					<div class="border-sidebar-border border-b pb-5">
+						<p class="text-sidebar-foreground/55 font-mono text-[10px] font-semibold tracking-[0.14em] uppercase">Account settings</p>
+						<div class="mt-4 flex items-center gap-3">
+							<Avatar class="h-9 w-9"
+								><AvatarImage :src="user?.profilePicture || ''" /><AvatarFallback>{{ getInitials(user?.firstName, user?.lastName) }}</AvatarFallback></Avatar
+							><span class="min-w-0"
+								><span class="block truncate text-sm font-bold">{{ user?.firstName }} {{ user?.lastName }}</span
+								><span class="text-sidebar-foreground/55 block truncate text-xs">Your Taskgid account</span></span
+							>
+						</div>
+					</div>
+					<p class="text-sidebar-foreground/55 mt-6 mb-3 font-mono text-[10px] font-semibold tracking-[0.14em] uppercase">Settings</p>
 					<nav class="space-y-1">
 						<button
 							v-for="section in sections"
 							:key="section.key"
 							type="button"
 							class="interactive flex w-full items-start gap-2 rounded-md px-2 py-2 text-left"
-							:class="activeSection === section.key ? 'bg-surface-2 text-text-primary' : 'text-text-secondary hover:bg-surface-2'"
+							:class="activeSection === section.key ? 'text-rail bg-white' : 'text-sidebar-foreground/60 hover:bg-white/10 hover:text-white'"
 							@click="activeSection = section.key"
 						>
 							<Icon :name="section.icon" :size="15" class="mt-0.5" />
 							<span>
 								<span class="block text-sm font-medium">{{ section.label }}</span>
-								<span class="text-2xs text-text-tertiary block">{{ section.description }}</span>
+								<span class="text-2xs block opacity-60">{{ section.description }}</span>
 							</span>
 						</button>
 					</nav>
 				</aside>
 
 				<div class="flex min-h-0 flex-1 flex-col">
-					<header class="border-border border-b px-5 py-4">
+					<header class="border-border bg-surface-1 border-b px-5 py-4">
 						<div class="md:hidden">
 							<Select v-model="activeSection">
 								<SelectTrigger class="h-9 w-full">
@@ -119,7 +131,7 @@ onBeforeUnmount(() => {
 						<section v-else class="space-y-5">
 							<div>
 								<p class="text-text-primary mb-1 text-sm font-semibold">Appearance</p>
-								<p class="text-text-tertiary mb-4 text-xs">Choose how TaskGid looks to you.</p>
+								<p class="text-text-tertiary mb-4 text-xs">Choose how Taskgid looks to you.</p>
 								<div class="grid grid-cols-3 gap-3">
 									<button
 										v-for="opt in themeOptions"
@@ -137,7 +149,7 @@ onBeforeUnmount(() => {
 								</div>
 							</div>
 
-							<div class="border-border rounded-lg border p-4">
+							<div class="border-border border p-4">
 								<p class="text-text-primary text-sm font-medium">Notification preferences</p>
 								<p class="text-text-tertiary mt-1 text-xs">Granular notification controls are coming soon.</p>
 								<div class="mt-3 space-y-2">

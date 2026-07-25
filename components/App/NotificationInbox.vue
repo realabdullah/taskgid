@@ -83,7 +83,7 @@ const appearance = computed<InboxAppearance>(() => ({
 	},
 	elements: {
 		root: {
-			fontFamily: "Geist, Inter, sans-serif",
+			fontFamily: "Manrope, sans-serif",
 		},
 		inboxContent: {
 			backgroundColor: "var(--color-surface-0)",

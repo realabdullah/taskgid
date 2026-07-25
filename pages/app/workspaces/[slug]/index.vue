@@ -19,45 +19,41 @@ const {
 	},
 });
 
-const activeTab = ref("tasks");
-const tabs = [
-	{ value: "tasks", label: "Recent Tasks" },
-	{ value: "stats", label: "Workspace Stats" },
-];
 const statOverview = computed(() => [
 	{
-		title: "Tasks Completed",
+		title: "Completed",
 		value: stats.value?.completedTasks.count ?? 0,
-		yesterday: `+${stats.value?.completedTasks.completedYesterday ?? 0}`,
+		yesterday: `${stats.value?.completedTasks.completedYesterday ?? 0} yesterday`,
 		icon: "hugeicons:checkmark-circle-01",
 		color: "text-green-500",
 	},
 	{
-		title: "In Progress",
+		title: "In progress",
 		value: stats.value?.inProgressTasks.count ?? 0,
-		yesterday: `-${stats.value?.inProgressTasks.movedToDoneYesterday ?? 0}`,
+		yesterday: `${stats.value?.inProgressTasks.movedToDoneYesterday ?? 0} moved to done`,
 		icon: "hugeicons:clock-01",
 		color: "text-amber-500",
 	},
-	{ title: "Overdue", value: stats.value?.overdueTasks.count ?? 0, yesterday: `+${stats.value?.overdueTasks.newlyOverdueYesterday ?? 0}`, icon: "hugeicons:alert-circle", color: "text-rose-500" },
+	{ title: "Overdue", value: stats.value?.overdueTasks.count ?? 0, yesterday: `${stats.value?.overdueTasks.newlyOverdueYesterday ?? 0} new`, icon: "hugeicons:alert-circle", color: "text-danger" },
 ]);
 </script>
 
 <template>
-	<div class="space-y-6">
-		<div class="flex flex-col justify-between gap-4 md:flex-row">
+	<div class="space-y-8">
+		<div class="border-border flex flex-col justify-between gap-5 border-b pb-6 md:flex-row md:items-end">
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
-				<p class="text-muted-foreground">Overview of your tasks and workspace activity</p>
+				<p class="editorial-kicker">Workspace overview</p>
+				<h1 class="page-heading mt-1">Tasks, in one view.</h1>
+				<p class="page-intro mt-2">Review task activity, ownership, and what needs attention next.</p>
 			</div>
 
 			<AppTaskCreateOrEdit is-creating />
 		</div>
 
-		<div v-if="isStatsLoading" class="grid gap-6 md:grid-cols-3">
-			<Skeleton class="h-28 w-full" />
-			<Skeleton class="h-28 w-full" />
-			<Skeleton class="h-28 w-full" />
+		<div v-if="isStatsLoading" class="divide-border border-border grid divide-y border-y md:grid-cols-3 md:divide-x md:divide-y-0">
+			<Skeleton class="h-24 w-full" />
+			<Skeleton class="h-24 w-full" />
+			<Skeleton class="h-24 w-full" />
 		</div>
 
 		<AppEmptyState
@@ -68,29 +64,30 @@ const statOverview = computed(() => [
 			:action="{ label: 'Retry', onClick: () => refetchStats(), variant: 'secondary' }"
 		/>
 
-		<div v-else class="grid gap-6 md:grid-cols-3">
-			<Card v-for="stat in statOverview" :key="stat.title">
-				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle class="text-sm font-medium">{{ stat.title }}</CardTitle>
-					<Icon :name="stat.icon" :size="16" :class="stat.color" />
-				</CardHeader>
-				<CardContent>
-					<div class="text-2xl font-bold">{{ stat.value }}</div>
-					<p class="text-muted-foreground text-xs">{{ stat.yesterday }} from yesterday</p>
-				</CardContent>
-			</Card>
+		<div v-else class="divide-border border-border grid divide-y border-y md:grid-cols-3 md:divide-x md:divide-y-0">
+			<div v-for="stat in statOverview" :key="stat.title" class="flex items-end justify-between gap-4 px-1 py-4 md:px-5">
+				<div>
+					<p class="text-text-tertiary text-xs font-semibold">{{ stat.title }}</p>
+					<p class="mt-1 font-mono text-3xl font-semibold tabular-nums">{{ stat.value }}</p>
+					<p class="text-text-secondary mt-1 text-xs">{{ stat.yesterday }}</p>
+				</div>
+				<Icon :name="stat.icon" :size="18" :class="stat.color" />
+			</div>
 		</div>
 
-		<Tabs v-model="activeTab">
-			<TabsList>
-				<TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">{{ tab.label }}</TabsTrigger>
-			</TabsList>
-
-			<TabsContent :value="activeTab" class="space-y-4">
-				<AppTaskRecents v-if="activeTab === 'tasks'" />
-				<AppWorkspaceStat v-else-if="activeTab === 'stats' && stats" :stats="stats" />
-				<AppEmptyState v-else-if="activeTab === 'stats'" heading="No stats available" body="Workspace statistics will appear once task activity is available." icon="lucide:bar-chart-3" />
-			</TabsContent>
-		</Tabs>
+		<div class="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] lg:gap-12">
+			<section>
+				<div class="mb-4 flex items-end justify-between gap-4">
+					<div>
+						<h2 class="text-xl font-bold tracking-[-0.025em]">Recent tasks</h2>
+						<p class="text-text-secondary mt-1 text-sm">The latest task activity in this workspace.</p>
+					</div>
+					<NuxtLink :to="`/app/workspaces/${useRoute().params.slug}/tasks`" class="text-primary text-sm font-semibold hover:underline">View all tasks</NuxtLink>
+				</div>
+				<AppTaskRecents />
+			</section>
+			<AppWorkspaceStat v-if="stats" :stats="stats" />
+			<AppEmptyState v-else heading="No activity summary yet" body="Workspace statistics will appear once tasks start moving." icon="lucide:bar-chart-3" />
+		</div>
 	</div>
 </template>

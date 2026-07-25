@@ -4,12 +4,6 @@ import { useWorkspacesStore } from "../../stores/workspaces";
 
 const { workspaces } = storeToRefs(useWorkspacesStore());
 
-const workspaceAccent = (slug: string) => {
-	const palette = ["border-indigo-500", "border-violet-500", "border-teal-500", "border-amber-500", "border-rose-500", "border-sky-500"];
-	const hash = Array.from(slug).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-	return palette[hash % palette.length];
-};
-
 const openWorkspace = async (workspace: Workspace) => {
 	await navigateTo(`/app/workspaces/${workspace.slug}/tasks`);
 };
@@ -20,27 +14,31 @@ const openCreateWorkspace = () => {
 </script>
 
 <template>
-	<section class="space-y-4">
+	<section class="pb-8">
 		<div class="flex items-center justify-between">
-			<h2 class="linear-title text-lg font-semibold">Workspaces</h2>
+			<div>
+				<p class="editorial-kicker">Your spaces</p>
+				<h2 class="linear-title mt-1 text-2xl">Workspaces</h2>
+				<p class="text-text-secondary mt-2 text-sm">Jump back into a team space.</p>
+			</div>
 			<Button variant="secondary" size="sm" class="h-8" @click="openCreateWorkspace">
 				<Icon name="lucide:plus" :size="14" />
 				New workspace
 			</Button>
 		</div>
 
-		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+		<div class="mt-6 grid gap-3 lg:grid-cols-2">
 			<article
 				v-for="workspace in workspaces"
 				:key="workspace.id"
-				class="interactive linear-shell cursor-pointer rounded-lg border border-t-2 p-5 hover:-translate-y-0.5"
-				:class="workspaceAccent(workspace.slug)"
+				class="interactive focus-ring border-border bg-surface-0 hover:border-accent/35 grid cursor-pointer gap-4 rounded-xl border p-5 hover:shadow-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
 				@click="openWorkspace(workspace)"
 			>
-				<div class="flex items-start justify-between gap-3">
+				<div class="flex min-w-0 items-start gap-3">
+					<div class="bg-accent-subtle text-accent-text flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-semibold">{{ workspace.title.slice(0, 1).toUpperCase() }}</div>
 					<div>
 						<p class="text-text-primary text-base font-semibold">{{ workspace.title }}</p>
-						<p class="text-text-tertiary mt-1 line-clamp-2 text-xs">{{ workspace.description || "No description yet." }}</p>
+						<p class="text-text-secondary mt-1 line-clamp-2 text-sm">{{ workspace.description || "No description yet." }}</p>
 					</div>
 					<Avatar class="h-8 w-8">
 						<AvatarImage :src="workspace.user.profilePicture || ''" :alt="workspace.user.username" />
@@ -48,7 +46,7 @@ const openCreateWorkspace = () => {
 					</Avatar>
 				</div>
 
-				<div class="text-text-tertiary mt-5 flex items-center justify-between text-xs">
+				<div class="text-text-tertiary flex items-center gap-4 text-xs font-semibold">
 					<p>{{ workspace.memberCount }} member{{ workspace.memberCount > 1 ? "s" : "" }}</p>
 					<p class="capitalize">{{ workspace.userRole }}</p>
 					<p>{{ formatDate(workspace.updatedAt, "MMM D") }}</p>
@@ -57,11 +55,11 @@ const openCreateWorkspace = () => {
 
 			<button
 				type="button"
-				class="interactive border-border bg-surface-0 text-text-tertiary hover:bg-surface-2 flex min-h-[172px] flex-col items-center justify-center rounded-lg border border-dashed"
+				class="interactive focus-ring border-border bg-surface-0 text-text-secondary hover:border-accent/35 hover:bg-accent-subtle/35 flex min-h-32 flex-row items-center justify-center gap-2 rounded-xl border px-3 text-sm font-semibold"
 				@click="openCreateWorkspace"
 			>
 				<Icon name="lucide:plus" :size="20" />
-				<span class="mt-2 text-sm font-medium">Create workspace</span>
+				<span>Create workspace</span>
 			</button>
 		</div>
 	</section>

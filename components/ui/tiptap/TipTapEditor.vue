@@ -22,7 +22,7 @@ const editor = useEditor({
 	],
 	editorProps: {
 		attributes: {
-			class: "prose prose-sm min-h-[120px] max-w-none w-full rounded-md border border-border bg-surface-0 px-3 py-2 text-base text-text-primary shadow-xs outline-none transition-[color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50",
+			class: "prose prose-sm min-h-[120px] max-w-none w-full rounded-none border border-border bg-surface-0 px-3 py-2 text-base text-text-primary shadow-none outline-none disabled:cursor-not-allowed disabled:opacity-50",
 		},
 	},
 	onUpdate({ editor }) {
@@ -145,8 +145,8 @@ onBeforeUnmount(() => editor.value?.destroy());
 }
 
 .tiptap-wrapper .tiptap:focus {
-	border-color: var(--color-primary);
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+	box-shadow: none;
+	outline: none;
 }
 
 .tiptap-wrapper .tiptap p.is-editor-empty:first-child::before {
