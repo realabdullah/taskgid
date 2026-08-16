@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { AuthExperience } from "~/features/auth";
+
 definePageMeta({ layout: "auth", name: "login" });
 </script>
 
 <template>
-	<AuthLogin initial-mode="login" />
+	<AuthExperience initial-mode="login" />
 </template>

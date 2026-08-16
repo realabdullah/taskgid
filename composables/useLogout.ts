@@ -21,7 +21,7 @@ export const useLogout = () => {
 		queryClient.removeQueries({ queryKey: ["workspace"] });
 		queryClient.removeQueries({ queryKey: ["workspace-teams"] });
 		clearNuxtData();
-		toast.success("You have been signed out.");
+		toast.success("Signed out.");
 		return navigateTo("/");
 	};
 

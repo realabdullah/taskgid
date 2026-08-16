@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { CommandPalette } from "~/features/navigation";
+
 const { initTheme } = useTheme();
 onMounted(initTheme);
 </script>
@@ -6,7 +8,7 @@ onMounted(initTheme);
 <template>
 	<NuxtLayout>
 		<Toaster />
-		<AppCommandPalette />
+		<CommandPalette />
 		<NuxtRouteAnnouncer />
 		<NuxtPage />
 	</NuxtLayout>

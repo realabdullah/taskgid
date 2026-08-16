@@ -1,72 +1,36 @@
 :root {
-	/* Taskgid identity — graphite, jade, and a reserved red signal */
-	--color-ink: oklch(0.19 0.012 230);
-	--color-canvas: oklch(0.985 0.002 230);
-	--color-surface-0: oklch(1 0 0);
-	--color-surface-1: oklch(0.965 0.004 230);
-	--color-surface-2: oklch(0.925 0.008 230);
-	--color-surface-3: oklch(0.84 0.012 230);
-	--color-border: oklch(0.82 0.012 230);
-	--color-border-strong: oklch(0.57 0.02 230);
+	/* Neutral foundation — one warm gray family across the product. */
+	--neutral-0: oklch(1 0 0);
+	--neutral-25: oklch(0.992 0.002 85);
+	--neutral-50: oklch(0.978 0.003 85);
+	--neutral-100: oklch(0.958 0.004 85);
+	--neutral-200: oklch(0.914 0.006 85);
+	--neutral-300: oklch(0.845 0.008 85);
+	--neutral-400: oklch(0.7 0.01 85);
+	--neutral-500: oklch(0.55 0.012 85);
+	--neutral-600: oklch(0.43 0.012 85);
+	--neutral-700: oklch(0.33 0.012 85);
+	--neutral-800: oklch(0.24 0.012 85);
+	--neutral-900: oklch(0.18 0.01 85);
+	--neutral-950: oklch(0.13 0.008 85);
 
-	--color-text-primary: var(--color-ink);
-	--color-text-secondary: oklch(0.4 0.015 230);
-	--color-text-tertiary: oklch(0.51 0.014 230);
-	--color-text-disabled: oklch(0.68 0.01 230);
+	/*
+	 * Product roles live in the `@theme` block in assets/css/tailwind.css so that a
+	 * single declaration both defines the value and generates the utility
+	 * (`--color-border` -> `border-border`). Do not redeclare `--color-*`,
+	 * `--radius-*` or `--shadow-*` here: a second declaration shadows the theme
+	 * value at runtime and hides the utility from tooling.
+	 */
 
-	/* Brand signals */
-	--color-accent: oklch(0.49 0.12 168);
-	--color-accent-hover: oklch(0.43 0.115 168);
-	--color-accent-active: oklch(0.37 0.095 168);
-	--color-accent-subtle: oklch(0.94 0.04 168);
-	--color-accent-text: oklch(0.34 0.09 168);
-	--color-accent-soft: oklch(0.975 0.012 168);
-	--color-accent-strong: oklch(0.28 0.07 168);
-	--color-signal: oklch(0.57 0.21 28);
-	--color-signal-subtle: oklch(0.95 0.045 28);
-	--color-rail: oklch(0.15 0.012 230);
-	--color-rail-muted: oklch(0.67 0.012 230);
-
-	/* Semantic */
-	--color-success: oklch(0.58 0.14 156);
-	--color-success-subtle: oklch(0.95 0.034 154);
-	--color-warning: oklch(0.67 0.16 76);
-	--color-warning-subtle: oklch(0.96 0.038 76);
-	--color-danger: var(--color-signal);
-	--color-danger-subtle: var(--color-signal-subtle);
-	--color-info: var(--color-accent);
-	--color-info-subtle: var(--color-accent-subtle);
-
-	--status-todo: oklch(0.54 0.018 260);
-	--status-in-progress: var(--color-accent);
-	--status-in-review: oklch(0.57 0.17 315);
-	--status-done: var(--color-success);
-	--status-blocked: var(--color-signal);
-	--status-cancelled: oklch(0.66 0.014 260);
-	--priority-urgent: var(--color-signal);
-	--priority-high: oklch(0.69 0.17 55);
-	--priority-medium: oklch(0.74 0.15 85);
-	--priority-low: oklch(0.52 0.065 210);
-	--priority-none: oklch(0.72 0.01 260);
-
-	/* Editorial geometry */
-	--radius-sm: 0px;
-	--radius-md: 0px;
-	--radius-lg: 0px;
-	--radius-xl: 0px;
-	--radius-full: 9999px;
-	--shadow-xs: 0 1px 0 rgb(15 20 34 / 0.05);
-	--shadow-sm: 0 3px 8px rgb(15 20 34 / 0.08);
-	--shadow-md: 0 8px 20px rgb(15 20 34 / 0.1);
-	--shadow-lg: 0 16px 32px rgb(15 20 34 / 0.13);
-	--shadow-xl: 0 24px 48px rgb(15 20 34 / 0.17);
-	--shadow-premium: var(--shadow-md);
+	/* Motion. */
 	--duration-instant: 80ms;
 	--duration-fast: 140ms;
-	--duration-normal: 200ms;
+	--duration-normal: 210ms;
 	--duration-slow: 320ms;
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+	/* Stacking. */
 	--z-dropdown: 40;
 	--z-sticky: 50;
 	--z-modal-backdrop: 60;
@@ -74,15 +38,15 @@
 	--z-toast: 80;
 	--z-tooltip: 90;
 
-	/* shadcn aliases */
+	/* shadcn aliases. These map the product roles onto shadcn's vocabulary. */
 	--background: var(--color-canvas);
 	--foreground: var(--color-text-primary);
 	--card: var(--color-surface-0);
 	--card-foreground: var(--color-text-primary);
 	--popover: var(--color-surface-0);
 	--popover-foreground: var(--color-text-primary);
-	--primary: var(--color-accent);
-	--primary-foreground: oklch(0.99 0.002 250);
+	--primary: var(--color-ink);
+	--primary-foreground: var(--neutral-0);
 	--secondary: var(--color-surface-2);
 	--secondary-foreground: var(--color-text-primary);
 	--muted: var(--color-surface-2);
@@ -90,75 +54,28 @@
 	--accent: var(--color-accent-subtle);
 	--accent-foreground: var(--color-accent-text);
 	--destructive: var(--color-danger);
-	--destructive-foreground: oklch(0.99 0.002 250);
+	--destructive-foreground: var(--neutral-0);
 	--border: var(--color-border);
 	--input: var(--color-border-strong);
-	--ring: var(--color-accent);
-	--chart-1: var(--color-accent);
+	--ring: var(--color-focus);
+	--chart-1: var(--color-info);
 	--chart-2: var(--color-success);
-	--chart-3: var(--color-signal);
-	--chart-4: var(--priority-medium);
-	--chart-5: var(--status-in-review);
+	--chart-3: var(--color-warning);
+	--chart-4: var(--color-danger);
+	--chart-5: var(--color-status-in-review);
 	--radius: var(--radius-lg);
-	--sidebar: var(--color-rail);
-	--sidebar-foreground: oklch(0.94 0.008 250);
-	--sidebar-primary: oklch(0.99 0.002 250);
-	--sidebar-primary-foreground: var(--color-rail);
-	--sidebar-accent: oklch(0.28 0.055 264);
-	--sidebar-accent-foreground: oklch(0.98 0.002 250);
-	--sidebar-border: oklch(0.29 0.02 264);
-	--sidebar-ring: oklch(0.72 0.17 264);
+	--sidebar: var(--color-surface-1);
+	--sidebar-foreground: var(--color-text-primary);
+	--sidebar-primary: var(--primary);
+	--sidebar-primary-foreground: var(--primary-foreground);
+	--sidebar-accent: var(--color-surface-2);
+	--sidebar-accent-foreground: var(--color-text-primary);
+	--sidebar-border: var(--color-border);
+	--sidebar-ring: var(--ring);
 }
 
+/* V2 is intentionally one light visual system. Stored preferences cannot fork it. */
 [data-theme="dark"],
 .dark {
-	--color-ink: oklch(0.94 0.008 250);
-	--color-canvas: oklch(0.135 0.01 230);
-	--color-surface-0: oklch(0.17 0.013 230);
-	--color-surface-1: oklch(0.205 0.015 230);
-	--color-surface-2: oklch(0.25 0.018 230);
-	--color-surface-3: oklch(0.32 0.018 230);
-	--color-border: oklch(0.32 0.015 230);
-	--color-border-strong: oklch(0.47 0.02 230);
-	--color-text-primary: var(--color-ink);
-	--color-text-secondary: oklch(0.76 0.012 230);
-	--color-text-tertiary: oklch(0.64 0.012 230);
-	--color-text-disabled: oklch(0.46 0.01 230);
-	--color-accent: oklch(0.74 0.14 168);
-	--color-accent-hover: oklch(0.8 0.12 168);
-	--color-accent-active: oklch(0.68 0.14 168);
-	--color-accent-subtle: oklch(0.27 0.055 168);
-	--color-accent-text: oklch(0.84 0.1 168);
-	--color-accent-soft: oklch(0.22 0.032 168);
-	--color-accent-strong: oklch(0.9 0.08 168);
-	--color-signal: oklch(0.7 0.19 28);
-	--color-signal-subtle: oklch(0.28 0.055 28);
-	--color-rail: oklch(0.105 0.008 230);
-	--color-rail-muted: oklch(0.64 0.01 230);
-	--color-success: oklch(0.73 0.14 154);
-	--color-warning: oklch(0.78 0.15 76);
-	--color-danger: var(--color-signal);
-	--color-success-subtle: oklch(0.25 0.052 154);
-	--color-warning-subtle: oklch(0.28 0.055 76);
-	--color-danger-subtle: var(--color-signal-subtle);
-	--color-info: var(--color-accent);
-	--color-info-subtle: var(--color-accent-subtle);
-	--background: var(--color-canvas);
-	--foreground: var(--color-text-primary);
-	--primary-foreground: oklch(0.16 0.015 230);
-	--card: var(--color-surface-0);
-	--popover: var(--color-surface-0);
-	--secondary: var(--color-surface-2);
-	--muted: var(--color-surface-2);
-	--accent: var(--color-accent-subtle);
-	--border: var(--color-border);
-	--input: var(--color-border-strong);
-	--sidebar: var(--color-rail);
-	--sidebar-foreground: oklch(0.94 0.008 250);
-	--sidebar-primary: oklch(0.99 0.002 250);
-	--sidebar-primary-foreground: var(--color-rail);
-	--sidebar-accent: oklch(0.25 0.03 264);
-	--sidebar-accent-foreground: oklch(0.98 0.002 250);
-	--sidebar-border: oklch(0.25 0.018 264);
-	--sidebar-ring: var(--color-accent);
+	color-scheme: light;
 }

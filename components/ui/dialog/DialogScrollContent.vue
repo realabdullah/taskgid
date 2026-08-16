@@ -19,10 +19,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 <template>
 	<DialogPortal>
 		<DialogOverlay
-			class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80"
+			class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 bg-scrim/20 fixed inset-0 z-50 grid place-items-center overflow-y-auto"
 		>
 			<DialogContent
-				:class="cn('border-border bg-background relative z-50 my-8 grid w-full max-w-lg gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg md:w-full', props.class)"
+				:class="cn('border-border bg-background relative z-50 my-8 grid w-full max-w-lg gap-4 rounded-xl border p-6 shadow-lg duration-200 md:w-full', props.class)"
 				v-bind="forwarded"
 				@pointer-down-outside="
 					(event) => {
@@ -36,7 +36,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 			>
 				<slot />
 
-				<DialogClose class="hover:bg-secondary absolute top-4 right-4 rounded-md p-0.5 transition-colors">
+				<DialogClose class="text-text-secondary hover:bg-surface-2 hover:text-text-primary absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-sm transition-colors">
 					<X class="h-4 w-4" />
 					<span class="sr-only">Close</span>
 				</DialogClose>

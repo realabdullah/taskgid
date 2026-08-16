@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-defineProps<{ title: string; description: string }>();
+withDefaults(defineProps<{ title: string; description: string; confirmLabel?: string }>(), {
+	confirmLabel: "Delete",
+});
 const emits = defineEmits<(event: "cancel" | "confirm") => void>();
 
 const isOpen = defineModel<boolean>();
@@ -14,7 +16,7 @@ const isOpen = defineModel<boolean>();
 			</AlertDialogHeader>
 			<AlertDialogFooter>
 				<AlertDialogCancel @click="emits('cancel')">Cancel</AlertDialogCancel>
-				<AlertDialogAction class="bg-red-500" @click="emits('confirm')">Continue</AlertDialogAction>
+				<AlertDialogAction class="bg-danger text-destructive-foreground hover:bg-danger/90" @click="emits('confirm')">{{ confirmLabel }}</AlertDialogAction>
 			</AlertDialogFooter>
 		</AlertDialogContent>
 	</AlertDialog>

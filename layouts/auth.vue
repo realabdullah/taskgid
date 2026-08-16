@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 const pageMap: { [key: string]: { title: string; description: string } } = {
-	login: { title: "Welcome back", description: "Enter your credentials to access your account" },
-	signup: { title: "Create an account", description: "Enter your details to create your account" },
-	"reset-password": { title: "Reset Password", description: "Enter your email to receive a password reset link" },
-	"reset-confirmation": { title: "Set New Password", description: "Create a new password for your account" },
+	login: { title: "Welcome back", description: "Enter your email and password to sign in." },
+	signup: { title: "Create an account", description: "Enter your details to create your account." },
+	"reset-password": { title: "Reset your password", description: "Enter your email address and we’ll send you a reset link." },
+	"reset-confirmation": { title: "Set a new password", description: "Choose a new password for your account." },
 };
 
 const route = useRoute();

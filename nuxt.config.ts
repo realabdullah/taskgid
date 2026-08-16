@@ -4,9 +4,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
 	modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/image", "@nuxt/scripts", "shadcn-nuxt", "@vueuse/nuxt", "@formkit/auto-animate/nuxt", "@pinia/nuxt", "@nuxt/fonts"],
 	ssr: false,
-	devtools: { enabled: process.env.NODE_ENV === "development" },
+	devtools: { enabled: false },
 	app: {
 		head: {
+			htmlAttrs: { lang: "en" },
 			charset: "utf-8",
 			viewport: "width=device-width, initial-scale=1",
 			title: "Taskgid — Make the next move obvious.",
@@ -16,7 +17,7 @@ export default defineNuxtConfig({
 				{ name: "description", content: "Taskgid gives product teams a shared signal for what moves next." },
 				{ name: "author", content: "Taskgid" },
 				{ name: "keywords", content: "Taskgid, product team, task management, team execution, project coordination" },
-				{ name: "theme-color", content: "#126c5a" },
+				{ name: "theme-color", content: "#f8f8f7" },
 				{ property: "og:title", content: "Taskgid — Make the next move obvious." },
 				{ property: "og:description", content: "A focused workspace that helps product teams move work forward." },
 				{ property: "og:type", content: "website" },
@@ -35,12 +36,11 @@ export default defineNuxtConfig({
 	build: {
 		transpile: ["@vuepic/vue-datepicker"],
 	},
+	devServer: { port: 3000 },
 	compatibilityDate: "2025-04-26",
 	vite: { plugins: [tailwindcss()] },
 	eslint: { config: { stylistic: true }, checker: true },
-	fonts: {
-		families: [{ name: "Manrope", provider: "google", weights: [400, 500, 600, 700, 800] }],
-	},
+	fonts: { families: [] },
 	shadcn: {
 		/**
 		 * Prefix for all the imported component

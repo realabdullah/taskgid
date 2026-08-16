@@ -1,3 +1,5 @@
+import { useWorkspacesStore } from "~/features/workspaces/stores";
+
 type GoSequence = "" | "g";
 
 const SEQUENCE_TIMEOUT_MS = 900;

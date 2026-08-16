@@ -48,7 +48,7 @@ const minDate = computed(() => {
 						)
 					"
 				>
-					<span class="flex-1 text-left">{{ value ? formatDate(value, "MMMM D, YYYY") : "Pick a date" }}</span>
+					<span class="flex-1 text-left tabular-nums">{{ value ? formatDate(value, "MMMM D, YYYY") : "Pick a date" }}</span>
 					<Icon name="hugeicons:calendar-03" :size="16" class="ms-auto opacity-50" />
 				</Button>
 				<input hidden />

@@ -1,0 +1,66 @@
+<script lang="ts" setup>
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+
+const emits = defineEmits<{
+	(e: "close"): void;
+}>();
+
+const formSchema = toTypedSchema(updateAccountSchema);
+
+const { isFieldDirty, handleSubmit, meta, resetForm } = useForm({
+	validationSchema: formSchema,
+});
+
+const isSaving = ref(false);
+
+const cancelChanges = () => {
+	resetForm();
+	emits("close");
+};
+
+const onSubmit = handleSubmit(async (values) => {
+	try {
+		isSaving.value = true;
+		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.changePassword, {
+			method: "POST",
+			body: {
+				currentPassword: values.currentPassword,
+				newPassword: values.newPassword,
+			},
+		});
+		if (!success || error) throw new Error(error || message || "Unable to update your password. Check your current password and try again.");
+		toast.success(message || "Password updated.");
+		resetForm();
+		emits("close");
+	} catch (error) {
+		toast.error(getServerError(error));
+	} finally {
+		isSaving.value = false;
+	}
+});
+</script>
+
+<template>
+	<div class="space-y-4">
+		<h3 class="flex items-center gap-2 text-lg font-medium">
+			<Icon name="hugeicons:key-01" :size="20" />
+			Login Information
+		</h3>
+
+		<form class="grid gap-4" @submit="onSubmit">
+			<FormFieldRenderer
+				v-for="(field, index) in updateAccountFields"
+				:key="index"
+				:name="field.id"
+				:label="field.label"
+				:type="field.type"
+				:placeholder="field.placeholder"
+				:is-field-dirty="!isFieldDirty"
+			/>
+
+			<slot :cancel="cancelChanges" :is-dirty="meta.dirty" :is-saving="isSaving" />
+		</form>
+	</div>
+</template>

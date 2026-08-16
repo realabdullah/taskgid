@@ -6,7 +6,7 @@ export const getInitials = (first?: string, second?: string): string => `${first
 
 export const getTimeAgo = (date: Date) => formatTimeAgo(new Date(date));
 
-export const formatDate = (val: any, format = "MMMM YYYY") => (val ? useDateFormat(val, format).value : "Nil");
+export const formatDate = (val: any, format = "MMMM YYYY") => (val ? useDateFormat(val, format).value : "Not set");
 
 export const formatFileSize = (bytes: number): string => {
 	if (bytes === 0) return "0 Bytes";
@@ -26,22 +26,22 @@ export const formatFileSize = (bytes: number): string => {
 export const getStatusIcon = (status: Task["status"]) => {
 	switch (status) {
 		case "done":
-			return { icon: "hugeicons:checkmark-circle-01", class: "text-green-500" };
+			return { icon: "hugeicons:checkmark-circle-01", class: "text-status-done" };
 		case "in_progress":
-			return { icon: "hugeicons:clock-01", class: "text-amber-500" };
+			return { icon: "hugeicons:clock-01", class: "text-status-in-progress" };
 		default:
-			return { icon: "hugeicons:clock-01", class: "text-slate-500" };
+			return { icon: "hugeicons:clock-01", class: "text-status-todo" };
 	}
 };
 
 export const getPriorityColor = (priority: Task["priority"]) => {
 	switch (priority) {
 		case "high":
-			return "bg-rose-500/10 text-rose-500 hover:bg-rose-500/20";
+			return "bg-priority-high/10 text-priority-high hover:bg-priority-high/20";
 		case "medium":
-			return "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20";
+			return "bg-priority-medium/10 text-priority-medium hover:bg-priority-medium/20";
 		case "low":
-			return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
+			return "bg-priority-low/10 text-priority-low hover:bg-priority-low/20";
 		default:
 			return "";
 	}
@@ -50,11 +50,11 @@ export const getPriorityColor = (priority: Task["priority"]) => {
 export const getStatusColor = (status: Task["status"]) => {
 	switch (status) {
 		case "done":
-			return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
+			return "bg-status-done-bg text-status-done hover:brightness-95";
 		case "in_progress":
-			return "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20";
+			return "bg-status-in-progress-bg text-status-in-progress hover:brightness-95";
 		default:
-			return "bg-slate-500/10 text-slate-500 hover:bg-slate-500/20";
+			return "bg-status-todo-bg text-status-todo hover:brightness-95";
 	}
 };
 
@@ -67,7 +67,7 @@ export const highlightMentions = (text: string): string => {
  * Handles: Error instances (including H3Error / FetchError from ofetch),
  * plain strings, and unknown shapes.
  */
-export const getServerError = (error: unknown, fallback = "Something went wrong. Please try again."): string => {
+export const getServerError = (error: unknown, fallback = "Unable to complete this action. Try again."): string => {
 	if (!error) return fallback;
 	if (typeof error === "string") return error.trim() || fallback;
 	if (error instanceof Error && error.message) return error.message;

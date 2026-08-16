@@ -45,7 +45,7 @@ useHead({
 				</svg>
 
 				<div class="relative z-10 max-w-2xl">
-					<p class="text-primary font-mono text-[11px] font-bold tracking-[0.16em] uppercase">Task, get it done.</p>
+					<p class="text-primary font-mono text-xs font-bold tracking-[0.16em] uppercase">Task, get it done.</p>
 					<h1 class="mt-5 text-5xl leading-[0.92] font-extrabold tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
 						The shortest path from <span class="text-primary">task</span> to done.
 					</h1>
@@ -66,8 +66,8 @@ useHead({
 						aria-label="Tasks moving through Taskgid from capture to done"
 					>
 						<div class="border-sidebar-border absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b px-4 py-3">
-							<span class="text-sidebar-foreground/55 font-mono text-[10px] font-bold tracking-[0.14em] uppercase">Task current</span>
-							<span class="text-primary font-mono text-[10px]">LIVE FLOW</span>
+							<span class="text-rail-muted font-mono text-[10px] font-bold tracking-[0.14em] uppercase">Task current</span>
+							<span class="text-rail-foreground font-mono text-[10px]">LIVE FLOW</span>
 						</div>
 						<svg aria-hidden="true" class="absolute inset-0 h-full w-full" viewBox="0 0 620 470" fill="none" preserveAspectRatio="none">
 							<path class="hero-flow-base" d="M130 105H275L350 235H492M130 235H350M130 365H275L350 235" />
@@ -76,23 +76,23 @@ useHead({
 							<path class="hero-flow-surge hero-flow-delay-3" d="M130 365H275L350 235H492" />
 							<circle class="hero-flow-core" cx="350" cy="235" r="11" />
 						</svg>
-						<div class="absolute top-[18%] left-4 w-[min(11rem,32%)] border border-white/15 bg-black/25 px-3 py-2.5 sm:left-6">
-							<p class="text-sidebar-foreground/45 font-mono text-[9px] tracking-[0.12em] uppercase">Task 01</p>
-							<p class="mt-1 text-xs font-semibold text-white">Scope release</p>
+						<div class="border-rail-foreground/15 bg-scrim/25 absolute top-[18%] left-4 w-[min(11rem,32%)] border px-3 py-2.5 sm:left-6">
+							<p class="text-rail-muted font-mono text-[9px] tracking-[0.12em] uppercase">Task 01</p>
+							<p class="text-rail-foreground mt-1 text-xs font-semibold">Scope release</p>
 						</div>
-						<div class="absolute top-[45%] left-4 w-[min(11rem,32%)] border border-white/15 bg-black/25 px-3 py-2.5 sm:left-6">
-							<p class="text-sidebar-foreground/45 font-mono text-[9px] tracking-[0.12em] uppercase">Task 02</p>
-							<p class="mt-1 text-xs font-semibold text-white">Review feedback</p>
+						<div class="border-rail-foreground/15 bg-scrim/25 absolute top-[45%] left-4 w-[min(11rem,32%)] border px-3 py-2.5 sm:left-6">
+							<p class="text-rail-muted font-mono text-[9px] tracking-[0.12em] uppercase">Task 02</p>
+							<p class="text-rail-foreground mt-1 text-xs font-semibold">Review feedback</p>
 						</div>
-						<div class="absolute top-[72%] left-4 w-[min(11rem,32%)] border border-white/15 bg-black/25 px-3 py-2.5 sm:left-6">
-							<p class="text-sidebar-foreground/45 font-mono text-[9px] tracking-[0.12em] uppercase">Task 03</p>
-							<p class="mt-1 text-xs font-semibold text-white">Share notes</p>
+						<div class="border-rail-foreground/15 bg-scrim/25 absolute top-[72%] left-4 w-[min(11rem,32%)] border px-3 py-2.5 sm:left-6">
+							<p class="text-rail-muted font-mono text-[9px] tracking-[0.12em] uppercase">Task 03</p>
+							<p class="text-rail-foreground mt-1 text-xs font-semibold">Share notes</p>
 						</div>
-						<div class="border-primary bg-rail absolute top-1/2 left-[56%] w-20 -translate-x-1/2 -translate-y-1/2 border px-2 py-3 text-center">
-							<Icon name="lucide:zap" :size="16" class="text-primary mx-auto" />
-							<p class="mt-1 font-mono text-[9px] font-bold tracking-[0.1em] text-white uppercase">Decide</p>
+						<div class="border-signal bg-rail absolute top-1/2 left-[56%] w-20 -translate-x-1/2 -translate-y-1/2 border px-2 py-3 text-center">
+							<Icon name="lucide:zap" :size="16" class="text-signal mx-auto" />
+							<p class="text-rail-foreground mt-1 font-mono text-[9px] font-bold tracking-[0.1em] uppercase">Decide</p>
 						</div>
-						<div class="border-primary bg-primary text-primary-foreground absolute top-1/2 right-4 w-[min(7.25rem,22%)] -translate-y-1/2 border px-2 py-4 text-center sm:right-6">
+						<div class="border-rail-foreground bg-rail-foreground text-rail absolute top-1/2 right-4 w-[min(7.25rem,22%)] -translate-y-1/2 border px-2 py-4 text-center sm:right-6">
 							<Icon name="lucide:check" :size="18" class="mx-auto" />
 							<p class="mt-2 font-mono text-[9px] font-bold tracking-[0.1em] uppercase">Done</p>
 						</div>
@@ -103,8 +103,8 @@ useHead({
 			<section id="method" class="border-border border-y">
 				<div class="mx-auto grid max-w-[1440px] lg:grid-cols-[0.75fr_1.25fr] lg:px-12">
 					<div class="border-border px-5 py-12 sm:px-8 lg:border-r lg:px-0 lg:py-16 lg:pr-16">
-						<p class="text-primary font-mono text-[11px] font-bold tracking-[0.16em] uppercase">One operating rhythm</p>
-						<h2 class="mt-4 text-3xl leading-tight font-extrabold tracking-[-0.03em]">Make the next action obvious.</h2>
+						<p class="text-primary font-mono text-xs font-bold tracking-[0.16em] uppercase">One operating rhythm</p>
+						<h2 class="mt-4 text-3xl leading-tight font-extrabold tracking-[-0.03em] text-balance">Make the next action obvious.</h2>
 					</div>
 					<div class="divide-border grid divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
 						<div class="px-5 py-10 sm:px-7 lg:py-16">
@@ -129,8 +129,8 @@ useHead({
 			<section id="product" class="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
 				<div class="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-end">
 					<div>
-						<p class="text-primary font-mono text-[11px] font-bold tracking-[0.16em] uppercase">Designed for momentum</p>
-						<h2 class="mt-4 max-w-md text-4xl leading-[0.98] font-extrabold tracking-[-0.035em]">Less status chasing. More meaningful progress.</h2>
+						<p class="text-primary font-mono text-xs font-bold tracking-[0.16em] uppercase">Designed for momentum</p>
+						<h2 class="mt-4 max-w-md text-4xl leading-[0.98] font-extrabold tracking-[-0.035em] text-balance">Less status chasing. More meaningful progress.</h2>
 					</div>
 					<p class="text-text-secondary max-w-xl text-lg leading-8">
 						Use the task ledger to see what is overdue, who owns it, and what needs attention—without turning task management into another meeting.
@@ -155,20 +155,20 @@ useHead({
 				</div>
 			</section>
 
-			<section id="teams" class="bg-rail text-white">
+			<section id="teams" class="bg-rail text-rail-foreground">
 				<div class="mx-auto flex max-w-[1440px] flex-col justify-between gap-10 px-5 py-16 sm:px-8 lg:flex-row lg:items-end lg:px-12 lg:py-22">
 					<div class="max-w-2xl">
-						<p class="text-primary font-mono text-[11px] font-bold tracking-[0.16em] uppercase">Ready when you are</p>
-						<h2 class="mt-4 text-4xl leading-[0.95] font-extrabold tracking-[-0.035em] sm:text-5xl">Give your team a clearer way to finish.</h2>
+						<p class="text-rail-muted font-mono text-xs font-bold tracking-[0.16em] uppercase">Ready when you are</p>
+						<h2 class="mt-4 text-4xl leading-[0.95] font-extrabold tracking-[-0.035em] text-balance sm:text-5xl">Give your team a clearer way to finish.</h2>
 					</div>
-					<Button as-child size="lg" class="bg-primary text-primary-foreground hover:bg-accent-hover h-12 px-5"
+					<Button as-child size="lg" class="bg-rail-foreground text-rail hover:bg-surface-3 h-12 px-5"
 						><NuxtLink to="/signup" class="inline-flex items-center gap-2">Start free <Icon name="lucide:arrow-up-right" :size="16" class="shrink-0" /></NuxtLink
 					></Button>
 				</div>
 			</section>
 		</main>
 
-		<footer class="bg-rail text-sidebar-foreground/55 border-t border-white/10 px-5 py-5 sm:px-8 lg:px-12">
+		<footer class="bg-rail text-rail-muted border-rail-foreground/10 border-t px-5 py-5 sm:px-8 lg:px-12">
 			<div class="mx-auto flex max-w-[1440px] items-center justify-between gap-4 text-xs"><span class="font-mono tracking-[0.12em] uppercase">Taskgid</span><span>Task, get it done.</span></div>
 		</footer>
 	</div>
@@ -176,17 +176,17 @@ useHead({
 
 <style scoped>
 .hero-flow-base {
-	stroke: color-mix(in srgb, var(--color-primary) 32%, transparent);
+	stroke: color-mix(in srgb, var(--color-signal) 32%, transparent);
 	stroke-width: 3;
 }
 
 .hero-flow-surge {
-	stroke: var(--color-primary);
+	stroke: var(--color-signal);
 	stroke-dasharray: 10 190;
 	stroke-dashoffset: 200;
 	stroke-linecap: square;
 	stroke-width: 4;
-	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 80%, transparent));
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-signal) 80%, transparent));
 	animation: task-current 3.4s linear infinite;
 }
 
@@ -199,8 +199,8 @@ useHead({
 }
 
 .hero-flow-core {
-	fill: var(--color-primary);
-	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-primary) 85%, transparent));
+	fill: var(--color-signal);
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-signal) 85%, transparent));
 	animation: task-core 2.6s ease-in-out infinite;
 }
 

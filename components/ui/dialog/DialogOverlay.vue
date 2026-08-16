@@ -18,7 +18,7 @@ const delegatedProps = computed(() => {
 		v-bind="delegatedProps"
 		:class="
 			cn(
-				'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/20 data-[state=closed]:hidden motion-reduce:animate-none motion-reduce:transition-none',
+				'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 bg-scrim/20 fixed inset-0 z-50 motion-reduce:animate-none motion-reduce:transition-none',
 				props.class
 			)
 		"
