@@ -33,9 +33,9 @@ const onSubmit = handleSubmit(async (values) => {
 			},
 		});
 		if (!success || error) {
-			throw new Error(error || message || "Failed to reset password");
+			throw new Error(error || message || "Unable to reset your password. Request a new link and try again.");
 		}
-		toast.success(message || "Password reset successful. Sign in with your new password.");
+		toast.success(message || "Password reset. Sign in with your new password.");
 		await router.push("/");
 	} catch (error) {
 		toast.error(getServerError(error));
@@ -47,12 +47,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
 	<div class="grid gap-4">
-		<div v-if="!resetToken" class="bg-danger/10 text-danger border-danger/20 rounded-md border px-3 py-2 text-sm">
-			Invalid or expired reset link. Request a new one from the forgot password page.
-		</div>
+		<div v-if="!resetToken" class="bg-danger/10 text-danger border-danger/20 rounded-md border px-3 py-2 text-sm">This reset link is invalid or has expired. Request a new reset link.</div>
 
 		<form class="space-y-4" @submit="onSubmit">
-			<AuthFormField
+			<FormFieldRenderer
 				v-for="field in resetConfirmationFields"
 				:key="field.id"
 				:name="field.id"
@@ -62,7 +60,7 @@ const onSubmit = handleSubmit(async (values) => {
 				:is-field-dirty="!isFieldDirty"
 			/>
 			<Button class="w-full" :disabled="isSubmitting || !resetToken">
-				{{ isSubmitting ? "Resetting Password..." : "Reset Password" }}
+				{{ isSubmitting ? "Resetting password…" : "Reset password" }}
 			</Button>
 		</form>
 

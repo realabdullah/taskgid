@@ -22,7 +22,7 @@ const editor = useEditor({
 	],
 	editorProps: {
 		attributes: {
-			class: "prose prose-sm min-h-[120px] max-w-none w-full rounded-none border border-border bg-surface-0 px-3 py-2 text-base text-text-primary shadow-none outline-none disabled:cursor-not-allowed disabled:opacity-50",
+			class: "prose prose-sm min-h-[120px] max-w-none w-full bg-surface-0 px-3 py-2.5 text-sm text-text-primary shadow-none outline-none disabled:cursor-not-allowed disabled:opacity-50",
 		},
 	},
 	onUpdate({ editor }) {
@@ -44,94 +44,79 @@ watch(
 );
 
 onBeforeUnmount(() => editor.value?.destroy());
+
+const toolbarButtonClass = "text-text-secondary hover:bg-surface-2 hover:text-text-primary flex h-7 min-w-7 items-center justify-center rounded-sm px-2 text-sm";
 </script>
 
 <template>
-	<div class="tiptap-wrapper">
-		<div class="tiptap-toolbar border-border bg-surface-1 flex flex-wrap gap-1 rounded-t-md border border-b-0 px-2 py-1.5">
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm font-bold transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('bold') }"
-				title="Bold"
-				@click="editor?.chain().focus().toggleBold().run()"
-			>
+	<div
+		class="tiptap-wrapper border-border bg-surface-0 focus-within:border-border-strong focus-within:ring-focus/25 overflow-hidden rounded-md border transition-[border-color,box-shadow] focus-within:ring-2"
+	>
+		<div class="tiptap-toolbar border-border bg-surface-1 flex flex-wrap gap-1 border-b px-2 py-1.5">
+			<Pressable static :class="[toolbarButtonClass, 'font-bold', { 'bg-surface-2 text-primary': editor?.isActive('bold') }]" title="Bold" @click="editor?.chain().focus().toggleBold().run()">
 				B
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm italic transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('italic') }"
-				title="Italic"
-				@click="editor?.chain().focus().toggleItalic().run()"
-			>
+			</Pressable>
+			<Pressable static :class="[toolbarButtonClass, 'italic', { 'bg-surface-2 text-primary': editor?.isActive('italic') }]" title="Italic" @click="editor?.chain().focus().toggleItalic().run()">
 				I
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm line-through transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('strike') }"
+			</Pressable>
+			<Pressable
+				static
+				:class="[toolbarButtonClass, 'line-through', { 'bg-surface-2 text-primary': editor?.isActive('strike') }]"
 				title="Strikethrough"
 				@click="editor?.chain().focus().toggleStrike().run()"
 			>
 				S
-			</button>
+			</Pressable>
 			<div class="bg-border mx-0.5 w-px self-stretch" />
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm font-semibold transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('heading', { level: 2 }) }"
+			<Pressable
+				static
+				:class="[toolbarButtonClass, 'font-semibold', { 'bg-surface-2 text-primary': editor?.isActive('heading', { level: 2 }) }]"
 				title="Heading"
 				@click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
 			>
 				H2
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm font-semibold transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('heading', { level: 3 }) }"
+			</Pressable>
+			<Pressable
+				static
+				:class="[toolbarButtonClass, 'font-semibold', { 'bg-surface-2 text-primary': editor?.isActive('heading', { level: 3 }) }]"
 				title="Subheading"
 				@click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
 			>
 				H3
-			</button>
+			</Pressable>
 			<div class="bg-border mx-0.5 w-px self-stretch" />
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('bulletList') }"
+			<Pressable
+				static
+				:class="[toolbarButtonClass, { 'bg-surface-2 text-primary': editor?.isActive('bulletList') }]"
 				title="Bullet list"
 				@click="editor?.chain().focus().toggleBulletList().run()"
 			>
-				<Icon name="hugeicons:list-view" :size="14" />
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('orderedList') }"
+				<Icon name="lucide:list" :size="14" />
+			</Pressable>
+			<Pressable
+				static
+				:class="[toolbarButtonClass, { 'bg-surface-2 text-primary': editor?.isActive('orderedList') }]"
 				title="Ordered list"
 				@click="editor?.chain().focus().toggleOrderedList().run()"
 			>
-				<Icon name="hugeicons:list-number" :size="14" />
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 text-sm transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('blockquote') }"
+				<Icon name="lucide:list-ordered" :size="14" />
+			</Pressable>
+			<Pressable
+				static
+				:class="[toolbarButtonClass, { 'bg-surface-2 text-primary': editor?.isActive('blockquote') }]"
 				title="Blockquote"
 				@click="editor?.chain().focus().toggleBlockquote().run()"
 			>
-				<Icon name="hugeicons:quote-down" :size="14" />
-			</button>
-			<button
-				type="button"
-				class="hover:bg-surface-2 text-text-secondary hover:text-text-primary rounded px-2 py-0.5 font-mono text-sm transition-colors"
-				:class="{ 'bg-surface-2 text-primary': editor?.isActive('code') }"
+				<Icon name="lucide:quote" :size="14" />
+			</Pressable>
+			<Pressable
+				static
+				:class="[toolbarButtonClass, 'font-mono', { 'bg-surface-2 text-primary': editor?.isActive('code') }]"
 				title="Inline code"
 				@click="editor?.chain().focus().toggleCode().run()"
 			>
 				&lt;/&gt;
-			</button>
+			</Pressable>
 		</div>
 		<EditorContent :editor="editor" />
 	</div>
@@ -141,7 +126,6 @@ onBeforeUnmount(() => editor.value?.destroy());
 .tiptap-wrapper .tiptap {
 	min-height: 120px;
 	outline: none;
-	border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 .tiptap-wrapper .tiptap:focus {
@@ -192,7 +176,7 @@ onBeforeUnmount(() => editor.value?.destroy());
 
 .tiptap-wrapper .tiptap code {
 	background: var(--color-surface-2);
-	border-radius: 3px;
+	border-radius: var(--radius-xs);
 	font-size: 0.875em;
 	padding: 0.1em 0.3em;
 }

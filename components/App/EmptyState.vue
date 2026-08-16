@@ -14,7 +14,6 @@ const props = withDefaults(
 		action?: EmptyStateAction;
 	}>(),
 	{
-		subheading: "Nothing here yet",
 		icon: "hugeicons:folder-02",
 	}
 );
@@ -22,7 +21,7 @@ const props = withDefaults(
 
 <template>
 	<div class="bg-surface-0 flex flex-col items-center justify-center rounded-xl px-6 py-20 text-center shadow-xs">
-		<div class="bg-accent-subtle text-primary flex h-14 w-14 items-center justify-center rounded-2xl">
+		<div class="bg-accent-subtle text-primary flex h-14 w-14 items-center justify-center rounded-xl">
 			<Icon :name="props.icon" :size="24" aria-hidden="true" />
 		</div>
 		<p v-if="props.subheading" class="text-text-tertiary mt-6 text-sm font-semibold">{{ props.subheading }}</p>

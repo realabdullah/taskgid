@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { TaskWorkbench } from "~/features/tasks";
+
 definePageMeta({
 	name: "tasks",
 	layout: "workspace",
@@ -6,5 +8,5 @@ definePageMeta({
 </script>
 
 <template>
-	<AppTaskWorkspaceTasksView />
+	<TaskWorkbench />
 </template>

@@ -39,7 +39,7 @@ const initials = (first?: string, last?: string, username?: string) => {
 					</div>
 
 					<Avatar v-if="remainingCount > 0" :class="[size, 'ring-surface-0 border-border bg-surface-0 border ring-2']">
-						<AvatarFallback class="bg-surface-2 text-text-secondary font-medium">+{{ remainingCount }}</AvatarFallback>
+						<AvatarFallback class="bg-surface-2 text-text-secondary font-medium tabular-nums">+{{ remainingCount }}</AvatarFallback>
 					</Avatar>
 				</div>
 			</TooltipTrigger>

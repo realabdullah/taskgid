@@ -19,7 +19,7 @@ const errorMessage = ref("");
 
 onMounted(async () => {
 	if (!token.value) {
-		errorMessage.value = "Invalid invite link. The token is missing.";
+		errorMessage.value = "This invitation link is incomplete. Ask the sender for a new invitation.";
 		state.value = "error";
 		return;
 	}
@@ -31,7 +31,7 @@ onMounted(async () => {
 		});
 
 		if (!response?.success) {
-			throw new Error(response?.error || "Failed to accept invitation");
+			throw new Error(response?.error || "Unable to accept this invitation. Ask the sender for a new invitation.");
 		}
 
 		state.value = "success";
@@ -59,35 +59,35 @@ onMounted(async () => {
 						'bg-destructive/10': state === 'error',
 					}"
 				>
-					<Icon v-if="state === 'validating'" name="hugeicons:loading-03" :size="28" class="animate-spin text-white" />
-					<Icon v-else-if="state === 'success'" name="hugeicons:checkmark-circle-03" :size="28" class="text-white" />
+					<Icon v-if="state === 'validating'" name="hugeicons:loading-03" :size="28" class="text-primary-foreground animate-spin" />
+					<Icon v-else-if="state === 'success'" name="hugeicons:checkmark-circle-03" :size="28" class="text-primary-foreground" />
 					<Icon v-else name="hugeicons:alert-circle" :size="28" class="text-destructive" />
 				</div>
 
 				<template v-if="state === 'validating'">
-					<h1 class="text-2xl font-bold">Validating Invite</h1>
-					<p class="text-muted-foreground text-sm">Please wait while we verify your invite link…</p>
+					<h1 class="text-2xl font-bold">Checking your invitation</h1>
+					<p class="text-muted-foreground text-sm">Verifying the invitation link…</p>
 				</template>
 
 				<template v-else-if="state === 'success'">
-					<h1 class="text-2xl font-bold">Invitation Accepted</h1>
+					<h1 class="text-2xl font-bold">Invitation accepted</h1>
 					<p class="text-muted-foreground text-sm">Redirecting you now…</p>
 				</template>
 
 				<template v-else>
-					<h1 class="text-2xl font-bold">Invite Link Invalid</h1>
+					<h1 class="text-2xl font-bold">Unable to accept invitation</h1>
 					<p class="text-muted-foreground text-sm">{{ errorMessage }}</p>
 
 					<div class="bg-destructive/10 border-destructive/20 w-full rounded-md border px-4 py-3 text-left text-sm">
-						<p class="text-destructive font-medium">This may have happened because:</p>
+						<p class="text-destructive font-medium">The link may no longer work because:</p>
 						<ul class="text-destructive/80 mt-1 list-inside list-disc space-y-1">
-							<li>The invite link has expired</li>
-							<li>The invite was already accepted or declined</li>
-							<li>The link was copied incorrectly</li>
+							<li>It has expired</li>
+							<li>It was already accepted or declined</li>
+							<li>It was copied incorrectly</li>
 						</ul>
 					</div>
 
-					<NuxtLink to="/" class="text-primary text-sm font-medium underline-offset-4 hover:underline"> Go back to sign in </NuxtLink>
+					<NuxtLink to="/" class="text-primary text-sm font-medium underline-offset-4 hover:underline">Return to sign in</NuxtLink>
 				</template>
 			</div>
 		</div>

@@ -1,13 +1,19 @@
+@import "./fonts.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "../design-tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Single source of truth for product roles. Every `--color-*`, `--radius-*` and
+ * `--shadow-*` is declared exactly once, here, so the value and the generated
+ * utility can never drift apart.
+ */
 @theme {
-	--font-display: "Manrope", "Avenir Next", sans-serif;
-	--font-body: "Manrope", "Avenir Next", sans-serif;
-	--font-mono: "IBM Plex Mono", monospace;
+	--font-display: "Geist", "Avenir Next", sans-serif;
+	--font-body: "Geist", "Avenir Next", sans-serif;
+	--font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "Roboto Mono", Consolas, monospace;
 
 	--text-2xs: 0.71875rem;
 	--text-xs: 0.78125rem;
@@ -23,64 +29,89 @@
 	--leading-normal: 1.5;
 	--leading-none: 1;
 
-	--color-surface-0: var(--color-surface-0);
-	--color-canvas: var(--color-canvas);
-	--color-surface-1: var(--color-surface-1);
-	--color-surface-2: var(--color-surface-2);
-	--color-surface-3: var(--color-surface-3);
-	--color-border-strong: var(--color-border-strong);
-	--color-text-primary: var(--color-text-primary);
-	--color-text-secondary: var(--color-text-secondary);
-	--color-text-tertiary: var(--color-text-tertiary);
-	--color-text-disabled: var(--color-text-disabled);
-	--color-accent-hover: var(--color-accent-hover);
-	--color-accent-active: var(--color-accent-active);
-	--color-accent-subtle: var(--color-accent-subtle);
-	--color-accent-text: var(--color-accent-text);
-	--color-accent-soft: var(--color-accent-soft);
-	--color-accent-strong: var(--color-accent-strong);
-	--color-brand-line: var(--color-brand-line);
-	--color-brand-focus: var(--color-brand-focus);
-	--color-brand-hero-start: var(--color-brand-hero-start);
-	--color-brand-hero-end: var(--color-brand-hero-end);
-	--color-success: var(--color-success);
-	--color-success-subtle: var(--color-success-subtle);
-	--color-warning: var(--color-warning);
-	--color-warning-subtle: var(--color-warning-subtle);
-	--color-danger: var(--color-danger);
-	--color-danger-subtle: var(--color-danger-subtle);
-	--color-info: var(--color-info);
-	--color-info-subtle: var(--color-info-subtle);
+	/* Surfaces and lines. */
+	--color-canvas: var(--neutral-50);
+	--color-surface-0: var(--neutral-0);
+	--color-surface-1: var(--neutral-25);
+	--color-surface-2: var(--neutral-100);
+	--color-surface-3: var(--neutral-200);
+	--color-border: var(--neutral-200);
+	--color-border-strong: var(--neutral-300);
 
-	--color-status-todo: var(--status-todo);
-	--color-status-in-progress: var(--status-in-progress);
-	--color-status-in-review: var(--status-in-review);
-	--color-status-done: var(--status-done);
-	--color-status-blocked: var(--status-blocked);
-	--color-status-cancelled: var(--status-cancelled);
+	/* Text. */
+	--color-text-primary: var(--neutral-900);
+	--color-text-secondary: var(--neutral-600);
+	--color-text-tertiary: var(--neutral-500);
+	--color-text-disabled: var(--neutral-400);
 
-	--color-priority-urgent: var(--priority-urgent);
-	--color-priority-high: var(--priority-high);
-	--color-priority-medium: var(--priority-medium);
-	--color-priority-low: var(--priority-low);
-	--color-priority-none: var(--priority-none);
+	/* Primary actions are ink (near-black); indigo is reserved for focus and selection. */
+	--color-ink: var(--neutral-900);
+	--color-ink-hover: var(--neutral-800);
+	--color-ink-active: var(--neutral-950);
+	--color-accent-subtle: oklch(0.952 0.022 267);
+	--color-accent-soft: oklch(0.978 0.01 267);
+	--color-accent-text: oklch(0.45 0.14 267);
+	--color-accent-strong: oklch(0.39 0.15 267);
+	--color-focus: oklch(0.58 0.16 267);
+	--color-rail: var(--neutral-900);
+	--color-rail-foreground: var(--neutral-0);
+	--color-rail-muted: var(--neutral-300);
+	--color-scrim: var(--neutral-950);
+	--color-signal: oklch(0.62 0.19 31);
+	--color-signal-subtle: oklch(0.962 0.018 31);
 
-	--radius-sm: var(--radius-sm);
-	--radius-md: var(--radius-md);
-	--radius-lg: var(--radius-lg);
-	--radius-xl: var(--radius-xl);
-	--radius-full: var(--radius-full);
+	/* Semantic feedback. */
+	--color-success: oklch(0.48 0.12 153);
+	--color-success-subtle: oklch(0.958 0.045 153);
+	--color-warning: oklch(0.54 0.113 75);
+	--color-warning-subtle: oklch(0.965 0.033 82);
+	--color-danger: oklch(0.55 0.19 28);
+	--color-danger-subtle: oklch(0.962 0.018 28);
+	--color-info: oklch(0.52 0.15 256);
+	--color-info-subtle: oklch(0.956 0.021 256);
 
-	--shadow-xs: var(--shadow-xs);
-	--shadow-sm: var(--shadow-sm);
-	--shadow-md: var(--shadow-md);
-	--shadow-lg: var(--shadow-lg);
-	--shadow-xl: var(--shadow-xl);
-	--shadow-premium: var(--shadow-premium);
-	--color-signal: var(--color-signal);
-	--color-signal-subtle: var(--color-signal-subtle);
-	--color-rail: var(--color-rail);
-	--color-rail-muted: var(--color-rail-muted);
+	/* Task semantics: foreground and background travel together. */
+	--color-status-todo: oklch(0.535 0.012 85);
+	--color-status-todo-bg: var(--neutral-100);
+	--color-status-in-progress: oklch(0.52 0.15 256);
+	--color-status-in-progress-bg: oklch(0.95 0.024 256);
+	--color-status-in-review: oklch(0.54 0.113 75);
+	--color-status-in-review-bg: oklch(0.962 0.036 82);
+	--color-status-done: oklch(0.48 0.12 153);
+	--color-status-done-bg: oklch(0.956 0.045 153);
+	--color-status-blocked: oklch(0.55 0.19 28);
+	--color-status-blocked-bg: oklch(0.958 0.02 28);
+	--color-status-cancelled: oklch(0.535 0.012 85);
+	--color-status-cancelled-bg: var(--neutral-100);
+	--color-priority-urgent: oklch(0.55 0.19 28);
+	--color-priority-high: oklch(0.62 0.17 35);
+	--color-priority-medium: oklch(0.61 0.128 75);
+	--color-priority-low: oklch(0.52 0.12 256);
+	--color-priority-none: var(--neutral-400);
+
+	/*
+	 * One radius ladder. Nothing in the product is square-cornered.
+	 *   xs  chips, checkboxes, swatches
+	 *   sm  buttons, inputs, menu items, segmented options
+	 *   md  list tiles, inline cards, toolbars
+	 *   lg  panels, popovers, dropdowns, cards
+	 *   xl  dialogs, sheets, hero cards
+	 */
+	--radius-xs: 6px;
+	--radius-sm: 8px;
+	--radius-md: 10px;
+	--radius-lg: 14px;
+	--radius-xl: 18px;
+	--radius-2xl: 24px;
+	--radius-3xl: 32px;
+	--radius-full: 9999px;
+
+	--shadow-xs: 0 1px 2px oklch(0.18 0.01 85 / 0.04);
+	--shadow-sm: 0 4px 14px oklch(0.18 0.01 85 / 0.06);
+	--shadow-md: 0 12px 32px oklch(0.18 0.01 85 / 0.09);
+	--shadow-lg: 0 24px 56px oklch(0.18 0.01 85 / 0.12);
+	--shadow-xl: 0 32px 72px oklch(0.18 0.01 85 / 0.15);
+	--shadow-premium: var(--shadow-md);
 }
 
 @theme inline {
@@ -100,7 +131,6 @@
 	--color-accent-foreground: var(--accent-foreground);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
-	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
 	--color-chart-1: var(--chart-1);
@@ -108,10 +138,6 @@
 	--color-chart-3: var(--chart-3);
 	--color-chart-4: var(--chart-4);
 	--color-chart-5: var(--chart-5);
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
 	--color-sidebar: var(--sidebar);
 	--color-sidebar-foreground: var(--sidebar-foreground);
 	--color-sidebar-primary: var(--sidebar-primary);
@@ -129,7 +155,7 @@
 	}
 
 	.interactive-slow {
-		@apply transition-all duration-[350ms] ease-out;
+		@apply transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-[350ms] ease-out;
 	}
 
 	.linear-shell {
@@ -166,7 +192,7 @@
 	}
 
 	.focus-ring {
-		@apply focus-visible:ring-accent focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+		@apply focus-visible:ring-focus focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
 	}
 
 	.brand-wordmark {
@@ -193,24 +219,65 @@
 	.command-surface {
 		background: var(--color-surface-0);
 		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
 		box-shadow: var(--shadow-md);
+	}
+
+	/*
+	 * Page rhythm. `product-page` owns the vertical spacing between a page's
+	 * top-level blocks so individual sections never hand-roll their own margins.
+	 */
+	.product-page {
+		@apply mx-auto flex w-full max-w-[1440px] flex-col gap-6 sm:gap-8;
+	}
+
+	.product-header {
+		@apply border-border flex flex-col gap-5 border-b pb-6 sm:flex-row sm:items-end sm:justify-between;
+	}
+
+	.product-eyebrow {
+		@apply text-text-tertiary text-xs font-medium;
+	}
+
+	.product-title {
+		@apply text-text-primary text-3xl font-semibold tracking-[-0.04em] sm:text-4xl;
+		text-wrap: balance;
+	}
+
+	.product-description {
+		@apply text-text-secondary mt-2 max-w-[62ch] text-sm leading-6;
+	}
+
+	.product-panel {
+		@apply border-border bg-surface-0 rounded-lg border shadow-xs;
+	}
+
+	.product-toolbar {
+		@apply border-border bg-surface-1 rounded-lg border px-4 py-3;
+		@apply flex flex-col gap-3 sm:flex-row sm:items-center;
+	}
+
+	.product-row {
+		@apply border-border hover:bg-surface-1 border-b px-4 py-3 transition-colors duration-150 last:border-b-0;
+	}
+
+	.product-section-title {
+		@apply text-text-primary text-base font-semibold tracking-[-0.015em];
+	}
+
+	.product-label {
+		@apply text-text-tertiary text-xs font-medium;
+	}
+
+	.product-divider {
+		@apply border-border;
 	}
 }
 
 @layer base {
 	* {
-		border-color: var(--border);
+		border-color: var(--color-border);
 		outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
-	}
-
-	:where([class*="rounded-"]) {
-		border-radius: 0 !important;
-	}
-
-	:where(input, textarea, select, button, [data-slot]),
-	:where(input, textarea, select, button, [data-slot]):focus,
-	:where(input, textarea, select, button, [data-slot]):focus-visible {
-		border-radius: 0 !important;
 	}
 
 	:where(button:not(:disabled), a[href], [role="button"]) {
@@ -235,6 +302,7 @@
 		background: color-mix(in srgb, var(--color-border-strong) 72%, transparent);
 		border: 2px solid transparent;
 		background-clip: padding-box;
+		border-radius: var(--radius-full);
 	}
 
 	::-webkit-scrollbar-thumb:hover {
@@ -249,10 +317,11 @@
 		text-rendering: optimizeLegibility;
 		font-feature-settings: "ss01", "ss02", "cv02";
 		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
 	::selection {
-		background: var(--color-accent);
+		background: var(--color-ink);
 		color: var(--primary-foreground);
 	}
 

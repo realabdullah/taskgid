@@ -7,13 +7,18 @@ defineOptions({
 	inheritAttrs: false,
 });
 
-const { align = "center", sideOffset = 4, ...props } = defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>();
+/*
+ * `avoidCollisions` + `collisionPadding` keep the panel inside the viewport, and
+ * `--reka-popover-content-available-height` caps it so a tall popover scrolls
+ * internally instead of running off the top or bottom of the screen.
+ */
+const { align = "center", sideOffset = 4, avoidCollisions = true, collisionPadding = 12, ...props } = defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>();
 const emits = defineEmits<PopoverContentEmits>();
 
 const delegatedProps = computed(() => {
 	const { class: _, ...delegated } = props;
 
-	return { ...delegated, align, sideOffset };
+	return { ...delegated, align, sideOffset, avoidCollisions, collisionPadding };
 });
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
@@ -26,7 +31,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 			v-bind="{ ...forwarded, ...$attrs }"
 			:class="
 				cn(
-					'bg-popover text-popover-foreground border-border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 z-50 w-72 origin-(--reka-popover-content-transform-origin) rounded-none border p-3 shadow-sm outline-hidden',
+					'bg-popover text-popover-foreground border-border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 z-50 flex max-h-(--reka-popover-content-available-height) w-72 origin-(--reka-popover-content-transform-origin) flex-col overflow-hidden rounded-lg border p-3 shadow-md outline-hidden',
 					props.class
 				)
 			"

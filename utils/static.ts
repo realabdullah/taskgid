@@ -1,8 +1,8 @@
 export const signupFormFields = [
-	{ id: "firstName", label: "First Name", type: "text", placeholder: "John" },
-	{ id: "lastName", label: "Last Name", type: "text", placeholder: "Doe" },
+	{ id: "firstName", label: "First name", type: "text", placeholder: "Ada" },
+	{ id: "lastName", label: "Last name", type: "text", placeholder: "Lovelace" },
 	{ id: "username", label: "Username", type: "text", placeholder: "johndoe" },
-	{ id: "email", label: "Email Address", type: "email", placeholder: "name@example.com" },
+	{ id: "email", label: "Email address", type: "email", placeholder: "name@example.com" },
 	{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
 ];
 
@@ -15,7 +15,7 @@ export const passkeyLoginFormFields = [{ id: "email", label: "Email", type: "ema
 
 export const resetConfirmationFields = [
 	{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
-	{ id: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "••••••••" },
+	{ id: "confirmPassword", label: "Confirm password", type: "password", placeholder: "••••••••" },
 ];
 
 export const inviteRoleOptions = [
@@ -24,39 +24,39 @@ export const inviteRoleOptions = [
 ];
 
 export const inviteFormFields = [
-	{ id: "email", label: "Email Address", type: "email", placeholder: "colleague@example.com" },
+	{ id: "email", label: "Email address", type: "email", placeholder: "colleague@example.com" },
 	{ id: "role", label: "Role", type: "select", placeholder: "Select a role (optional)", options: inviteRoleOptions },
 ];
 
 export const profileUpdateFields = [
-	{ id: "firstName", label: "First Name", type: "text", placeholder: "John" },
-	{ id: "lastName", label: "Last Name", type: "text", placeholder: "Doe" },
+	{ id: "firstName", label: "First name", type: "text", placeholder: "Ada" },
+	{ id: "lastName", label: "Last name", type: "text", placeholder: "Lovelace" },
 	{ id: "username", label: "Username", type: "text", placeholder: "johndoe" },
-	{ id: "about", label: "About", type: "textarea", placeholder: "Tell us about yourself" },
-	{ id: "location", label: "Location", type: "text", placeholder: "City, Country" },
-	{ id: "title", label: "Title", type: "text", placeholder: "Software Engineer" },
+	{ id: "about", label: "About", type: "textarea", placeholder: "What should teammates know about you?" },
+	{ id: "location", label: "Location", type: "text", placeholder: "Lagos, Nigeria" },
+	{ id: "title", label: "Job title", type: "text", placeholder: "Software engineer" },
 ];
 
 export const updateAccountFields = [
-	{ id: "currentPassword", label: "Current Password", type: "password", placeholder: "••••••••" },
-	{ id: "newPassword", label: "New Password", type: "password", placeholder: "••••••••" },
-	{ id: "confirmPassword", label: "Confirm New Password", type: "password", placeholder: "••••••••" },
+	{ id: "currentPassword", label: "Current password", type: "password", placeholder: "••••••••" },
+	{ id: "newPassword", label: "New password", type: "password", placeholder: "••••••••" },
+	{ id: "confirmPassword", label: "Confirm new password", type: "password", placeholder: "••••••••" },
 ];
 
 export const TaskFormFields = [
-	{ id: "title", label: "Title", type: "text", placeholder: "Enter task title", extra: "A clear, concise title for your task.", fullWidth: true },
-	{ id: "description", label: "Description", type: "wysiwyg", placeholder: "Enter task description", extra: "Provide details about what needs to be done.", fullWidth: true },
-	{ id: "dueDate", label: "Due Date", type: "date", placeholder: "Select task due date", extra: "When should this task be completed?", fullWidth: false },
-	{ id: "priority", label: "Priority", type: "select", placeholder: "Select task priority", extra: "Set the importance level of this task.", fullWidth: false },
-	{ id: "assignees", label: "Assignees", type: "select", placeholder: "Assign task", extra: "Who should work on this task? Leave empty for unassigned.", isMultiple: true, fullWidth: false },
-	{ id: "status", label: "Status", type: "select", placeholder: "Select task status", extra: "Current state of the task.", fullWidth: false },
+	{ id: "title", label: "Title", type: "text", placeholder: "Review launch checklist", extra: "Summarize the outcome in a few words.", fullWidth: true },
+	{ id: "description", label: "Description", type: "wysiwyg", placeholder: "Add context, links, or acceptance criteria…", extra: "Add the details needed to complete this task.", fullWidth: true },
+	{ id: "dueDate", label: "Due date", type: "date", placeholder: "Select a due date", extra: "When should this task be completed?", fullWidth: false },
+	{ id: "priority", label: "Priority", type: "select", placeholder: "Select a priority", extra: "How urgently does this task need attention?", fullWidth: false },
+	{ id: "assignees", label: "Assignees", type: "select", placeholder: "Select assignees", extra: "Leave this empty to keep the task unassigned.", isMultiple: true, fullWidth: false },
+	{ id: "status", label: "Status", type: "select", placeholder: "Select a status", extra: "Where is this task in the workflow?", fullWidth: false },
 ];
 
 export const taskActions = [
-	{ label: "Change Status", value: "status", description: "Modify the current state of the task" },
-	{ label: "Change Priority", value: "priority", description: "Adjust how urgent or important the task is" },
-	{ label: "Assign to Someone Else", value: "assignees", description: "Reassign the task to a different team member" },
-	{ label: "Set Due Date", value: "dueDate", description: "Specify or update the task’s deadline" },
+	{ label: "Change status", value: "status", description: "Move the task to a different stage" },
+	{ label: "Change priority", value: "priority", description: "Change how urgently the task needs attention" },
+	{ label: "Change assignees", value: "assignees", description: "Choose who is responsible for the task" },
+	{ label: "Set due date", value: "dueDate", description: "Add or update the task deadline" },
 ] as const;
 
 export const taskActionsLabelMap = taskActions.reduce(
@@ -68,9 +68,9 @@ export const taskActionsLabelMap = taskActions.reduce(
 );
 
 export const taskStatuses = [
-	{ label: "Todo", value: "todo", description: "Tasks that are queued up and waiting to be started." },
-	{ label: "In Progress", value: "in_progress", description: "Tasks currently being worked on." },
-	{ label: "Done", value: "done", description: "Tasks that have been completed." },
+	{ label: "To do", value: "todo", description: "Tasks waiting to be started." },
+	{ label: "In progress", value: "in_progress", description: "Tasks currently being worked on." },
+	{ label: "Done", value: "done", description: "Completed tasks." },
 ];
 
 export const taskPriorities = [
@@ -80,8 +80,8 @@ export const taskPriorities = [
 ];
 
 export const periods = [
-	{ label: "This Week", value: "week" },
-	{ label: "This Month", value: "month" },
-	{ label: "This Quarter", value: "quarter" },
-	{ label: "This Year", value: "year" },
+	{ label: "This week", value: "week" },
+	{ label: "This month", value: "month" },
+	{ label: "This quarter", value: "quarter" },
+	{ label: "This year", value: "year" },
 ];

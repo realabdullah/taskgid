@@ -1,8 +1,8 @@
-# TaskGid
+# Taskgid
 
-A collaborative task management app built with Nuxt 3.
+A collaborative task manager built with Nuxt 3.
 
-## Tech Stack
+## Technology
 
 - **Framework**: Nuxt 3 (SPA, `ssr: false`)
 - **Language**: TypeScript
@@ -13,43 +13,50 @@ A collaborative task management app built with Nuxt 3.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 24
 - pnpm
-- A running TaskGid backend API
+- A running Taskgid backend API
 
-## Setup
+## Local setup
 
 ```bash
 pnpm install
 ```
 
-Copy the example env file and fill in the values:
+Copy the example environment file, then add the required values:
 
 ```bash
 cp .env.example .env
 ```
 
-### Environment Variables
+### Environment variables
 
-| Variable       | Description                                         |
-| -------------- | --------------------------------------------------- |
-| `API_BASE_URL` | Backend base URL (default: `http://localhost:8000`) |
+| Variable       | Description                                           |
+| -------------- | ----------------------------------------------------- |
+| `API_BASE_URL` | Backend API URL. Defaults to `http://localhost:8000`. |
 
-## Development
+Start the development server:
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in a browser.
 
-## Scripts
+## Architecture
 
-| Command         | Description              |
-| --------------- | ------------------------ |
-| `pnpm dev`      | Start development server |
-| `pnpm build`    | Build for production     |
-| `pnpm preview`  | Preview production build |
-| `pnpm lint`     | Run ESLint               |
-| `pnpm lint:fix` | Auto-fix lint issues     |
-| `pnpm format`   | Run Prettier             |
+The application organizes product surfaces by feature. Route files stay thin, shared primitives live in `components/ui`, and each feature owns its presentation, derived state, and local types. Read the [feature architecture guide](./features/README.md) for dependency rules and boundaries.
+
+## Quality checks
+
+| Command             | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| `pnpm dev`          | Start the development server.                          |
+| `pnpm build`        | Create a production build.                             |
+| `pnpm preview`      | Preview the production build.                          |
+| `pnpm lint`         | Check the code with ESLint.                            |
+| `pnpm lint:fix`     | Fix supported ESLint issues.                           |
+| `pnpm format`       | Format the code with Prettier.                         |
+| `pnpm typecheck`    | Run Nuxt and Vue type checks.                          |
+| `pnpm format:check` | Check formatting without changing files.               |
+| `pnpm check`        | Run lint, type checks, and formatting checks together. |

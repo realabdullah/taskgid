@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { MobileDock, ProductHeader } from "~/features/navigation";
+import { WorkspaceEditorDialog, WorkspaceSwitchboard } from "~/features/workspaces";
+
 const isCreateWorkspaceOpen = useState<boolean>("create-workspace-open", () => false);
 
 const openCreateWorkspace = () => {
@@ -16,11 +19,10 @@ onBeforeUnmount(() => {
 
 <template>
 	<div class="bg-canvas min-h-svh">
-		<AppHeader />
-		<main class="relative z-10 mx-auto w-full max-w-[1540px] px-5 py-7 pb-24 sm:px-8 lg:px-12 lg:py-10"><slot /></main>
-		<AppWorkspaceSwitchboard />
-		<AppMobileDock />
-		<UserSettingsSheet />
-		<AppWorkspaceCreateOrEdit v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
+		<ProductHeader />
+		<main id="main-content" class="relative z-10 mx-auto w-full max-w-[1540px] px-4 py-6 pb-24 sm:px-6 lg:px-10 lg:py-8"><slot /></main>
+		<WorkspaceSwitchboard />
+		<MobileDock />
+		<WorkspaceEditorDialog v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
 	</div>
 </template>

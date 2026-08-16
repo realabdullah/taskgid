@@ -3,73 +3,73 @@ import * as z from "zod";
 export const SignupSchema = z.object({
 	firstName: z
 		.string()
-		.min(3, { message: "First name must be at least 3 characters" })
-		.max(50, { message: "First name must be less than 50 characters" })
-		.regex(/^[a-zA-Z]+$/, { message: "First name should only contain letters" }),
+		.min(3, { message: "Enter at least 3 characters for your first name" })
+		.max(50, { message: "Use no more than 50 characters for your first name" })
+		.regex(/^[a-zA-Z]+$/, { message: "Use only letters for your first name" }),
 
 	lastName: z
 		.string()
-		.min(3, { message: "Last name must be at least 3 characters" })
-		.max(50, { message: "Last name must be less than 50 characters" })
-		.regex(/^[a-zA-Z]+$/, { message: "Last name should only contain letters" }),
+		.min(3, { message: "Enter at least 3 characters for your last name" })
+		.max(50, { message: "Use no more than 50 characters for your last name" })
+		.regex(/^[a-zA-Z]+$/, { message: "Use only letters for your last name" }),
 
 	username: z
 		.string()
-		.min(3, { message: "Username is required" })
-		.max(30, { message: "Username must be less than 30 characters" })
+		.min(3, { message: "Enter a username with at least 3 characters" })
+		.max(30, { message: "Use no more than 30 characters for your username" })
 		.regex(/^[a-zA-Z0-9_]+$/, {
-			message: "Username must contain only letters, numbers, and underscores",
+			message: "Use only letters, numbers, and underscores for your username",
 		}),
 
-	email: z.string().email({ message: "Invalid email address" }).max(100, { message: "Email must be less than 100 characters" }),
+	email: z.string().email({ message: "Enter an email address in the format name@example.com" }).max(100, { message: "Use no more than 100 characters for your email address" }),
 
 	password: z
 		.string()
-		.min(8, { message: "Password must be at least 8 characters" })
-		.max(100, { message: "Password must be less than 100 characters" })
-		.regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-		.regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-		.regex(/[0-9]/, { message: "Password must contain at least one number" })
+		.min(8, { message: "Use at least 8 characters for your password" })
+		.max(100, { message: "Use no more than 100 characters for your password" })
+		.regex(/[a-z]/, { message: "Add at least one lowercase letter to your password" })
+		.regex(/[A-Z]/, { message: "Add at least one uppercase letter to your password" })
+		.regex(/[0-9]/, { message: "Add at least one number to your password" })
 		.regex(/[^a-zA-Z0-9]/, {
-			message: "Password must contain at least one special character",
+			message: "Add at least one symbol to your password",
 		}),
 });
 
 export const LoginSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }),
-	password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+	email: z.string().email({ message: "Enter an email address in the format name@example.com" }),
+	password: z.string().min(8, { message: "Enter your password using at least 8 characters" }),
 });
 
 export const PasskeyLoginSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }),
+	email: z.string().email({ message: "Enter an email address in the format name@example.com" }),
 });
 
 export const ResetPasswordSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }).max(100, { message: "Email must be less than 100 characters" }),
+	email: z.string().email({ message: "Enter an email address in the format name@example.com" }).max(100, { message: "Use no more than 100 characters for your email address" }),
 });
 
 export const ResetPasswordConfirmationSchema = z
 	.object({
 		password: z
 			.string()
-			.min(8, { message: "Password must be at least 8 characters" })
-			.max(100, { message: "Password must be less than 100 characters" })
-			.regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-			.regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-			.regex(/[0-9]/, { message: "Password must contain at least one number" })
+			.min(8, { message: "Use at least 8 characters for your password" })
+			.max(100, { message: "Use no more than 100 characters for your password" })
+			.regex(/[a-z]/, { message: "Add at least one lowercase letter to your password" })
+			.regex(/[A-Z]/, { message: "Add at least one uppercase letter to your password" })
+			.regex(/[0-9]/, { message: "Add at least one number to your password" })
 			.regex(/[^a-zA-Z0-9]/, {
-				message: "Password must contain at least one special character",
+				message: "Add at least one symbol to your password",
 			}),
-		confirmPassword: z.string().min(8, { message: "Confirm Password is required" }),
+		confirmPassword: z.string().min(8, { message: "Re-enter your new password" }),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		path: ["confirmPassword"],
-		message: "Passwords do not match",
+		message: "Enter the same password in both fields",
 	});
 
 export const InviteSchema = z.object({
-	workspaceId: z.string().uuid("Invalid workspace ID"),
-	email: z.string().email("Invalid email address").max(100, { message: "Email must be less than 100 characters" }),
+	workspaceId: z.string().uuid("Select a valid workspace"),
+	email: z.string().email("Enter an email address in the format name@example.com").max(100, { message: "Use no more than 100 characters for the email address" }),
 	role: z.enum(["member", "admin"]).optional(),
 });
 
@@ -85,7 +85,7 @@ export const BulkInviteSchema = z.object({
 					.filter(Boolean);
 				return emails.length > 0 && emails.every((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
 			},
-			{ message: "All entries must be valid email addresses (one per line or comma-separated)" }
+			{ message: "Enter valid email addresses, separated by commas or one per line" }
 		),
 	role: z.enum(["member", "admin"]).optional(),
 });
@@ -94,46 +94,46 @@ export const WorkspaceFormSchema = z.object({
 	title: z
 		.string()
 		.min(2, {
-			message: "Title must be at least 2 characters.",
+			message: "Enter at least 2 characters for the workspace name",
 		})
 		.max(50, {
-			message: "Title must not be longer than 50 characters.",
+			message: "Use no more than 50 characters for the workspace name",
 		}),
-	description: z.string().min(10).max(200, {
-		message: "Description must not be longer than 200 characters.",
+	description: z.string().min(10, { message: "Enter at least 10 characters for the workspace description" }).max(200, {
+		message: "Use no more than 200 characters for the workspace description",
 	}),
 	slug: z
 		.string()
 		.min(3, {
-			message: "Slug must be at least 3 characters.",
+			message: "Enter at least 3 characters for the workspace address",
 		})
 		.max(20, {
-			message: "Slug must not be longer than 20 characters.",
+			message: "Use no more than 20 characters for the workspace address",
 		})
 		.regex(/^[a-zA-Z0-9-]+$/, {
-			message: "Slug can only contain letters, numbers, and hyphens.",
+			message: "Use only letters, numbers, and hyphens for the workspace address",
 		}),
 });
 
 export const updateProfileSchema = z.object({
 	firstName: z
 		.string()
-		.min(3, { message: "First name must be at least 3 characters" })
-		.max(50, { message: "First name must be less than 50 characters" })
-		.regex(/^[a-zA-Z]+$/, { message: "First name should only contain letters" }),
+		.min(3, { message: "Enter at least 3 characters for your first name" })
+		.max(50, { message: "Use no more than 50 characters for your first name" })
+		.regex(/^[a-zA-Z]+$/, { message: "Use only letters for your first name" }),
 
 	lastName: z
 		.string()
-		.min(3, { message: "Last name must be at least 3 characters" })
-		.max(50, { message: "Last name must be less than 50 characters" })
-		.regex(/^[a-zA-Z]+$/, { message: "Last name should only contain letters" }),
+		.min(3, { message: "Enter at least 3 characters for your last name" })
+		.max(50, { message: "Use no more than 50 characters for your last name" })
+		.regex(/^[a-zA-Z]+$/, { message: "Use only letters for your last name" }),
 
 	username: z
 		.string()
-		.min(3, { message: "Username is required" })
-		.max(30, { message: "Username must be less than 30 characters" })
+		.min(3, { message: "Enter a username with at least 3 characters" })
+		.max(30, { message: "Use no more than 30 characters for your username" })
 		.regex(/^[a-zA-Z0-9_]+$/, {
-			message: "Username must contain only letters, numbers, and underscores",
+			message: "Use only letters, numbers, and underscores for your username",
 		}),
 	profilePicture: z.string().optional(),
 	about: z.string().optional(),
@@ -143,18 +143,18 @@ export const updateProfileSchema = z.object({
 
 export const updateAccountSchema = z
 	.object({
-		currentPassword: z.string().min(8, "Current Password must be at least 8 characters"),
-		newPassword: z.string().min(8, "New Password must be at least 8 characters"),
-		confirmPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
+		currentPassword: z.string().min(8, "Enter your current password using at least 8 characters"),
+		newPassword: z.string().min(8, "Use at least 8 characters for your new password"),
+		confirmPassword: z.string().min(8, "Re-enter your new password"),
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		path: ["confirmPassword"],
-		message: "Passwords do not match",
+		message: "Enter the same password in both new password fields",
 	});
 
 export const taskFormSchema = z.object({
-	title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(150, { message: "Title must be less than 50 characters" }),
-	description: z.string().min(10, { message: "Description must be at least 10 characters" }),
+	title: z.string().min(3, { message: "Enter at least 3 characters for the task title" }).max(150, { message: "Use no more than 150 characters for the task title" }),
+	description: z.string().min(10, { message: "Enter at least 10 characters for the task description" }),
 	dueDate: z.date().optional(),
 	priority: z.enum(["high", "medium", "low"]).optional(),
 	assignees: z.array(z.string()).optional(),
