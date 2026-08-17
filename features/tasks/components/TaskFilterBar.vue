@@ -28,8 +28,14 @@ const PRIORITY_OPTIONS: Array<{ value: Task["priority"]; label: string }> = [
 	{ value: "medium", label: "Medium" },
 	{ value: "low", label: "Low" },
 ];
+/*
+ * Select forbids an empty option value — it reserves "" for clearing the
+ * selection — so "anyone" stands in for the absent filter and is translated
+ * back at the boundary.
+ */
+const ANY_ASSIGNEE = "anyone";
 const ASSIGNEE_OPTIONS = [
-	{ value: "", label: "Anyone" },
+	{ value: ANY_ASSIGNEE, label: "Anyone" },
 	{ value: "me", label: "Assigned to me" },
 	{ value: "unassigned", label: "Unassigned" },
 ];
@@ -101,10 +107,10 @@ const toggleSortOrder = () => emit("write", { sortOrder: props.filters.sortOrder
 		</Popover>
 
 		<!-- Assignee -->
-		<Select :model-value="filters.assignee" @update:model-value="(value: unknown) => emit('write', { assignee: String(value ?? '') })">
+		<Select :model-value="filters.assignee || ANY_ASSIGNEE" @update:model-value="(value: unknown) => emit('write', { assignee: value === ANY_ASSIGNEE ? '' : String(value ?? '') })">
 			<SelectTrigger class="w-[168px]" aria-label="Filter by assignee"><SelectValue /></SelectTrigger>
 			<SelectContent>
-				<SelectItem v-for="option in ASSIGNEE_OPTIONS" :key="option.value || 'any'" :value="option.value">{{ option.label }}</SelectItem>
+				<SelectItem v-for="option in ASSIGNEE_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</SelectItem>
 			</SelectContent>
 		</Select>
 
