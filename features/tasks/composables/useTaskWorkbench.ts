@@ -19,24 +19,26 @@ export const useTaskWorkbench = () => {
 	const editor = ref<EditorState>(null);
 
 	const {
-		data: tasks,
+		data: taskPages,
 		isFetching,
 		isError,
 		error,
 		refetch,
 	} = useQuery({
 		queryKey: computed(() => ["workspace-tasks", workspaceSlug.value]),
-		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value));
-			if (!success || !data) throw new Error("Unable to load tasks. Try again.");
-			return data;
-		},
+		// Filtering and board grouping both happen client-side, so the workbench
+		// needs the whole workspace rather than the first page the API returns.
+		queryFn: () => fetchAllPages<Task>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value)),
 		enabled: computed(() => Boolean(workspaceSlug.value)),
 	});
 
+	const tasks = computed(() => taskPages.value?.data ?? []);
+	const totalTasks = computed(() => taskPages.value?.total ?? 0);
+	const isTaskListTruncated = computed(() => Boolean(taskPages.value?.truncated));
+
 	const filteredTasks = computed(() => {
 		const needle = search.value.trim().toLowerCase();
-		return (tasks.value ?? [])
+		return tasks.value
 			.filter((task) => statusFilter.value === "all" || task.status === statusFilter.value)
 			.filter((task) => priorityFilter.value === "all" || task.priority === priorityFilter.value)
 			.filter((task) => !needle || `${task.title} ${task.description}`.toLowerCase().includes(needle))
@@ -111,6 +113,7 @@ export const useTaskWorkbench = () => {
 		isError,
 		isFetching,
 		isPanelOpen,
+		isTaskListTruncated,
 		openTask,
 		priorityFilter,
 		refetch,
@@ -119,6 +122,7 @@ export const useTaskWorkbench = () => {
 		startEditing,
 		statusFilter,
 		tasks,
+		totalTasks,
 		viewMode,
 		workspaceName,
 		workspaceSlug,

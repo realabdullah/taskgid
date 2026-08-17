@@ -2,7 +2,9 @@
 import { useDebounceFn } from "@vueuse/core";
 import { toast } from "vue-sonner";
 import { useWorkspacesStore } from "~/features/workspaces/stores";
-import type { Task, Workspace } from "~/types";
+import type { PaginatedResponse, Task, Workspace } from "~/types";
+
+const TASK_RESULT_COUNT = 8;
 
 const isOpen = useState<boolean>("command-palette-open", () => false);
 const search = ref("");
@@ -21,11 +23,11 @@ const fetchTasks = useDebounceFn(async () => {
 		return;
 	}
 
-	const { success, data } = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), {
-		query: { search: search.value.trim() },
+	const { success, data } = await useApiFetch<PaginatedResponse<Task>>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), {
+		query: { search: search.value.trim(), page: 1, limit: TASK_RESULT_COUNT },
 	});
 
-	taskResults.value = success && data ? data.slice(0, 8) : [];
+	taskResults.value = success && data ? data : [];
 }, 220);
 
 watch(search, () => {

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/vue-query";
-import type { Pagination, Team, Workspace } from "~/types";
+import type { Team, Workspace } from "~/types";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
 	const workspaceSlug = computed(() => {
@@ -18,8 +18,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	const { data: teams } = useQuery({
 		queryKey: ["workspace-teams", workspaceSlug],
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: Team[]; pagination: Pagination }>(API_ENDPOINTS.workspaces.team(workspaceSlug.value));
-			if (!data || !success) throw new Error("Unable to load workspace members. Try again.");
+			const { data } = await fetchAllPages<Team>(API_ENDPOINTS.workspaces.team(workspaceSlug.value));
 			return data;
 		},
 		enabled: () => !!workspaceSlug.value,

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { ActivityDetails, Comment } from "~/types";
+import type { ActivityDetails, ApiResponse, Comment, PaginatedResponse } from "~/types";
 
 type TaskTimelineOptions = { workspaceSlug: string; taskId: string };
 
@@ -19,7 +19,9 @@ export const useTaskTimeline = (options: TaskTimelineOptions) => {
 	} = useQuery({
 		queryKey: computed(() => ["task-activities", options.workspaceSlug, options.taskId]),
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(API_ENDPOINTS.workspaces.taskActivities(options.workspaceSlug, options.taskId));
+			const { success, data } = await useApiFetch<PaginatedResponse<ActivityDetails>>(API_ENDPOINTS.workspaces.taskActivities(options.workspaceSlug, options.taskId), {
+				query: { page: 1, limit: LIST_PAGE_SIZE },
+			});
 			if (!success || !data) throw new Error("Unable to load task activity. Try again.");
 			return data;
 		},
@@ -35,9 +37,9 @@ export const useTaskTimeline = (options: TaskTimelineOptions) => {
 	} = useQuery({
 		queryKey: computed(() => ["task-comments", options.workspaceSlug, options.taskId]),
 		queryFn: async () => {
-			const { success, data, pagination } = await useApiFetch<{ success: boolean; data: Comment[]; pagination: { total: number } }>(
-				API_ENDPOINTS.workspaces.taskComments(options.workspaceSlug, options.taskId)
-			);
+			const { success, data, pagination } = await useApiFetch<PaginatedResponse<Comment>>(API_ENDPOINTS.workspaces.taskComments(options.workspaceSlug, options.taskId), {
+				query: { page: 1, limit: LIST_PAGE_SIZE },
+			});
 			if (!success || !data) throw new Error("Unable to load task comments. Try again.");
 			return { comments: data, pagination };
 		},
@@ -52,7 +54,7 @@ export const useTaskTimeline = (options: TaskTimelineOptions) => {
 		if (!content) return;
 		try {
 			isAddingComment.value = true;
-			const { success } = await useApiFetch<{ success: boolean }>(API_ENDPOINTS.workspaces.taskComments(options.workspaceSlug, options.taskId), {
+			const { success } = await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskComments(options.workspaceSlug, options.taskId), {
 				method: "POST",
 				body: { content },
 			});

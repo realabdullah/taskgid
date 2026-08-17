@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/vue-query";
-import type { TeamPerformanceStat } from "~/types";
+import type { ApiResponse, TeamPerformanceStat } from "~/types";
 
 export const useTeamStats = () => {
 	const route = useRoute();
@@ -16,10 +16,9 @@ export const useTeamStats = () => {
 	} = useQuery({
 		queryKey: ["team-members-stat", periodToApiValue],
 		queryFn: async () => {
-			const { success, message, data } = await useApiFetch<{ success: boolean; message?: string; data: TeamPerformanceStat }>(
-				API_ENDPOINTS.workspaces.teamStatistics(route.params.slug, periodToApiValue.value),
-				{ method: "GET" }
-			);
+			const { success, message, data } = await useApiFetch<ApiResponse<TeamPerformanceStat>>(API_ENDPOINTS.workspaces.teamStatistics(route.params.slug, periodToApiValue.value), {
+				method: "GET",
+			});
 			if (!success && !data) throw createError({ status: 500, statusMessage: message || "Unable to load team statistics. Try again." });
 			return data;
 		},

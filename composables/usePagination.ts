@@ -3,7 +3,7 @@ export const usePagination = () => {
 
 	const pagination = ref({
 		page: Number(route.query.page) || 1,
-		limit: Number(route.query.limit) || 10,
+		limit: Number(route.query.limit) || LIST_PAGE_SIZE,
 	});
 
 	const setPagination = (page: number, limit: number) => {

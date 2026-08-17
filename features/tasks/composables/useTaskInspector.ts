@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Task } from "~/types";
+import type { ApiResponse, Task } from "~/types";
 
 type TaskInspectorOptions = {
 	workspaceSlug: MaybeRefOrGetter<string>;
@@ -16,7 +16,7 @@ export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspe
 	const query = useQuery({
 		queryKey: computed(() => ["task", toValue(taskId)]),
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: Task }>(API_ENDPOINTS.workspaces.taskById(toValue(workspaceSlug), toValue(taskId)));
+			const { success, data } = await useApiFetch<ApiResponse<Task>>(API_ENDPOINTS.workspaces.taskById(toValue(workspaceSlug), toValue(taskId)));
 			if (!success || !data) throw new Error("Unable to load this task. Try again.");
 			return data;
 		},
@@ -26,7 +26,7 @@ export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspe
 	const deleteTask = async () => {
 		try {
 			isDeleting.value = true;
-			const { success } = await useApiFetch<{ success: boolean }>(API_ENDPOINTS.workspaces.taskById(toValue(workspaceSlug), toValue(taskId)), {
+			const { success } = await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskById(toValue(workspaceSlug), toValue(taskId)), {
 				method: "DELETE",
 			});
 			if (!success) throw new Error("Unable to delete this task. Try again.");
