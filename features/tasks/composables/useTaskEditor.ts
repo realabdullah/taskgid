@@ -31,21 +31,16 @@ const toDraft = (task?: Task): TaskDraft => ({
 	tags: task?.tags?.map((tag) => tag.name) ?? [],
 });
 
-/** `YYYY-MM-DD` in the user's own timezone, which is what `<input type="date">` expects. */
-const toDateInputValue = (date: Date) => {
-	const offset = date.getTimezoneOffset() * 60_000;
-	return new Date(date.getTime() - offset).toISOString().slice(0, 10);
-};
-
-const addDays = (days: number) => {
-	const date = new Date();
-	date.setDate(date.getDate() + days);
-	return toDateInputValue(date);
-};
+/**
+ * Due-date presets, resolved against the user's stored timezone rather than the
+ * browser's, so "today" agrees with what the server considers overdue.
+ */
+const addDays = (days: number, timezone: string) => addDaysToKey(todayKey(timezone), days);
 
 export const useTaskEditor = (options: TaskEditorOptions) => {
 	const queryClient = useQueryClient();
 	const { teams } = storeToRefs(useWorkspaceStore());
+	const timezone = useUserTimezone();
 	const draft = reactive<TaskDraft>(toDraft(options.task));
 	const isSubmitting = ref(false);
 	const titleError = computed(() => (!draft.title.trim() ? "Add a task title." : ""));
@@ -53,9 +48,9 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 
 	/** Shortcuts for the dates people actually pick, so the calendar stays optional. */
 	const dueDatePresets = computed(() => [
-		{ label: "Today", value: addDays(0) },
-		{ label: "Tomorrow", value: addDays(1) },
-		{ label: "Next week", value: addDays(7) },
+		{ label: "Today", value: addDays(0, timezone.value) },
+		{ label: "Tomorrow", value: addDays(1, timezone.value) },
+		{ label: "Next week", value: addDays(7, timezone.value) },
 	]);
 
 	watch(

@@ -141,6 +141,13 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 							<p class="truncate text-sm font-medium">{{ task.title }}</p>
 							<div class="mt-1 flex min-w-0 items-center gap-2">
 								<p class="text-text-tertiary truncate text-xs tabular-nums">{{ task.id }} · {{ task.commentCount }} {{ task.commentCount === 1 ? "comment" : "comments" }}</p>
+								<span
+									v-if="task.unreadCommentCount"
+									class="bg-primary text-primary-foreground inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 font-mono text-[0.625rem] leading-none tabular-nums"
+									:title="`${task.unreadCommentCount} unread comment${task.unreadCommentCount === 1 ? '' : 's'}`"
+								>
+									{{ task.unreadCommentCount }} new
+								</span>
 								<TagChip v-for="tag in (task.tags ?? []).slice(0, 3)" :key="tag.id" :tag="tag" />
 							</div>
 						</Pressable>

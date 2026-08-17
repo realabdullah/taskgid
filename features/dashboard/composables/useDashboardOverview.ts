@@ -7,11 +7,6 @@ import type { PaginatedResponse, Task } from "~/types";
 import { API_ENDPOINTS } from "~/utils/endpoints";
 import type { DashboardTask, DashboardTaskFilter } from "../types";
 
-const startOfToday = () => {
-	const now = new Date();
-	return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-};
-
 export const useDashboardOverview = () => {
 	const { user } = storeToRefs(useStore());
 	const { workspaces } = storeToRefs(useWorkspacesStore());
@@ -42,10 +37,9 @@ export const useDashboardOverview = () => {
 	});
 
 	const tasks = computed(() => data.value ?? []);
-	const today = computed(startOfToday);
-	const tomorrow = computed(() => new Date(today.value.getFullYear(), today.value.getMonth(), today.value.getDate() + 1));
-	const isDueToday = (task: DashboardTask) => Boolean(task.dueDate && new Date(task.dueDate) >= today.value && new Date(task.dueDate) < tomorrow.value);
-	const isOverdue = (task: DashboardTask) => Boolean(task.dueDate && new Date(task.dueDate) < today.value && task.status !== "done");
+	const timezone = useUserTimezone();
+	const isDueToday = (task: DashboardTask) => isDueTodayIn(task.dueDate, timezone.value);
+	const isOverdue = (task: DashboardTask) => task.status !== "done" && isOverdueIn(task.dueDate, timezone.value);
 
 	const openTasks = computed(() => tasks.value.filter((task) => task.status !== "done"));
 	const completedTasks = computed(() => tasks.value.filter((task) => task.status === "done"));

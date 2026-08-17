@@ -12,9 +12,6 @@ export type MyWorkBucket = {
 	tasks: MyTask[];
 };
 
-const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
-const addDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
-
 /**
  * Everything assigned to the current user, across every workspace they are in.
  *
@@ -48,10 +45,14 @@ export const useMyWork = () => {
 
 	const tasks = computed(() => query.data.value ?? []);
 
+	const timezone = useUserTimezone();
+
 	const buckets = computed<MyWorkBucket[]>(() => {
-		const today = startOfDay(new Date());
-		const tomorrow = addDays(today, 1);
-		const endOfWeek = addDays(today, 7);
+		// Compared as calendar days in the user's own timezone, so a task due
+		// tonight does not read as tomorrow's work to someone east of the server.
+		const today = todayKey(timezone.value);
+		const tomorrow = addDaysToKey(today, 1);
+		const endOfWeek = addDaysToKey(today, 7);
 
 		const empty: Record<MyWorkBucket["id"], MyTask[]> = { overdue: [], today: [], week: [], later: [], someday: [] };
 		for (const task of tasks.value) {
@@ -60,7 +61,7 @@ export const useMyWork = () => {
 				empty.someday.push(task);
 				continue;
 			}
-			const due = new Date(task.dueDate);
+			const due = toLocalDateKey(task.dueDate, timezone.value);
 			if (due < today) empty.overdue.push(task);
 			else if (due < tomorrow) empty.today.push(task);
 			else if (due < endOfWeek) empty.week.push(task);

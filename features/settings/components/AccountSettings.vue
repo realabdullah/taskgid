@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import NotificationSettings from "./NotificationSettings.vue";
 import PasskeySettings from "./PasskeySettings.vue";
 import PasswordForm from "./PasswordForm.vue";
 import ProfileForm from "./ProfileForm.vue";
@@ -81,30 +82,7 @@ const sections: Array<{ key: SettingsSection; label: string; description: string
 					>
 				</PasswordForm>
 				<PasskeySettings v-else-if="activeSection === 'security'" />
-				<!--
-					The old "Consistent light appearance" card explained an internal design
-					decision rather than offering a setting. Preferences now lists only things
-					the user can actually act on.
-				-->
-				<div v-else class="space-y-4">
-					<div class="divide-border border-border overflow-hidden rounded-md border">
-						<div class="flex items-center justify-between gap-4 p-4">
-							<div>
-								<p class="text-sm font-medium">Mention notifications</p>
-								<p class="text-text-tertiary mt-1 text-xs">Receive an alert when a teammate mentions you.</p>
-							</div>
-							<Switch disabled />
-						</div>
-						<div class="border-border flex items-center justify-between gap-4 border-t p-4">
-							<div>
-								<p class="text-sm font-medium">Weekly summary</p>
-								<p class="text-text-tertiary mt-1 text-xs">A concise email about unfinished work.</p>
-							</div>
-							<Switch disabled />
-						</div>
-					</div>
-					<p class="text-text-tertiary text-xs">Notification delivery is not editable yet. These controls turn on once the API accepts preference changes.</p>
-				</div>
+				<NotificationSettings v-else />
 			</section>
 		</div>
 	</div>

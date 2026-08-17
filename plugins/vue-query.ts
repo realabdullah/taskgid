@@ -5,7 +5,9 @@ export default defineNuxtPlugin((nuxt) => {
 	const vueQueryState = useState<DehydratedState | null>("vue-query");
 
 	const queryClient = new QueryClient({
-		defaultOptions: { queries: { staleTime: 5000 } },
+		// refetchOnWindowFocus is the correctness floor: when the event stream is
+		// unavailable or a tab has been asleep, coming back still reconciles.
+		defaultOptions: { queries: { staleTime: 5000, refetchOnWindowFocus: true } },
 	});
 	const options: VueQueryPluginOptions = { queryClient };
 
