@@ -1,8 +1,14 @@
 <script lang="ts" setup>
 import { MobileDock, ProductHeader, ShortcutSheet } from "~/features/navigation";
+import { useWorkspaceChannel } from "~/features/workspaces/composables/useWorkspaceChannel";
 import { WorkspaceEditorDialog, WorkspaceSwitchboard } from "~/features/workspaces";
 
 const isCreateWorkspaceOpen = useState<boolean>("create-workspace-open", () => false);
+
+// One stream for the whole product surface; it follows the workspace in the URL
+// and closes itself when there is none.
+const route = useRoute();
+useWorkspaceChannel(() => (typeof route.params.slug === "string" ? route.params.slug : ""));
 
 const openCreateWorkspace = () => {
 	isCreateWorkspaceOpen.value = true;

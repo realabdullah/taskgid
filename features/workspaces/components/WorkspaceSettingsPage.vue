@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import NotificationSettings from "~/features/settings/components/NotificationSettings.vue";
 import { TagManager } from "~/features/tags";
 import WorkspaceInviteDialog from "~/features/workspaces/components/WorkspaceInviteDialog.vue";
 import { useWorkspaceSettings } from "~/features/workspaces/composables/useWorkspaceSettings";
@@ -73,6 +74,14 @@ const canManageTags = computed(() => ["admin", "owner"].includes(String(workspac
 			</div>
 			<section class="product-panel p-5 sm:p-7">
 				<TagManager :workspace-slug="String(route.params.slug ?? '')" :can-manage="canManageTags" />
+			</section>
+
+			<div>
+				<h2 class="text-lg font-semibold">Your notifications here</h2>
+				<p class="text-text-secondary mt-1 text-sm leading-6">Override your account settings for this workspace alone — useful when one space is noisier than the rest.</p>
+			</div>
+			<section class="product-panel p-5 sm:p-7">
+				<NotificationSettings :workspace-slug="String(route.params.slug ?? '')" />
 			</section>
 
 			<div>

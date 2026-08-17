@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { ApiResponse, Task } from "~/types";
 import { useTaskMutations } from "./useTaskMutations";
 
@@ -10,6 +10,7 @@ type TaskInspectorOptions = {
 
 export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspectorOptions) => {
 	const { deleteTaskWithUndo } = useTaskMutations(workspaceSlug);
+	const client = useQueryClient();
 
 	const query = useQuery({
 		queryKey: computed(() => ["task", toValue(taskId)]),
@@ -20,6 +21,26 @@ export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspe
 		},
 		enabled: computed(() => Boolean(toValue(workspaceSlug) && toValue(taskId))),
 	});
+
+	/*
+	 * Opening a task is what "reading" it means, so the marker is set here rather
+	 * than behind a button. Failures are ignored: an unread badge that lingers is
+	 * a far smaller problem than an error toast for something nobody asked for.
+	 */
+	watch(
+		() => [toValue(workspaceSlug), toValue(taskId)] as const,
+		async ([slug, id]) => {
+			if (!slug || !id) return;
+			try {
+				await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskRead(slug, id), { method: "POST" });
+				void client.invalidateQueries({ queryKey: ["workspace-tasks"] });
+				void client.invalidateQueries({ queryKey: ["workspace-tasks-column"] });
+			} catch {
+				// Non-fatal by design.
+			}
+		},
+		{ immediate: true }
+	);
 
 	/*
 	 * Deleting closes the panel immediately and offers an undo, rather than

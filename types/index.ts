@@ -17,6 +17,8 @@ export interface BaseUser {
 
 export interface User extends BaseUser {
 	email: string;
+	/** IANA timezone name; drives what counts as overdue and today. */
+	timezone?: string | null;
 	title: string | null;
 	about: string | null;
 	location: string | null;
@@ -120,6 +122,8 @@ export interface Task {
 	assignees: BaseUser[];
 	creator: BaseUser;
 	commentCount: number;
+	/** Comments from other people since this user last opened the task. */
+	unreadCommentCount?: number;
 	tags: Tag[];
 }
 
