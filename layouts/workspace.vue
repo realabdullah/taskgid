@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MobileDock, ProductHeader } from "~/features/navigation";
+import { MobileDock, ProductHeader, ShortcutSheet } from "~/features/navigation";
 import { WorkspaceEditorDialog, WorkspaceSwitchboard } from "~/features/workspaces";
 
 const isCreateWorkspaceOpen = useState<boolean>("create-workspace-open", () => false);
@@ -24,5 +24,6 @@ onBeforeUnmount(() => {
 		<WorkspaceSwitchboard />
 		<MobileDock />
 		<WorkspaceEditorDialog v-model="isCreateWorkspaceOpen" is-creating hide-trigger />
+		<ShortcutSheet />
 	</div>
 </template>

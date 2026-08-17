@@ -5,6 +5,8 @@ import { useSavedViews } from "./useSavedViews";
 import { useTaskBoard } from "./useTaskBoard";
 import { useTaskExport } from "./useTaskExport";
 import { useTaskFilters } from "./useTaskFilters";
+import { useTaskMutations } from "./useTaskMutations";
+import { useTaskSelection } from "./useTaskSelection";
 import { useWorkspaceTasks, TASKS_PER_PAGE } from "./useWorkspaceTasks";
 
 type EditorState = { mode: "create" } | { mode: "edit"; task: Task } | null;
@@ -44,6 +46,52 @@ export const useTaskWorkbench = () => {
 		computed(() => filters.value.view === "board")
 	);
 	const savedViews = useSavedViews(workspaceSlug);
+	const mutations = useTaskMutations(workspaceSlug);
+	const selection = useTaskSelection(list.tasks);
+
+	/** Announced to screen readers whenever a card moves, since the change is visual. */
+	const boardAnnouncement = ref("");
+	const statusLabels: Record<Task["status"], string> = { todo: "To do", in_progress: "In progress", done: "Done" };
+
+	const moveTask = (task: Task, status: Task["status"]) => {
+		if (task.status === status) return;
+		mutations.updateTask.mutate({ taskId: task.id, patch: { status } });
+		boardAnnouncement.value = `${task.title} moved to ${statusLabels[status]}.`;
+	};
+
+	const deleteTask = (task: Task) => mutations.deleteTaskWithUndo(task);
+
+	const applyToSelection = (patch: Parameters<typeof mutations.bulkUpdate.mutate>[0]["patch"]) => {
+		const taskIds = [...selection.selectedIds.value];
+		if (!taskIds.length) return;
+		mutations.bulkUpdate.mutate({ taskIds, patch });
+		selection.clear();
+	};
+
+	const assignSelection = (assigneeId: string) => {
+		const taskIds = [...selection.selectedIds.value];
+		if (!taskIds.length) return;
+		mutations.bulkAssign.mutate({ taskIds, assigneeId });
+		selection.clear();
+	};
+
+	/** Bulk tagging adds to what a task already has rather than replacing it. */
+	const addTagsToSelection = (names: string[]) => {
+		const tasks = selection.selectedTasks.value;
+		if (!tasks.length) return;
+		for (const task of tasks) {
+			const merged = [...new Set([...(task.tags ?? []).map((tag) => tag.name), ...names])];
+			mutations.updateTask.mutate({ taskId: task.id, patch: { tags: merged } });
+		}
+		selection.clear();
+	};
+
+	const deleteSelection = () => {
+		const tasks = selection.selectedTasks.value;
+		if (!tasks.length) return;
+		mutations.bulkDeleteWithUndo(tasks);
+		selection.clear();
+	};
 	const { downloadCsv, isExporting, openPrintView } = useTaskExport(workspaceSlug, filters);
 
 	const isBoard = computed(() => filters.value.view === "board");
@@ -107,6 +155,14 @@ export const useTaskWorkbench = () => {
 	return {
 		activeFilterCount,
 		activeTaskId,
+		addTagsToSelection,
+		applyToSelection,
+		assignSelection,
+		boardAnnouncement,
+		deleteSelection,
+		deleteTask,
+		moveTask,
+		selection,
 		clearFilters: resetFilters,
 		closePanel,
 		columns: board.columns,

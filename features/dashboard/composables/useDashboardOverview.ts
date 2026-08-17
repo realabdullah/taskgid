@@ -3,9 +3,8 @@ import { storeToRefs } from "pinia";
 
 import { useStore } from "~/stores";
 import { useWorkspacesStore } from "~/features/workspaces/stores";
-import type { Task } from "~/types";
+import type { PaginatedResponse, Task } from "~/types";
 import { API_ENDPOINTS } from "~/utils/endpoints";
-import { fetchAllPages } from "~/utils/pagination";
 import type { DashboardTask, DashboardTaskFilter } from "../types";
 
 const startOfToday = () => {
@@ -18,30 +17,26 @@ export const useDashboardOverview = () => {
 	const { workspaces } = storeToRefs(useWorkspacesStore());
 	const activeFilter = ref<DashboardTaskFilter>("all");
 
-	const isAssignedToCurrentUser = (task: Task) => {
-		return task.assignees.some((assignee) => assignee.id === user.value?.id || assignee.username === user.value?.username);
-	};
-
 	const { data, isFetching, isError, error, refetch } = useQuery({
 		queryKey: ["dashboard-overview", workspaces, user],
 		queryFn: async () => {
 			const sources = await Promise.all(
 				(workspaces.value ?? []).map(async (workspace) => {
-					// The focus queue counts every task assigned to the user, so each
-					// workspace has to be read past the API's first page.
-					const { data } = await fetchAllPages<Task>(API_ENDPOINTS.workspaces.tasks(workspace.slug));
-					return data.map<DashboardTask>((task) => ({ ...task, workspaceSlug: workspace.slug, workspaceTitle: workspace.title }));
+					// `assignee=me` is applied by the server, so this no longer pulls a
+					// whole workspace down to keep the fraction assigned to one person.
+					const response = await useApiFetch<PaginatedResponse<Task>>(API_ENDPOINTS.workspaces.taskSearch(workspace.slug), {
+						query: { assignee: "me", sortBy: "dueDate", sortOrder: "ASC", page: 1, limit: 100 },
+					});
+					if (!response?.success) throw new Error(`Unable to load tasks from ${workspace.title}.`);
+					return response.data.map<DashboardTask>((task) => ({ ...task, workspaceSlug: workspace.slug, workspaceTitle: workspace.title }));
 				})
 			);
 
-			return sources
-				.flat()
-				.filter(isAssignedToCurrentUser)
-				.sort((left, right) => {
-					if (!left.dueDate) return 1;
-					if (!right.dueDate) return -1;
-					return new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime();
-				});
+			return sources.flat().sort((left, right) => {
+				if (!left.dueDate) return 1;
+				if (!right.dueDate) return -1;
+				return new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime();
+			});
 		},
 		enabled: computed(() => Boolean(user.value?.id && workspaces.value?.length)),
 	});
