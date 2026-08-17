@@ -7,6 +7,7 @@ import { PendingInvites, WorkspaceInviteDialog } from "~/features/workspaces";
 import { useWorkspacesStore } from "~/features/workspaces/stores";
 import { formatDate } from "~/utils";
 import FocusQueue from "./FocusQueue.vue";
+import OnboardingChecklist from "./OnboardingChecklist.vue";
 import WorkspaceGrid from "./WorkspaceGrid.vue";
 import { useDashboardOverview } from "../composables/useDashboardOverview";
 
@@ -66,6 +67,8 @@ const openInvite = () => {
 		</section>
 
 		<PendingInvites />
+
+		<OnboardingChecklist />
 
 		<template v-if="selectedWorkspace">
 			<section class="border-border bg-border grid grid-cols-2 gap-px overflow-hidden rounded-xl border lg:grid-cols-4">

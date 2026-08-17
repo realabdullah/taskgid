@@ -25,7 +25,8 @@ const accountMenu = [
 ];
 
 const navigation = computed(() => [
-	{ label: "My work", to: "/app", active: route.name === "app" },
+	{ label: "Home", to: "/app", active: route.name === "app" },
+	{ label: "My tasks", to: "/app/tasks", active: route.name === "my-tasks" },
 	{ label: "Workspace", to: workspaceRoot.value, active: route.name === "workspaces-slug" || route.name === "workspaces-slug-settings" },
 	{ label: "Tasks", to: hasWorkspace.value ? `${workspaceRoot.value}/tasks` : "/app", active: route.name === "tasks" || route.name === "task-id" },
 	{ label: "People", to: hasWorkspace.value ? `${workspaceRoot.value}/team` : "/app", active: route.name === "workspaces-slug-team" },

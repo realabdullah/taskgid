@@ -2,6 +2,8 @@
 import { TagChip } from "~/features/tags";
 import { useTaskWorkbench } from "~/features/tasks/composables/useTaskWorkbench";
 import SavedViewBar from "./SavedViewBar.vue";
+import TaskBoardColumn from "./TaskBoardColumn.vue";
+import TaskBulkBar from "./TaskBulkBar.vue";
 import TaskEditorPanel from "./TaskEditorPanel.vue";
 import TaskFilterBar from "./TaskFilterBar.vue";
 import TaskInspector from "./TaskInspector.vue";
@@ -9,9 +11,15 @@ import TaskInspector from "./TaskInspector.vue";
 const {
 	activeFilterCount,
 	activeTaskId,
+	addTagsToSelection,
+	applyToSelection,
+	assignSelection,
+	boardAnnouncement,
 	clearFilters,
 	closePanel,
 	columns,
+	deleteSelection,
+	deleteTask,
 	downloadCsv,
 	editor,
 	error,
@@ -24,6 +32,7 @@ const {
 	isFiltered,
 	isPanelOpen,
 	loadMoreInColumn,
+	moveTask,
 	openPrintView,
 	openTask,
 	pageCount,
@@ -31,6 +40,7 @@ const {
 	refetch,
 	savedViews,
 	searchInput,
+	selection,
 	startCreating,
 	startEditing,
 	tasks,
@@ -116,27 +126,32 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 
 				<!-- List -->
 				<div v-else-if="viewMode === 'list' && tasks.length">
-					<div class="text-text-tertiary grid grid-cols-[minmax(0,1fr)_120px_110px_120px] gap-4 border-b px-4 py-3 text-xs font-semibold uppercase max-md:hidden">
-						<span>Task</span><span>Status</span><span>Priority</span><span>Due date</span>
+					<div class="text-text-tertiary grid grid-cols-[2rem_minmax(0,1fr)_120px_110px_120px_2.5rem] gap-4 border-b px-4 py-3 text-xs font-semibold uppercase max-md:hidden">
+						<Checkbox :model-value="selection.isAllSelected.value" aria-label="Select every task on this page" @update:model-value="selection.toggleAll" />
+						<span>Task</span><span>Status</span><span>Priority</span><span>Due date</span><span class="sr-only">Actions</span>
 					</div>
-					<Pressable
+					<div
 						v-for="task in tasks"
 						:key="task.id"
-						class="product-row grid w-full grid-cols-[minmax(0,1fr)_120px_110px_120px] items-center gap-4 text-start max-md:grid-cols-[minmax(0,1fr)_auto]"
-						@click="openTask(task.id)"
+						class="product-row grid w-full grid-cols-[2rem_minmax(0,1fr)_120px_110px_120px_2.5rem] items-center gap-4 text-start max-md:grid-cols-[2rem_minmax(0,1fr)_auto]"
+						:class="selection.isSelected(task.id) ? 'bg-surface-1' : ''"
 					>
-						<div class="min-w-0">
+						<Checkbox :model-value="selection.isSelected(task.id)" :aria-label="`Select ${task.title}`" @update:model-value="selection.toggle(task.id)" />
+						<Pressable class="min-w-0 text-start" @click="openTask(task.id)">
 							<p class="truncate text-sm font-medium">{{ task.title }}</p>
 							<div class="mt-1 flex min-w-0 items-center gap-2">
 								<p class="text-text-tertiary truncate text-xs tabular-nums">{{ task.id }} · {{ task.commentCount }} {{ task.commentCount === 1 ? "comment" : "comments" }}</p>
 								<TagChip v-for="tag in (task.tags ?? []).slice(0, 3)" :key="tag.id" :tag="tag" />
 							</div>
-						</div>
+						</Pressable>
 						<BadgeStatus class="max-md:row-start-1" :status="task.status" /><BadgePriority class="max-md:hidden" :priority="task.priority" /><span
 							class="text-text-secondary text-sm max-md:hidden"
 							>{{ task.dueDate ? formatDate(task.dueDate, "MMM D") : "No date" }}</span
 						>
-					</Pressable>
+						<Button variant="ghost" size="icon" class="max-md:hidden" :aria-label="`Delete ${task.title}`" @click="deleteTask(task)">
+							<Icon name="lucide:trash-2" :size="14" />
+						</Button>
+					</div>
 
 					<div v-if="pageCount > 1" class="flex items-center justify-between gap-3 border-t px-4 py-3">
 						<p class="text-text-tertiary text-xs tabular-nums">{{ rangeLabel }}</p>
@@ -152,34 +167,22 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 
 				<!-- Board -->
 				<div v-else-if="viewMode === 'board'" class="bg-canvas overflow-x-auto p-3">
-					<p class="text-text-tertiary mb-2 text-xs md:hidden">Swipe horizontally to view every status column.</p>
+					<p class="text-text-tertiary mb-2 text-xs">Drag a card between columns, or focus one and press <kbd class="font-mono">⌘</kbd> with the left and right arrow keys.</p>
+					<p aria-live="polite" class="sr-only">{{ boardAnnouncement }}</p>
 					<div class="grid min-w-[820px] grid-cols-3 gap-3">
-						<section v-for="column in columns" :key="column.status" class="bg-surface-0 min-h-[36rem] rounded-xl border">
-							<header class="flex items-center justify-between border-b px-3 py-3">
-								<BadgeStatus :status="column.status" /><span class="text-text-tertiary font-mono text-xs tabular-nums">{{ column.total }}</span>
-							</header>
-							<div class="space-y-2 p-2">
-								<Pressable
-									v-for="task in column.tasks"
-									:key="task.id"
-									class="border-border bg-surface-0 hover:border-text-tertiary w-full rounded-md border p-3 text-start"
-									@click="openTask(task.id)"
-								>
-									<p class="text-sm leading-5 font-medium">{{ task.title }}</p>
-									<div v-if="task.tags?.length" class="mt-2 flex flex-wrap gap-1">
-										<TagChip v-for="tag in task.tags.slice(0, 3)" :key="tag.id" :tag="tag" />
-									</div>
-									<div class="mt-5 flex items-center justify-between gap-2">
-										<BadgePriority :priority="task.priority" /><span class="text-text-tertiary text-xs">{{ task.dueDate ? formatDate(task.dueDate, "MMM D") : "No date" }}</span>
-									</div>
-								</Pressable>
-
-								<Button v-if="column.hasMore" variant="secondary" class="w-full" @click="loadMoreInColumn(column.status)">
-									Load more ({{ column.total - column.tasks.length }} left)
-								</Button>
-								<Button variant="ghost" class="w-full justify-start" @click="startCreating"><Icon name="lucide:plus" :size="15" /> Add task</Button>
-							</div>
-						</section>
+						<TaskBoardColumn
+							v-for="column in columns"
+							:key="column.status"
+							:status="column.status"
+							:label="column.label"
+							:tasks="column.tasks"
+							:total="column.total"
+							:has-more="column.hasMore"
+							@open="openTask"
+							@move="({ task, status }) => moveTask(task, status)"
+							@load-more="loadMoreInColumn(column.status)"
+							@create="startCreating"
+						/>
 					</div>
 				</div>
 
@@ -196,6 +199,19 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 			<TaskEditorPanel v-else-if="editor?.mode === 'edit'" :workspace-slug="workspaceSlug" :task="editor.task" @close="closePanel" @saved="handleSaved" />
 			<TaskInspector v-else-if="activeTaskId" :workspace-slug="workspaceSlug" :task-id="activeTaskId" @close="closePanel" @edit="startEditing" @deleted="closePanel" />
 		</div>
+
+		<TaskBulkBar
+			v-if="selection.hasSelection.value && viewMode === 'list'"
+			:count="selection.selectedCount.value"
+			:workspace-slug="workspaceSlug"
+			@status="(status) => applyToSelection({ status })"
+			@priority="(priority) => applyToSelection({ priority })"
+			@due-date="(dueDate) => applyToSelection({ dueDate })"
+			@assign="assignSelection"
+			@tags="addTagsToSelection"
+			@remove="deleteSelection"
+			@clear="selection.clear"
+		/>
 
 		<p v-if="!isFetching && !isError && viewMode === 'list' && totalTasks > 0 && pageCount <= 1" class="text-text-tertiary px-1 text-xs tabular-nums">
 			{{ totalTasks }} task{{ totalTasks === 1 ? "" : "s" }}

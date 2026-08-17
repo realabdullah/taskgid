@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { toast } from "vue-sonner";
+import { useQuery } from "@tanstack/vue-query";
 import type { ApiResponse, Task } from "~/types";
+import { useTaskMutations } from "./useTaskMutations";
 
 type TaskInspectorOptions = {
 	workspaceSlug: MaybeRefOrGetter<string>;
@@ -9,9 +9,7 @@ type TaskInspectorOptions = {
 };
 
 export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspectorOptions) => {
-	const queryClient = useQueryClient();
-	const isDeleteOpen = ref(false);
-	const isDeleting = ref(false);
+	const { deleteTaskWithUndo } = useTaskMutations(workspaceSlug);
 
 	const query = useQuery({
 		queryKey: computed(() => ["task", toValue(taskId)]),
@@ -23,23 +21,17 @@ export const useTaskInspector = ({ workspaceSlug, taskId, onDeleted }: TaskInspe
 		enabled: computed(() => Boolean(toValue(workspaceSlug) && toValue(taskId))),
 	});
 
-	const deleteTask = async () => {
-		try {
-			isDeleting.value = true;
-			const { success } = await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskById(toValue(workspaceSlug), toValue(taskId)), {
-				method: "DELETE",
-			});
-			if (!success) throw new Error("Unable to delete this task. Try again.");
-			await queryClient.invalidateQueries({ queryKey: ["workspace-tasks", toValue(workspaceSlug)] });
-			toast.success("Task deleted.");
-			onDeleted();
-		} catch (error) {
-			toast.error(getServerError(error));
-		} finally {
-			isDeleting.value = false;
-			isDeleteOpen.value = false;
-		}
+	/*
+	 * Deleting closes the panel immediately and offers an undo, rather than
+	 * asking for confirmation first. The request is only sent once the undo
+	 * window closes, so nothing needs to be restored server-side.
+	 */
+	const deleteTask = () => {
+		const task = query.data.value;
+		if (!task) return;
+		deleteTaskWithUndo(task);
+		onDeleted();
 	};
 
-	return { ...query, isDeleteOpen, isDeleting, deleteTask };
+	return { ...query, deleteTask };
 };

@@ -15,8 +15,6 @@ const {
 	isError,
 	error,
 	refetch,
-	isDeleteOpen,
-	isDeleting,
 	deleteTask,
 } = useTaskInspector({
 	workspaceSlug: () => props.workspaceSlug,
@@ -39,7 +37,7 @@ const {
 						><Button variant="ghost" size="icon" aria-label="Task actions"><Icon name="lucide:ellipsis" :size="17" /></Button
 					></DropdownMenuTrigger>
 					<DropdownMenuContent align="end"
-						><DropdownMenuItem variant="destructive" @select="isDeleteOpen = true"><Icon name="lucide:trash-2" :size="15" /> Delete task</DropdownMenuItem></DropdownMenuContent
+						><DropdownMenuItem variant="destructive" @select="deleteTask"><Icon name="lucide:trash-2" :size="15" /> Delete task</DropdownMenuItem></DropdownMenuContent
 					>
 				</DropdownMenu>
 				<Button type="button" variant="ghost" size="icon" aria-label="Close task" @click="emit('close')"><Icon name="lucide:x" :size="17" /></Button>
@@ -66,14 +64,4 @@ const {
 			<div class="p-5"><TaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 		</div>
 	</aside>
-
-	<AlertDialog v-model:open="isDeleteOpen">
-		<AlertDialogContent>
-			<AlertDialogHeader
-				><AlertDialogTitle>Delete this task?</AlertDialogTitle
-				><AlertDialogDescription>This permanently removes the task, its comments, and its activity history.</AlertDialogDescription></AlertDialogHeader
-			>
-			<AlertDialogFooter><AlertDialogCancel>Keep task</AlertDialogCancel><Button variant="destructive" :loading="isDeleting" @click="deleteTask">Delete task</Button></AlertDialogFooter>
-		</AlertDialogContent>
-	</AlertDialog>
 </template>
