@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Comment } from "@/types";
+import type { ApiResponse, Comment } from "@/types";
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import TaskMentionTextarea from "./TaskMentionTextarea.vue";
@@ -16,7 +16,7 @@ const addComment = async () => {
 	try {
 		isAddingComment.value = true;
 		const url = API_ENDPOINTS.workspaces.taskComments(route.params.slug, route.params.id);
-		const res = await useApiFetch<{ success: boolean; data: Comment }>(url, {
+		const res = await useApiFetch<ApiResponse<Comment>>(url, {
 			method: "POST",
 			body: { content: comment.value, parentId },
 		});

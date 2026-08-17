@@ -15,6 +15,7 @@ const {
 	isError,
 	isFetching,
 	isPanelOpen,
+	isTaskListTruncated,
 	openTask,
 	priorityFilter,
 	refetch,
@@ -23,6 +24,7 @@ const {
 	startEditing,
 	statusFilter,
 	tasks,
+	totalTasks,
 	viewMode,
 	workspaceName,
 	workspaceSlug,
@@ -66,6 +68,10 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 			>
 			<SegmentedControl v-model="viewMode" :options="viewOptions" label="Task view" size="md" class="sm:ms-auto" />
 		</div>
+
+		<p v-if="isTaskListTruncated" class="text-text-secondary bg-surface-0 rounded-lg border px-4 py-3 text-sm">
+			Showing the first {{ tasks.length }} of {{ totalTasks }} tasks. Narrow the workspace down to see the rest.
+		</p>
 
 		<div class="grid min-h-[calc(100dvh-14rem)] gap-6" :class="isPanelOpen ? 'xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]' : 'grid-cols-1'">
 			<section class="product-panel min-w-0 overflow-hidden" :class="isPanelOpen ? 'hidden xl:block' : ''">

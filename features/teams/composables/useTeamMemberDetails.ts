@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/vue-query";
-import type { ActivityDetails, TeamMember, UserBareTask } from "~/types";
+import type { ActivityDetails, PaginatedResponse, TeamMember, UserBareTask } from "~/types";
 
 export const useTeamMemberDetails = (member: MaybeRefOrGetter<TeamMember>, isOpen: MaybeRefOrGetter<boolean | undefined>) => {
 	const route = useRoute();
@@ -9,7 +9,9 @@ export const useTeamMemberDetails = (member: MaybeRefOrGetter<TeamMember>, isOpe
 	const tasksQuery = useQuery({
 		queryKey: computed(() => ["user-tasks", currentMember.value.id]),
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: UserBareTask[] }>(API_ENDPOINTS.workspaces.memberTasks(workspaceSlug.value, currentMember.value.id));
+			const { success, data } = await useApiFetch<PaginatedResponse<UserBareTask>>(API_ENDPOINTS.workspaces.memberTasks(workspaceSlug.value, currentMember.value.id), {
+				query: { page: 1, limit: LIST_PAGE_SIZE },
+			});
 			if (!data || !success) throw new Error("Unable to load assigned tasks. Try again.");
 			return data;
 		},
@@ -19,7 +21,9 @@ export const useTeamMemberDetails = (member: MaybeRefOrGetter<TeamMember>, isOpe
 	const activitiesQuery = useQuery({
 		queryKey: computed(() => ["user-activities", currentMember.value.id]),
 		queryFn: async () => {
-			const { success, data } = await useApiFetch<{ success: boolean; data: ActivityDetails[] }>(API_ENDPOINTS.workspaces.memberActivities(workspaceSlug.value, currentMember.value.id));
+			const { success, data } = await useApiFetch<PaginatedResponse<ActivityDetails>>(API_ENDPOINTS.workspaces.memberActivities(workspaceSlug.value, currentMember.value.id), {
+				query: { page: 1, limit: LIST_PAGE_SIZE },
+			});
 			if (!data || !success) throw new Error("Unable to load recent activity. Try again.");
 			return data;
 		},

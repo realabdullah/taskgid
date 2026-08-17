@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Pagination, PendingInvitation } from "~/types";
+import type { PendingInvitation } from "~/types";
 
 type InvitationActionResponse = { success: boolean; error?: string; isNewUser?: boolean; resetToken?: string };
 type InvitationEndpoint = typeof API_ENDPOINTS.invites.accept | typeof API_ENDPOINTS.invites.decline;
@@ -11,9 +11,8 @@ export const usePendingInvitations = () => {
 	const query = useQuery({
 		queryKey: ["pending-invitations"],
 		queryFn: async () => {
-			const response = await useApiFetch<{ data: PendingInvitation[]; pagination: Pagination }>(API_ENDPOINTS.invites.pending);
-			if (!response?.data) throw new Error("Unable to load pending invitations. Try again.");
-			return response.data;
+			const { data } = await fetchAllPages<PendingInvitation>(API_ENDPOINTS.invites.pending);
+			return data;
 		},
 	});
 	const inviteCount = computed(() => query.data.value?.length ?? 0);

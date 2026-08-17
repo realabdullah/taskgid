@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
-import type { ActivityDetails, StatisticsResponse } from "~/types";
+import type { ActivityDetails, PaginatedResponse, StatisticsResponse } from "~/types";
 import { useActivityLabel } from "~/features/activity/composables/useActivityLabel";
 
 const props = defineProps<{ stats?: StatisticsResponse["statistics"] }>();
@@ -57,7 +57,9 @@ const {
 } = useQuery({
 	queryKey: ["member-activity", props.stats?.memberActivity],
 	queryFn: async () => {
-		const { success, data, message } = await useApiFetch<{ success: boolean; data: ActivityDetails[]; message?: string }>(API_ENDPOINTS.workspaces.activities(useRoute().params.slug));
+		const { success, data, message } = await useApiFetch<PaginatedResponse<ActivityDetails>>(API_ENDPOINTS.workspaces.activities(useRoute().params.slug), {
+			query: { page: 1, limit: LIST_PAGE_SIZE },
+		});
 		if (!data || !success) throw new Error(message || "Unable to load workspace activity. Try again.");
 		return data;
 	},

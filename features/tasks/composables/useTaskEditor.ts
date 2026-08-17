@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Task } from "~/types";
+import type { ApiResponse, Task } from "~/types";
 import { useWorkspaceStore } from "~/features/workspaces/stores";
 
 type TaskDraft = {
@@ -75,7 +75,7 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 			isSubmitting.value = true;
 			const isEditing = Boolean(options.task);
 			const url = isEditing ? API_ENDPOINTS.workspaces.taskById(options.workspaceSlug, options.task?.id) : API_ENDPOINTS.workspaces.tasks(options.workspaceSlug);
-			const { success, data, error } = await useApiFetch<{ success: boolean; data: Task; error?: string }>(url, {
+			const { success, data, error } = await useApiFetch<ApiResponse<Task>>(url, {
 				method: isEditing ? "PATCH" : "POST",
 				body: {
 					...draft,

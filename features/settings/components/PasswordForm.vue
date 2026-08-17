@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { ApiResponse } from "~/types";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
@@ -23,7 +24,7 @@ const cancelChanges = () => {
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		isSaving.value = true;
-		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.changePassword, {
+		const { success, error, message } = await useApiFetch<ApiResponse>(API_ENDPOINTS.auth.changePassword, {
 			method: "POST",
 			body: {
 				currentPassword: values.currentPassword,

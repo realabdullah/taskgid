@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { ApiResponse } from "~/types";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
@@ -25,7 +26,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 	try {
 		isSubmitting.value = true;
-		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.resetPassword, {
+		const { success, error, message } = await useApiFetch<ApiResponse>(API_ENDPOINTS.auth.resetPassword, {
 			method: "POST",
 			body: {
 				token: resetToken.value,

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/vue-query";
 import { storeToRefs } from "pinia";
 
-import { useApiFetch } from "~/composables/useApiFetch";
 import { useStore } from "~/stores";
 import { useWorkspacesStore } from "~/features/workspaces/stores";
 import type { Task } from "~/types";
 import { API_ENDPOINTS } from "~/utils/endpoints";
+import { fetchAllPages } from "~/utils/pagination";
 import type { DashboardTask, DashboardTaskFilter } from "../types";
 
 const startOfToday = () => {
@@ -27,9 +27,10 @@ export const useDashboardOverview = () => {
 		queryFn: async () => {
 			const sources = await Promise.all(
 				(workspaces.value ?? []).map(async (workspace) => {
-					const response = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspace.slug));
-					if (!response?.success) throw new Error(`Unable to load tasks from ${workspace.title}.`);
-					return response.data.map<DashboardTask>((task) => ({ ...task, workspaceSlug: workspace.slug, workspaceTitle: workspace.title }));
+					// The focus queue counts every task assigned to the user, so each
+					// workspace has to be read past the API's first page.
+					const { data } = await fetchAllPages<Task>(API_ENDPOINTS.workspaces.tasks(workspace.slug));
+					return data.map<DashboardTask>((task) => ({ ...task, workspaceSlug: workspace.slug, workspaceTitle: workspace.title }));
 				})
 			);
 

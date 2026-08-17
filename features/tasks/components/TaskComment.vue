@@ -19,11 +19,7 @@ const {
 } = useQuery({
 	queryKey: ["task-replies", comment.id],
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{
-			success: boolean;
-			data: Comment[];
-		}>(API_ENDPOINTS.workspaces.taskCommentReplies(route.params.slug, route.params.id, comment.id));
-		if (!data || !success) throw new Error("Unable to load replies. Try again.");
+		const { data } = await fetchAllPages<Comment>(API_ENDPOINTS.workspaces.taskCommentReplies(route.params.slug, route.params.id, comment.id));
 		return data;
 	},
 	enabled: () => showCommentReplies.value && comment.replyCount > 0,

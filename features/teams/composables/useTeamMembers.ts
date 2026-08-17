@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Pagination, TeamMember } from "~/types";
+import type { TeamMember } from "~/types";
 
 export const useTeamMembers = () => {
 	const route = useRoute();
@@ -20,11 +20,9 @@ export const useTeamMembers = () => {
 	} = useQuery({
 		queryKey: ["members-list", route.params.slug, filter, search],
 		queryFn: async () => {
-			const { success, data, message } = await useApiFetch<{ success: boolean; data: TeamMember[]; pagination: Pagination; message?: string }>(
-				API_ENDPOINTS.workspaces.teamComprehensive(route.params.slug),
-				{ method: "GET", query: { ...(isFilterActive.value ? filter : undefined), search: search.value } }
-			);
-			if (!data || !success) throw createError({ status: 500, statusMessage: message || "Unable to load workspace members. Try again." });
+			const { data } = await fetchAllPages<TeamMember>(API_ENDPOINTS.workspaces.teamComprehensive(String(route.params.slug)), {
+				query: { ...(isFilterActive.value ? filter : undefined), search: search.value },
+			});
 			return data;
 		},
 	});
