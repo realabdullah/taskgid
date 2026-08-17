@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AuthExperience } from "~/features/auth";
 
-definePageMeta({ layout: "auth", name: "signup" });
+definePageMeta({ layout: "auth", name: "signup", title: "Create an account" });
 
 const route = useRoute();
 const initialEmail = computed(() => (typeof route.query.email === "string" ? route.query.email : undefined));

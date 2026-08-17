@@ -2,7 +2,6 @@
 definePageMeta({ layout: "marketing", name: "home" });
 
 useHead({
-	title: "Taskgid — every task keeps its own record",
 	meta: [
 		{
 			name: "description",

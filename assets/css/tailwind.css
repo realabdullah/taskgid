@@ -195,10 +195,11 @@
 		@apply focus-visible:ring-focus focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
 	}
 
+	/* The wordmark: Geist SemiBold, tracked -0.03em. Matches public/brand/taskgid-wordmark.svg. */
 	.brand-wordmark {
 		font-family: var(--font-body);
 		font-size: 1.1rem;
-		font-weight: 800;
+		font-weight: 600;
 		letter-spacing: -0.03em;
 		line-height: 1;
 	}

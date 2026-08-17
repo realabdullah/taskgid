@@ -3,7 +3,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 
-definePageMeta({ layout: "auth", name: "reset-confirmation" });
+definePageMeta({ layout: "auth", name: "reset-confirmation", title: "Set a new password" });
 
 const route = useRoute();
 const router = useRouter();

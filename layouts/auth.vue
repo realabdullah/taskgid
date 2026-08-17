@@ -19,7 +19,7 @@ const isSplitAuthPage = computed(() => route.path === "/login" || route.path ===
 	<div v-else class="bg-canvas relative flex min-h-screen flex-col items-center justify-center p-6">
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 			<div class="flex flex-col space-y-2 text-center">
-				<AppBrandMark class="text-primary mx-auto mb-4" size="lg" />
+				<AppBrandMark show-name size="md" class="mx-auto mb-4" />
 				<h1 class="text-3xl font-bold">{{ page?.title }}</h1>
 				<p class="text-muted-foreground text-sm">{{ page?.description }}</p>
 			</div>

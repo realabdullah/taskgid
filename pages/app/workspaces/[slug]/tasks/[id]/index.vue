@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 definePageMeta({
 	name: "task-id",
+	title: "Task",
 	layout: "workspace",
 	middleware: [
 		(to) =>

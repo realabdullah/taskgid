@@ -3,7 +3,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 
-definePageMeta({ layout: "auth", name: "reset-password" });
+definePageMeta({ layout: "auth", name: "reset-password", title: "Reset your password" });
 
 // Reset links sent via email target /reset-password?token=... — redirect to the
 // confirmation page which handles the token + new password form.
