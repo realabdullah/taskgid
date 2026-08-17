@@ -5,7 +5,7 @@ import PasskeyLoginForm from "./PasskeyLoginForm.vue";
 
 type AuthMode = "login" | "signup";
 
-const props = withDefaults(defineProps<{ initialMode?: AuthMode }>(), { initialMode: "login" });
+const props = withDefaults(defineProps<{ initialMode?: AuthMode; initialEmail?: string }>(), { initialMode: "login", initialEmail: undefined });
 const mode = ref<AuthMode>(props.initialMode);
 const usingPasskey = ref(false);
 const previewName = ref("Ada");
@@ -71,7 +71,7 @@ const setMode = (nextMode: AuthMode) => {
 							<p class="text-primary text-xs font-semibold tracking-[0.08em] uppercase">Start with clarity</p>
 							<h1 class="text-text-primary mt-3 text-3xl font-semibold tracking-[-0.045em] text-balance sm:text-4xl">A calmer way to move work forward.</h1>
 							<p class="text-text-secondary mt-3 mb-7 text-sm leading-6">Two short steps. No setup maze.</p>
-							<SignupJourney @back="setMode('login')" @preview="previewName = $event" />
+							<SignupJourney :initial-email="props.initialEmail" @back="setMode('login')" @preview="previewName = $event" />
 						</div>
 					</Transition>
 				</div>
