@@ -17,14 +17,22 @@ const hasWorkspace = computed(() => (workspaces.value?.length ?? 0) > 0);
 
 const taskResults = ref<Task[]>([]);
 
+/** `tag:design` searches by tag instead of by title, matching the workbench filter. */
+const parseSearch = (raw: string) => {
+	const match = raw.trim().match(/^tag:\s*(.+)$/i);
+	return match ? { tags: match[1].trim() } : { search: raw.trim() };
+};
+
 const fetchTasks = useDebounceFn(async () => {
-	if (!workspaceSlug.value || search.value.trim().length < 2) {
+	const parsed = parseSearch(search.value);
+	const term = parsed.tags ?? parsed.search ?? "";
+	if (!workspaceSlug.value || term.length < 2) {
 		taskResults.value = [];
 		return;
 	}
 
 	const { success, data } = await useApiFetch<PaginatedResponse<Task>>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), {
-		query: { search: search.value.trim(), page: 1, limit: TASK_RESULT_COUNT },
+		query: { ...parsed, page: 1, limit: TASK_RESULT_COUNT },
 	});
 
 	taskResults.value = success && data ? data : [];
@@ -91,7 +99,7 @@ const openTask = async (task: Task) => {
 <template>
 	<CommandDialog v-model:open="isOpen" title="Command palette" description="Search tasks and workspaces, or choose an action">
 		<Command class="command-surface max-h-[70vh] rounded-lg">
-			<CommandInput v-model="search" placeholder="Search tasks and workspaces…" />
+			<CommandInput v-model="search" placeholder="Search tasks and workspaces, or type tag:name…" />
 			<CommandList>
 				<CommandEmpty>{{ search.trim() ? `No results for “${search.trim()}”.` : "No matching tasks or workspaces." }}</CommandEmpty>
 

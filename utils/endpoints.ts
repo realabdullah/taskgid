@@ -47,5 +47,19 @@ export const API_ENDPOINTS = {
 		memberTasks: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/tasks`,
 		memberActivities: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/activities`,
 		batchAssignTasks: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/batch-assign`,
+		taskSearch: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/search`,
+		taskExport: (slug: unknown, format: "csv" | "pdf") => `/workspaces/${toPath(slug)}/tasks/export/${format}`,
+		taskCommentLike: (slug: unknown, taskId: unknown, commentId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/comments/${toPath(commentId)}/like`,
+		tags: (slug: unknown) => `/workspaces/${toPath(slug)}/tags`,
+		tagById: (slug: unknown, tagId: unknown) => `/workspaces/${toPath(slug)}/tags/${toPath(tagId)}`,
+	},
+	/**
+	 * Attachments are mounted at `/attachments`, and the router inside it repeats
+	 * the workspace segment — hence the doubled prefix on the delete path.
+	 */
+	attachments: {
+		forTask: (slug: unknown, taskId: unknown) => `/attachments/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/attachments`,
+		forComment: (slug: unknown, commentId: unknown) => `/attachments/workspaces/${toPath(slug)}/comments/${toPath(commentId)}/attachments`,
+		byId: (attachmentId: unknown) => `/attachments/attachments/${toPath(attachmentId)}`,
 	},
 } as const;

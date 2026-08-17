@@ -11,6 +11,8 @@ type TaskDraft = {
 	priority: Task["priority"];
 	dueDate: string;
 	assignees: string[];
+	/** Tag **names** — the task endpoints resolve them to records themselves. */
+	tags: string[];
 };
 
 type TaskEditorOptions = {
@@ -26,6 +28,7 @@ const toDraft = (task?: Task): TaskDraft => ({
 	priority: task?.priority ?? "medium",
 	dueDate: task?.dueDate ? task.dueDate.slice(0, 10) : "",
 	assignees: task?.assignees.map((assignee) => assignee.username) ?? [],
+	tags: task?.tags?.map((tag) => tag.name) ?? [],
 });
 
 /** `YYYY-MM-DD` in the user's own timezone, which is what `<input type="date">` expects. */
@@ -85,7 +88,11 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 				},
 			});
 			if (!success || !data) throw new Error(error || "Unable to save the task. Try again.");
-			await queryClient.invalidateQueries({ queryKey: ["workspace-tasks", options.workspaceSlug] });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["workspace-tasks", options.workspaceSlug] }),
+				queryClient.invalidateQueries({ queryKey: ["workspace-tasks-column", options.workspaceSlug] }),
+				queryClient.invalidateQueries({ queryKey: ["workspace-tags", options.workspaceSlug] }),
+			]);
 			toast.success(isEditing ? "Task updated." : "Task created.");
 			options.onSaved(data);
 		} catch (error) {

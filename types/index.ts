@@ -120,6 +120,34 @@ export interface Task {
 	assignees: BaseUser[];
 	creator: BaseUser;
 	commentCount: number;
+	tags: Tag[];
+}
+
+export interface Tag {
+	id: string;
+	name: string;
+	color: string;
+	description: string | null;
+	workspaceId: string;
+	createdById: string;
+	createdAt: string;
+	updatedAt: string;
+	/** Present on the workspace tag list, absent on tags embedded in a task. */
+	taskCount?: number;
+	creator?: BaseUser;
+}
+
+export interface Attachment {
+	id: string;
+	filename: string;
+	url: string;
+	mimetype: string;
+	size: number;
+	taskId: string | null;
+	commentId: string | null;
+	userId: string;
+	createdAt: string;
+	user: Pick<BaseUser, "id" | "username" | "firstName">;
 }
 
 interface TaskStatistics {
@@ -214,6 +242,7 @@ export interface Comment {
 	parentId: string | null;
 	mentions: string[];
 	likeCount: number;
+	likedByMe: boolean;
 	replyCount: number;
 	createdAt: string;
 	updatedAt: string;

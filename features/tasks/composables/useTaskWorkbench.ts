@@ -1,7 +1,11 @@
-import { useQuery } from "@tanstack/vue-query";
 import { refDebounced } from "@vueuse/core";
 import type { Task } from "~/types";
 import { useWorkspaceStore } from "~/features/workspaces/stores";
+import { useSavedViews } from "./useSavedViews";
+import { useTaskBoard } from "./useTaskBoard";
+import { useTaskExport } from "./useTaskExport";
+import { useTaskFilters } from "./useTaskFilters";
+import { useWorkspaceTasks, TASKS_PER_PAGE } from "./useWorkspaceTasks";
 
 type EditorState = { mode: "create" } | { mode: "edit"; task: Task } | null;
 
@@ -11,53 +15,53 @@ export const useTaskWorkbench = () => {
 	const workspaceSlug = computed(() => String(route.params.slug ?? ""));
 	const activeTaskId = computed(() => (typeof route.query.taskId === "string" ? route.query.taskId : ""));
 	const { workspace } = storeToRefs(useWorkspaceStore());
-	const viewMode = ref<"list" | "board">("list");
-	const searchInput = ref("");
-	const search = refDebounced(searchInput, 180);
-	const statusFilter = ref<"all" | Task["status"]>("all");
-	const priorityFilter = ref<"all" | Task["priority"]>("all");
 	const editor = ref<EditorState>(null);
 
-	const {
-		data: taskPages,
-		isFetching,
-		isError,
-		error,
-		refetch,
-	} = useQuery({
-		queryKey: computed(() => ["workspace-tasks", workspaceSlug.value]),
-		// Filtering and board grouping both happen client-side, so the workbench
-		// needs the whole workspace rather than the first page the API returns.
-		queryFn: () => fetchAllPages<Task>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value)),
-		enabled: computed(() => Boolean(workspaceSlug.value)),
+	const { activeFilterCount, clearFilters, filters, isFiltered, toggleInList, writeQuery } = useTaskFilters();
+	const viewMode = computed({
+		get: () => filters.value.view,
+		set: (view: "list" | "board") => void writeQuery({ view }, { resetPage: false }),
 	});
 
-	const tasks = computed(() => taskPages.value?.data ?? []);
-	const totalTasks = computed(() => taskPages.value?.total ?? 0);
-	const isTaskListTruncated = computed(() => Boolean(taskPages.value?.truncated));
-
-	const filteredTasks = computed(() => {
-		const needle = search.value.trim().toLowerCase();
-		return tasks.value
-			.filter((task) => statusFilter.value === "all" || task.status === statusFilter.value)
-			.filter((task) => priorityFilter.value === "all" || task.priority === priorityFilter.value)
-			.filter((task) => !needle || `${task.title} ${task.description}`.toLowerCase().includes(needle))
-			.sort((a, b) => {
-				if (!a.dueDate) return 1;
-				if (!b.dueDate) return -1;
-				return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-			});
+	// The search box stays local so typing is not debounced through the URL;
+	// only the settled value is written, which keeps history and refetches sane.
+	const searchInput = ref(filters.value.search);
+	const debouncedSearch = refDebounced(searchInput, 180);
+	watch(debouncedSearch, (value) => {
+		if (value !== filters.value.search) void writeQuery({ search: value });
 	});
-
-	const columns = computed(() =>
-		(
-			[
-				["todo", "To do"],
-				["in_progress", "In progress"],
-				["done", "Done"],
-			] as const
-		).map(([status, label]) => ({ status, label, tasks: filteredTasks.value.filter((task) => task.status === status) }))
+	watch(
+		() => filters.value.search,
+		(value) => {
+			if (value !== searchInput.value) searchInput.value = value;
+		}
 	);
+
+	const list = useWorkspaceTasks(workspaceSlug, filters);
+	const board = useTaskBoard(
+		workspaceSlug,
+		filters,
+		computed(() => filters.value.view === "board")
+	);
+	const savedViews = useSavedViews(workspaceSlug);
+	const { downloadCsv, isExporting, openPrintView } = useTaskExport(workspaceSlug, filters);
+
+	const isBoard = computed(() => filters.value.view === "board");
+	const isFetching = computed(() => (isBoard.value ? board.isBoardLoading.value : list.isFetching.value));
+	const isError = computed(() => (isBoard.value ? board.isBoardError.value : list.isError.value));
+	const error = computed(() => (isBoard.value ? board.boardError.value : list.error.value));
+	const refetch = () => (isBoard.value ? board.refetchBoard() : list.refetch());
+
+	const pageCount = computed(() => list.pagination.value?.totalPages ?? 1);
+	const totalTasks = computed(() => list.pagination.value?.total ?? 0);
+	const rangeLabel = computed(() => {
+		const total = totalTasks.value;
+		if (!total) return "";
+		const first = (filters.value.page - 1) * TASKS_PER_PAGE + 1;
+		return `${first}–${Math.min(first + list.tasks.value.length - 1, total)} of ${total}`;
+	});
+	const goToPage = (page: number) => writeQuery({ page: Math.min(Math.max(1, page), pageCount.value) }, { resetPage: false });
+
 	const workspaceName = computed(() => workspace.value?.title || workspaceSlug.value);
 	const isPanelOpen = computed(() => Boolean(editor.value || activeTaskId.value));
 
@@ -83,10 +87,9 @@ export const useTaskWorkbench = () => {
 		editor.value = null;
 		await openTask(task.id);
 	};
-	const clearFilters = () => {
+	const resetFilters = () => {
 		searchInput.value = "";
-		statusFilter.value = "all";
-		priorityFilter.value = "all";
+		return clearFilters();
 	};
 
 	const onNewTaskIntent = () => startCreating();
@@ -102,29 +105,38 @@ export const useTaskWorkbench = () => {
 	onBeforeUnmount(() => globalThis.window.removeEventListener("taskgid:new-task-intent", onNewTaskIntent));
 
 	return {
+		activeFilterCount,
 		activeTaskId,
-		clearFilters,
+		clearFilters: resetFilters,
 		closePanel,
-		columns,
+		columns: board.columns,
+		downloadCsv,
 		editor,
 		error,
-		filteredTasks,
+		filters,
+		goToPage,
 		handleSaved,
 		isError,
+		isExporting,
 		isFetching,
+		isFiltered,
 		isPanelOpen,
-		isTaskListTruncated,
+		loadMoreInColumn: board.loadMore,
+		openPrintView,
 		openTask,
-		priorityFilter,
+		pageCount,
+		rangeLabel,
 		refetch,
+		savedViews,
 		searchInput,
 		startCreating,
 		startEditing,
-		statusFilter,
-		tasks,
+		tasks: list.tasks,
+		toggleInList,
 		totalTasks,
 		viewMode,
 		workspaceName,
 		workspaceSlug,
+		writeQuery,
 	};
 };

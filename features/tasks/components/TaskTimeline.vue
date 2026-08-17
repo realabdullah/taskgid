@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useActivityLabel } from "~/features/activity/composables/useActivityLabel";
+import { useCommentReactions } from "~/features/tasks/composables/useCommentReactions";
 import { useTaskTimeline } from "~/features/tasks/composables/useTaskTimeline";
 import TaskMentionTextarea from "./TaskMentionTextarea.vue";
 
@@ -33,6 +34,8 @@ const {
 		return props.taskId;
 	},
 });
+
+const { toggle } = useCommentReactions({ workspaceSlug: props.workspaceSlug, taskId: props.taskId });
 </script>
 
 <template>
@@ -91,7 +94,21 @@ const {
 						<div class="min-w-0 flex-1 space-y-1">
 							<p class="text-text-primary text-sm font-medium">{{ comment.user.firstName }} {{ comment.user.lastName }}</p>
 							<p class="text-text-secondary text-sm leading-6" v-html="highlightMentions(comment.content)"></p>
-							<p class="text-text-tertiary text-xs tabular-nums">{{ getTimeAgo(new Date(comment.createdAt)) }}</p>
+							<div class="flex items-center gap-3">
+								<p class="text-text-tertiary text-xs tabular-nums">{{ getTimeAgo(new Date(comment.createdAt)) }}</p>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									class="h-6 gap-1.5 px-1.5"
+									:aria-pressed="comment.likedByMe"
+									:aria-label="comment.likedByMe ? `Remove your like from ${comment.user.firstName}'s comment` : `Like ${comment.user.firstName}'s comment`"
+									@click="toggle.mutate({ comment })"
+								>
+									<Icon name="lucide:thumbs-up" :size="13" :class="comment.likedByMe ? 'text-primary fill-current' : 'text-text-tertiary'" />
+									<span v-if="comment.likeCount" class="text-xs tabular-nums">{{ comment.likeCount }}</span>
+								</Button>
+							</div>
 						</div>
 					</div>
 				</article>

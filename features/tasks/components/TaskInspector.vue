@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { Task } from "~/types";
 import { useTaskInspector } from "../composables/useTaskInspector";
+import { TagChip } from "~/features/tags";
+import TaskAttachments from "./TaskAttachments.vue";
 import TaskDescriptionEditor from "./TaskDescriptionEditor.vue";
 import TaskMetadataHorizontal from "./TaskMetadataHorizontal.vue";
 import TaskTimeline from "./TaskTimeline.vue";
@@ -56,7 +58,11 @@ const {
 			<div class="border-border space-y-5 border-b p-5">
 				<TaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
 				<TaskMetadataHorizontal :task="task" />
+				<div v-if="task.tags?.length" class="flex flex-wrap gap-1.5">
+					<TagChip v-for="tag in task.tags" :key="tag.id" :tag="tag" />
+				</div>
 			</div>
+			<div class="border-border border-b p-5"><TaskAttachments :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 			<div class="p-5"><TaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 		</div>
 	</aside>
