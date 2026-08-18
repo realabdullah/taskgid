@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { useStore } from "~/stores";
+import { useWorkspaceStore } from "~/features/workspaces/stores";
 import type { WorkspaceEvent } from "~/composables/useRealtime";
 
 /**
@@ -12,6 +13,9 @@ import type { WorkspaceEvent } from "~/composables/useRealtime";
 export const useWorkspaceChannel = (workspaceSlug: MaybeRefOrGetter<string>) => {
 	const client = useQueryClient();
 	const { user } = storeToRefs(useStore());
+	// Pusher channels are keyed by workspace id, so this waits for the workspace
+	// record rather than using the slug from the URL.
+	const { workspace } = storeToRefs(useWorkspaceStore());
 
 	const onEvent = (event: WorkspaceEvent) => {
 		if (event.actorId && event.actorId === user.value?.id) return;
@@ -40,6 +44,6 @@ export const useWorkspaceChannel = (workspaceSlug: MaybeRefOrGetter<string>) => 
 		}
 	};
 
-	const { status } = useRealtime(workspaceSlug, onEvent);
-	return { status };
+	const { status, isEnabled } = useRealtime(() => workspace.value?.id, onEvent);
+	return { status, isEnabled };
 };

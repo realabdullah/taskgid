@@ -25,6 +25,9 @@ export const API_ENDPOINTS = {
 		decline: "/invite/decline",
 		bulk: "/invites/bulk",
 	},
+	pusher: {
+		auth: "/api/pusher/auth",
+	},
 	notifications: {
 		byUser: (userId: unknown) => `/api/notifications/${toPath(userId)}`,
 		preferences: "/api/notifications/preferences",

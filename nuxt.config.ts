@@ -44,6 +44,11 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000",
+			// Absent means realtime is off and the app falls back to
+			// refetch-on-window-focus. The key is public by design; the channel
+			// is private and authorised by our own API.
+			pusherKey: process.env.PUSHER_KEY || "",
+			pusherCluster: process.env.PUSHER_CLUSTER || "",
 		},
 	},
 	build: {

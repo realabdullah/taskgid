@@ -1,9 +1,16 @@
+import Pusher, { type Channel } from "pusher-js";
+
 /**
- * The client half of the workspace event stream.
+ * The client half of workspace realtime.
  *
- * EventSource cannot send an Authorization header, and putting a JWT in a query
- * string would leak it into proxy and server logs — so the stream is read with
- * `fetch` and a ReadableStream instead, which keeps the token in a header.
+ * The persistent connection lives on Pusher rather than in our own API, which
+ * is what makes this work on serverless: the server only makes a stateless HTTP
+ * call to publish. Subscription is authorised by our `/api/pusher/auth`, so the
+ * membership check stays ours.
+ *
+ * With no Pusher key configured this does nothing at all, and the app falls
+ * back to refetch-on-window-focus. Realtime is an enhancement, never a
+ * correctness requirement.
  */
 export type WorkspaceEventType = "task.created" | "task.updated" | "task.deleted" | "comment.created";
 
@@ -16,27 +23,46 @@ export type WorkspaceEvent = {
 	payload: Record<string, unknown>;
 };
 
-type RealtimeStatus = "idle" | "connecting" | "open" | "reconnecting" | "closed";
+const EVENT_TYPES: WorkspaceEventType[] = ["task.created", "task.updated", "task.deleted", "comment.created"];
 
-/** Reconnect backoff, in milliseconds, capped at the last value. */
-const BACKOFF_MS = [1000, 2000, 5000, 10000, 30000];
-
-/** How many event ids to remember for de-duplication. */
+/** How many event ids to remember, so a redelivery is not applied twice. */
 const SEEN_LIMIT = 200;
 
-export const useRealtime = (workspaceSlug: MaybeRefOrGetter<string>, onEvent: (event: WorkspaceEvent) => void) => {
+/** One connection per tab, shared across workspace switches. */
+let sharedClient: Pusher | null = null;
+
+const getClient = (key: string, cluster: string, authEndpoint: string, token: () => string | undefined) => {
+	if (sharedClient) return sharedClient;
+
+	sharedClient = new Pusher(key, {
+		cluster,
+		channelAuthorization: {
+			endpoint: authEndpoint,
+			transport: "ajax",
+			// The JWT travels in a header, never a query string, so it stays out
+			// of proxy and server logs.
+			headersProvider: () => {
+				const value = token();
+				return value ? { Authorization: `Bearer ${value}` } : {};
+			},
+		},
+	});
+	return sharedClient;
+};
+
+export const useRealtime = (workspaceId: MaybeRefOrGetter<string | undefined>, onEvent: (event: WorkspaceEvent) => void) => {
 	const config = useRuntimeConfig();
 	const authToken = useCookie<string | undefined>("TG-AUTHTOKEN");
-	const slug = computed(() => toValue(workspaceSlug));
-	const status = ref<RealtimeStatus>("idle");
+	const id = computed(() => toValue(workspaceId) || "");
 
-	let controller: AbortController | undefined;
-	let retryTimer: ReturnType<typeof setTimeout> | undefined;
-	let attempt = 0;
-	let stopped = false;
-
-	// The same event can arrive twice across a reconnect; ids make that harmless.
+	const status = ref<"disabled" | "idle" | "connecting" | "open" | "error">("idle");
 	const seen = new Set<string>();
+	let channel: Channel | undefined;
+
+	const pusherKey = String(config.public.pusherKey || "");
+	const pusherCluster = String(config.public.pusherCluster || "");
+	const isEnabled = Boolean(pusherKey && pusherCluster);
+
 	const remember = (eventId: string) => {
 		if (seen.has(eventId)) return false;
 		seen.add(eventId);
@@ -44,100 +70,46 @@ export const useRealtime = (workspaceSlug: MaybeRefOrGetter<string>, onEvent: (e
 		return true;
 	};
 
-	const handleFrame = (frame: string) => {
-		const type = frame.match(/^event: (.+)$/m)?.[1];
-		const raw = frame.match(/^data: (.+)$/m)?.[1];
-		if (!type || type === "connected" || !raw) return;
-
-		let event: WorkspaceEvent;
-		try {
-			event = JSON.parse(raw) as WorkspaceEvent;
-		} catch {
-			return;
-		}
-		if (!remember(event.eventId)) return;
-		onEvent(event);
+	const unsubscribe = () => {
+		if (!channel) return;
+		channel.unbind_all();
+		sharedClient?.unsubscribe(channel.name);
+		channel = undefined;
 	};
 
-	const scheduleRetry = () => {
-		if (stopped) return;
-		status.value = "reconnecting";
-		const delay = BACKOFF_MS[Math.min(attempt, BACKOFF_MS.length - 1)];
-		attempt += 1;
-		retryTimer = setTimeout(() => void connect(), delay);
-	};
+	const subscribe = () => {
+		if (!isEnabled || !id.value || !authToken.value) return;
 
-	const connect = async () => {
-		if (stopped || !slug.value || !authToken.value) return;
+		const client = getClient(pusherKey, pusherCluster, `${config.public.apiBaseUrl}${API_ENDPOINTS.pusher.auth}`, () => authToken.value);
+		status.value = "connecting";
 
-		controller?.abort();
-		controller = new AbortController();
-		status.value = attempt === 0 ? "connecting" : "reconnecting";
+		channel = client.subscribe(`private-workspace-${id.value}`);
+		channel.bind("pusher:subscription_succeeded", () => (status.value = "open"));
+		channel.bind("pusher:subscription_error", () => (status.value = "error"));
 
-		try {
-			const response = await fetch(`${config.public.apiBaseUrl}${API_ENDPOINTS.workspaces.events(slug.value)}`, {
-				headers: { Accept: "text/event-stream", Authorization: `Bearer ${authToken.value}`, "ngrok-skip-browser-warning": "ignore" },
-				signal: controller.signal,
+		for (const type of EVENT_TYPES) {
+			channel.bind(type, (event: WorkspaceEvent) => {
+				if (!event?.eventId || !remember(event.eventId)) return;
+				onEvent(event);
 			});
-
-			// A 401 or 403 will not fix itself by retrying, so the stream stops and
-			// the app falls back to refetch-on-focus.
-			if (response.status === 401 || response.status === 403) {
-				status.value = "closed";
-				return;
-			}
-			if (!response.ok || !response.body) throw new Error(`stream failed: ${response.status}`);
-
-			status.value = "open";
-			attempt = 0;
-
-			const reader = response.body.getReader();
-			const decoder = new TextDecoder();
-			let buffer = "";
-
-			while (!stopped) {
-				const { done, value } = await reader.read();
-				if (done) break;
-				buffer += decoder.decode(value, { stream: true });
-
-				let boundary = buffer.indexOf("\n\n");
-				while (boundary !== -1) {
-					handleFrame(buffer.slice(0, boundary));
-					buffer = buffer.slice(boundary + 2);
-					boundary = buffer.indexOf("\n\n");
-				}
-			}
-			if (!stopped) scheduleRetry();
-		} catch (error) {
-			if ((error as Error)?.name === "AbortError") return;
-			scheduleRetry();
 		}
 	};
 
-	const stop = () => {
-		stopped = true;
-		clearTimeout(retryTimer);
-		controller?.abort();
-		controller = undefined;
-		status.value = "closed";
-	};
-
-	const start = () => {
-		stopped = false;
-		attempt = 0;
-		void connect();
-	};
-
-	// Switching workspaces closes the old stream before opening the new one.
-	watch(slug, () => {
-		clearTimeout(retryTimer);
-		controller?.abort();
-		attempt = 0;
-		if (slug.value) void connect();
+	// Switching workspaces leaves the old channel before joining the new one, so
+	// a user never keeps receiving events for a workspace they have left.
+	watch(id, () => {
+		unsubscribe();
+		subscribe();
 	});
 
-	onMounted(start);
-	onBeforeUnmount(stop);
+	onMounted(() => {
+		if (!isEnabled) {
+			status.value = "disabled";
+			return;
+		}
+		subscribe();
+	});
+	onBeforeUnmount(unsubscribe);
 
-	return { status, start, stop };
+	return { status, isEnabled };
 };
