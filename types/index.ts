@@ -120,6 +120,11 @@ export interface Task {
 	/** Effort in minutes, so the API never has to guess the unit. */
 	estimateMinutes: number | null;
 	checklist: ChecklistItem[];
+	/** The task this one is nested under, or null when it is top-level. */
+	parentId: string | null;
+	/** How many subtasks this task has, and how many of those are done. */
+	subtaskCount?: number;
+	subtaskDoneCount?: number;
 	workspaceId: string;
 	createdById: string;
 	createdAt: string;
@@ -207,6 +212,16 @@ export interface StatisticsResponse {
 		completedTasks: TaskStatistics;
 		inProgressTasks: TaskStatistics;
 		overdueTasks: TaskStatistics;
+		/*
+		 * Reported apart from the figures above, which count top-level work
+		 * only so they stay comparable with what they meant before subtasks
+		 * existed.
+		 */
+		subtasks: {
+			total: number;
+			completed: number;
+			percentage: number;
+		};
 		statusBreakdown: StatusBreakdown;
 		priorityBreakdown: PriorityBreakdown;
 		memberActivity: {
