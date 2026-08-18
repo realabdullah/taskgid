@@ -8,7 +8,7 @@ import TaskAssigneePicker from "./TaskAssigneePicker.vue";
 const props = defineProps<{ workspaceSlug: string; task?: Task }>();
 const emit = defineEmits<{ close: []; saved: [task: Task] }>();
 
-const { canSave, draft, dueDatePresets, isSubmitting, saveTask, setDueDate, teams, titleError } = useTaskEditor({
+const { canSave, draft, dueDatePresets, formError, isSubmitting, saveTask, setDueDate, teams } = useTaskEditor({
 	get workspaceSlug() {
 		return props.workspaceSlug;
 	},
@@ -119,13 +119,22 @@ const onSubmitShortcut = (event: KeyboardEvent) => {
 
 					<span class="text-text-secondary self-start pt-2 text-sm">Tags</span>
 					<TagPicker v-model="draft.tags" :workspace-slug="workspaceSlug" />
+
+					<span class="text-text-secondary self-start pt-2 text-sm">Start date</span>
+					<Input v-model="draft.startDate" type="date" class="w-44" aria-label="Start date" />
+
+					<span class="text-text-secondary self-start pt-2 text-sm">Estimate</span>
+					<div class="flex items-center gap-2">
+						<Input v-model="draft.estimate" type="number" min="0" step="15" class="w-28" placeholder="—" aria-label="Estimate in minutes" />
+						<span class="text-text-tertiary text-xs">minutes</span>
+					</div>
 				</div>
 			</div>
 		</form>
 
 		<footer class="border-border bg-surface-1 flex items-center justify-between gap-3 border-t px-5 py-3">
 			<p class="text-text-tertiary min-w-0 truncate text-xs">
-				<span v-if="titleError">{{ titleError }}</span>
+				<span v-if="formError">{{ formError }}</span>
 				<span v-else>Press <kbd class="font-mono">⌘</kbd> + <kbd class="font-mono">Enter</kbd> to save</span>
 			</p>
 			<div class="flex shrink-0 items-center gap-2">

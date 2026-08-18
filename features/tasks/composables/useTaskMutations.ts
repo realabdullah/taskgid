@@ -3,8 +3,10 @@ import { toast } from "vue-sonner";
 import type { ApiResponse, PaginatedResponse, Task } from "~/types";
 
 /** The fields a task can be changed to from a list, board, inspector or bulk action. */
-export type TaskPatch = Partial<Pick<Task, "status" | "priority" | "title" | "description">> & {
+export type TaskPatch = Partial<Pick<Task, "status" | "priority" | "title" | "description" | "checklist">> & {
 	dueDate?: string | null;
+	startDate?: string | null;
+	estimateMinutes?: number | null;
 	assignees?: string[];
 	tags?: string[];
 };

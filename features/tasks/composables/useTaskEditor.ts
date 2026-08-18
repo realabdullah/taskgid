@@ -10,6 +10,9 @@ type TaskDraft = {
 	status: Task["status"];
 	priority: Task["priority"];
 	dueDate: string;
+	startDate: string;
+	/** Kept as a string so the input can be empty rather than zero. */
+	estimate: string;
 	assignees: string[];
 	/** Tag **names** — the task endpoints resolve them to records themselves. */
 	tags: string[];
@@ -27,6 +30,8 @@ const toDraft = (task?: Task): TaskDraft => ({
 	status: task?.status ?? "todo",
 	priority: task?.priority ?? "medium",
 	dueDate: task?.dueDate ? task.dueDate.slice(0, 10) : "",
+	startDate: task?.startDate ? task.startDate.slice(0, 10) : "",
+	estimate: task?.estimateMinutes != null ? String(task.estimateMinutes) : "",
 	assignees: task?.assignees.map((assignee) => assignee.username) ?? [],
 	tags: task?.tags?.map((tag) => tag.name) ?? [],
 });
@@ -44,7 +49,15 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 	const draft = reactive<TaskDraft>(toDraft(options.task));
 	const isSubmitting = ref(false);
 	const titleError = computed(() => (!draft.title.trim() ? "Add a task title." : ""));
-	const canSave = computed(() => !titleError.value && !isSubmitting.value);
+	const dateError = computed(() => (draft.startDate && draft.dueDate && draft.startDate > draft.dueDate ? "Start date is after the due date." : ""));
+	const estimateError = computed(() => {
+		const raw = draft.estimate.trim();
+		if (!raw) return "";
+		const value = Number(raw);
+		return Number.isInteger(value) && value >= 0 ? "" : "Estimate must be a whole number of minutes.";
+	});
+	const formError = computed(() => titleError.value || dateError.value || estimateError.value);
+	const canSave = computed(() => !formError.value && !isSubmitting.value);
 
 	/** Shortcuts for the dates people actually pick, so the calendar stays optional. */
 	const dueDatePresets = computed(() => [
@@ -80,6 +93,10 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 					title: draft.title.trim(),
 					description: draft.description.trim(),
 					dueDate: draft.dueDate ? new Date(`${draft.dueDate}T12:00:00`).toISOString() : undefined,
+					startDate: draft.startDate ? new Date(`${draft.startDate}T12:00:00`).toISOString() : null,
+					// Blank clears the estimate; the API rejects a non-numeric value.
+					estimateMinutes: draft.estimate.trim() ? Number(draft.estimate) : null,
+					estimate: undefined,
 				},
 			});
 			if (!success || !data) throw new Error(error || "Unable to save the task. Try again.");
@@ -97,5 +114,5 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 		}
 	};
 
-	return { canSave, draft, dueDatePresets, isSubmitting, saveTask, setDueDate, teams, titleError, toggleAssignee };
+	return { canSave, dateError, draft, dueDatePresets, estimateError, formError, isSubmitting, saveTask, setDueDate, teams, titleError, toggleAssignee };
 };
