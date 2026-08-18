@@ -13,7 +13,9 @@ export const useApiFetch = <T>(request: string | Request, opts: FetchOptions = {
 		headers: {
 			Accept: "application/json",
 			"ngrok-skip-browser-warning": "ignore",
-			...(String(opts.method)?.toUpperCase() !== "GET" && { "Content-Type": "application/json" }),
+			// FormData has to set its own multipart boundary, so it must not be
+			// given a content type here or the upload arrives unparseable.
+			...(String(opts.method)?.toUpperCase() !== "GET" && !(opts.body instanceof FormData) && { "Content-Type": "application/json" }),
 			...opts.headers,
 		},
 		onRequest({ options }) {

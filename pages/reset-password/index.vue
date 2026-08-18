@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import type { ApiResponse } from "~/types";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 
-definePageMeta({ layout: "auth", name: "reset-password" });
+definePageMeta({ layout: "auth", name: "reset-password", title: "Reset your password" });
 
 // Reset links sent via email target /reset-password?token=... — redirect to the
 // confirmation page which handles the token + new password form.
@@ -23,7 +24,7 @@ const isSubmitting = ref(false);
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		isSubmitting.value = true;
-		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.forgotPassword, {
+		const { success, error, message } = await useApiFetch<ApiResponse>(API_ENDPOINTS.auth.forgotPassword, {
 			method: "POST",
 			body: { email: values.email },
 		});

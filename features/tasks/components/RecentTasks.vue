@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { useQuery } from "@tanstack/vue-query";
-import type { Pagination, Task } from "~/types";
+import type { PaginatedResponse, Task } from "~/types";
 import TaskRow from "./TaskRow.vue";
+
+const RECENT_TASK_COUNT = 10;
 
 const route = useRoute();
 const workspaceSlug = computed(() => (typeof route.params.slug === "string" ? route.params.slug : ""));
@@ -22,7 +24,7 @@ const {
 } = useQuery({
 	queryKey: ["workspace-recent-tasks", workspaceSlug],
 	queryFn: async () => {
-		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[]; pagination: Pagination }>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value));
+		const { success, data: tasks } = await useApiFetch<PaginatedResponse<Task>>(API_ENDPOINTS.workspaces.tasks(workspaceSlug.value), { query: { page: 1, limit: RECENT_TASK_COUNT } });
 		if (!tasks || !success) throw new Error("Unable to load workspace tasks. Try again.");
 		return tasks;
 	},

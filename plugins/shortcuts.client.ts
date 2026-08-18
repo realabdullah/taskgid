@@ -80,31 +80,43 @@ export default defineNuxtPlugin(() => {
 			return;
 		}
 
+		if (key === "/") {
+			// Jump straight to the workbench search when it is on screen; fall back
+			// to the palette so the key always does the same kind of thing.
+			event.preventDefault();
+			const search = document.querySelector<HTMLInputElement>('input[aria-label="Search tasks"]');
+			if (search) search.focus();
+			else commandPaletteOpen.value = true;
+			clearSequence();
+			return;
+		}
+
 		if (sequence === "g") {
 			const slug = (() => {
 				const s = route.params.slug;
 				if (typeof s === "string" && s.length > 0) return s;
 				return useWorkspacesStore().workspaces?.[0]?.slug ?? "";
 			})();
-			if (key === "t") {
-				event.preventDefault();
-				if (slug) {
-					await navigateTo(`/app/workspaces/${slug}/tasks`);
-				}
-			}
-			if (key === "m") {
-				event.preventDefault();
-				if (slug) {
-					await navigateTo(`/app/workspaces/${slug}/team`);
-				}
-			}
-			if (key === "s") {
-				event.preventDefault();
-				if (slug) {
-					await navigateTo(`/app/workspaces/${slug}/settings`);
-				}
-			}
+			const workspaceRoot = slug ? `/app/workspaces/${slug}` : "";
+			const destination: Record<string, string> = {
+				h: "/app",
+				n: "/app/tasks",
+				...(workspaceRoot
+					? {
+							t: `${workspaceRoot}/tasks`,
+							b: `${workspaceRoot}/tasks?view=board`,
+							w: workspaceRoot,
+							m: `${workspaceRoot}/team`,
+							s: `${workspaceRoot}/settings`,
+						}
+					: {}),
+			};
+			const target = destination[key];
 			clearSequence();
+			if (target) {
+				event.preventDefault();
+				await navigateTo(target);
+			}
 			return;
 		}
 

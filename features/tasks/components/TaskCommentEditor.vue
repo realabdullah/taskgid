@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { Comment } from "@/types";
+import type { ApiResponse, Comment } from "@/types";
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import TaskMentionTextarea from "./TaskMentionTextarea.vue";
 
-const { parentId } = defineProps<{ parentId?: string }>();
+const props = defineProps<{ parentId?: string; workspaceSlug: string; taskId: string }>();
+const { parentId } = toRefs(props);
 
-const route = useRoute();
 const client = useQueryClient();
 
 const comment = shallowRef("");
@@ -15,14 +15,14 @@ const isAddingComment = ref(false);
 const addComment = async () => {
 	try {
 		isAddingComment.value = true;
-		const url = API_ENDPOINTS.workspaces.taskComments(route.params.slug, route.params.id);
-		const res = await useApiFetch<{ success: boolean; data: Comment }>(url, {
+		const url = API_ENDPOINTS.workspaces.taskComments(props.workspaceSlug, props.taskId);
+		const res = await useApiFetch<ApiResponse<Comment>>(url, {
 			method: "POST",
-			body: { content: comment.value, parentId },
+			body: { content: comment.value, parentId: parentId.value },
 		});
 		if (!res || !res.success) throw new Error("Unable to add your comment. Try again.");
 
-		await client.invalidateQueries({ queryKey: ["task-comments", route.params.id] });
+		await client.invalidateQueries({ queryKey: ["task-comments", props.workspaceSlug, props.taskId] });
 		comment.value = "";
 		toast.success("Comment added.");
 	} catch (error) {

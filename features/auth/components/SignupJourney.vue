@@ -12,18 +12,53 @@ import { getServerError } from "~/utils";
 import { SignupSchema } from "~/utils/validations";
 
 const emit = defineEmits<{ back: []; preview: [name: string] }>();
+const props = defineProps<{ initialEmail?: string }>();
 const { user } = storeToRefs(useStore());
 const step = ref<1 | 2>(1);
 const acceptedTerms = ref(false);
 
-const { handleSubmit, isSubmitting, validateField, values } = useForm({
+const { errors, handleSubmit, isSubmitting, setFieldValue, validateField, values } = useForm({
 	validationSchema: toTypedSchema(SignupSchema),
 	keepValuesOnUnmount: true,
+	initialValues: {
+		firstName: "",
+		lastName: "",
+		username: "",
+		email: props.initialEmail || "",
+		password: "",
+	},
 });
+
+const email = ref(new URLSearchParams(globalThis.location.search).get("email") || props.initialEmail || "");
+
+watch(
+	() => props.initialEmail,
+	(initialEmail) => {
+		if (!initialEmail) return;
+		email.value = initialEmail;
+		setFieldValue("email", initialEmail, false);
+	},
+	{ immediate: true }
+);
+
+onMounted(() => {
+	const queryEmail = new URLSearchParams(globalThis.location.search).get("email");
+	if (!queryEmail) return;
+	email.value = queryEmail;
+	setFieldValue("email", queryEmail, false);
+});
+
+const updateEmail = (value: Event | string | number) => {
+	const nextEmail = value instanceof Event ? (value.target as HTMLInputElement).value : String(value);
+	email.value = nextEmail;
+	setFieldValue("email", nextEmail, false);
+};
 
 const continueToAccount = async () => {
 	const [firstName, lastName] = await Promise.all([validateField("firstName"), validateField("lastName")]);
-	if (firstName.valid && lastName.valid) step.value = 2;
+	if (firstName.valid && lastName.valid) {
+		step.value = 2;
+	}
 };
 
 watch(
@@ -39,7 +74,10 @@ const onSubmit = handleSubmit(async (formValues) => {
 	}
 
 	try {
-		const response = await useApiFetch<SignupResponse>(API_ENDPOINTS.auth.register, { method: "POST", body: formValues });
+		const response = await useApiFetch<SignupResponse>(API_ENDPOINTS.auth.register, {
+			method: "POST",
+			body: { ...formValues, email: formValues.email || props.initialEmail },
+		});
 		if (!response?.accessToken.token) throw new Error("Unable to create your account. Try again.");
 
 		const token = useCookie("TG-AUTHTOKEN", { maxAge: response.accessToken.expiresIn });
@@ -86,7 +124,22 @@ const onSubmit = handleSubmit(async (formValues) => {
 					<p class="text-text-tertiary mt-1.5 text-sm">Next, you’ll create your first workspace.</p>
 				</div>
 				<FormFieldRenderer name="username" label="Username" type="text" placeholder="adalovelace" />
-				<FormFieldRenderer name="email" label="Work email" type="email" placeholder="ada@example.com" />
+				<div class="space-y-2">
+					<label for="signup-email" class="text-text-primary text-sm font-medium">Work email</label>
+					<input
+						id="signup-email"
+						v-model="email"
+						type="email"
+						name="email"
+						autocomplete="email"
+						:placeholder="email || 'ada@example.com'"
+						class="interactive file:text-text-primary placeholder:text-text-tertiary selection:bg-primary selection:text-primary-foreground border-border bg-surface-0 focus-visible:border-focus text-md aria-invalid:border-danger aria-invalid:ring-danger/25 flex h-10 w-full min-w-0 rounded-sm border px-3 leading-none focus-visible:outline-none aria-invalid:ring-2 sm:text-sm"
+						:aria-invalid="Boolean(errors.email)"
+						:aria-describedby="errors.email ? 'signup-email-error' : undefined"
+						@input="updateEmail"
+					/>
+					<p v-if="errors.email" id="signup-email-error" class="text-danger text-xs font-medium">{{ errors.email }}</p>
+				</div>
 				<FormFieldRenderer name="password" label="Password" type="password" placeholder="At least 8 characters" />
 				<label class="text-text-secondary flex items-start gap-2.5 text-xs leading-5">
 					<Checkbox v-model="acceptedTerms" class="mt-0.5" />

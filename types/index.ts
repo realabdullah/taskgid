@@ -17,6 +17,8 @@ export interface BaseUser {
 
 export interface User extends BaseUser {
 	email: string;
+	/** IANA timezone name; drives what counts as overdue and today. */
+	timezone?: string | null;
 	title: string | null;
 	about: string | null;
 	location: string | null;
@@ -120,6 +122,36 @@ export interface Task {
 	assignees: BaseUser[];
 	creator: BaseUser;
 	commentCount: number;
+	/** Comments from other people since this user last opened the task. */
+	unreadCommentCount?: number;
+	tags: Tag[];
+}
+
+export interface Tag {
+	id: string;
+	name: string;
+	color: string;
+	description: string | null;
+	workspaceId: string;
+	createdById: string;
+	createdAt: string;
+	updatedAt: string;
+	/** Present on the workspace tag list, absent on tags embedded in a task. */
+	taskCount?: number;
+	creator?: BaseUser;
+}
+
+export interface Attachment {
+	id: string;
+	filename: string;
+	url: string;
+	mimetype: string;
+	size: number;
+	taskId: string | null;
+	commentId: string | null;
+	userId: string;
+	createdAt: string;
+	user: Pick<BaseUser, "id" | "username" | "firstName">;
 }
 
 interface TaskStatistics {
@@ -214,6 +246,7 @@ export interface Comment {
 	parentId: string | null;
 	mentions: string[];
 	likeCount: number;
+	likedByMe: boolean;
 	replyCount: number;
 	createdAt: string;
 	updatedAt: string;
@@ -289,3 +322,5 @@ export interface TeamPerformanceStat {
 		avgCompletionTimeHours: number;
 	}[];
 }
+
+export type { ApiResponse, PaginatedResponse } from "./api";

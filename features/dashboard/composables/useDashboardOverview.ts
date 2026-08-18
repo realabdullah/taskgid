@@ -1,55 +1,45 @@
 import { useQuery } from "@tanstack/vue-query";
 import { storeToRefs } from "pinia";
 
-import { useApiFetch } from "~/composables/useApiFetch";
 import { useStore } from "~/stores";
 import { useWorkspacesStore } from "~/features/workspaces/stores";
-import type { Task } from "~/types";
+import type { PaginatedResponse, Task } from "~/types";
 import { API_ENDPOINTS } from "~/utils/endpoints";
 import type { DashboardTask, DashboardTaskFilter } from "../types";
-
-const startOfToday = () => {
-	const now = new Date();
-	return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-};
 
 export const useDashboardOverview = () => {
 	const { user } = storeToRefs(useStore());
 	const { workspaces } = storeToRefs(useWorkspacesStore());
 	const activeFilter = ref<DashboardTaskFilter>("all");
 
-	const isAssignedToCurrentUser = (task: Task) => {
-		return task.assignees.some((assignee) => assignee.id === user.value?.id || assignee.username === user.value?.username);
-	};
-
 	const { data, isFetching, isError, error, refetch } = useQuery({
 		queryKey: ["dashboard-overview", workspaces, user],
 		queryFn: async () => {
 			const sources = await Promise.all(
 				(workspaces.value ?? []).map(async (workspace) => {
-					const response = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(workspace.slug));
+					// `assignee=me` is applied by the server, so this no longer pulls a
+					// whole workspace down to keep the fraction assigned to one person.
+					const response = await useApiFetch<PaginatedResponse<Task>>(API_ENDPOINTS.workspaces.taskSearch(workspace.slug), {
+						query: { assignee: "me", sortBy: "dueDate", sortOrder: "ASC", page: 1, limit: 100 },
+					});
 					if (!response?.success) throw new Error(`Unable to load tasks from ${workspace.title}.`);
 					return response.data.map<DashboardTask>((task) => ({ ...task, workspaceSlug: workspace.slug, workspaceTitle: workspace.title }));
 				})
 			);
 
-			return sources
-				.flat()
-				.filter(isAssignedToCurrentUser)
-				.sort((left, right) => {
-					if (!left.dueDate) return 1;
-					if (!right.dueDate) return -1;
-					return new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime();
-				});
+			return sources.flat().sort((left, right) => {
+				if (!left.dueDate) return 1;
+				if (!right.dueDate) return -1;
+				return new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime();
+			});
 		},
 		enabled: computed(() => Boolean(user.value?.id && workspaces.value?.length)),
 	});
 
 	const tasks = computed(() => data.value ?? []);
-	const today = computed(startOfToday);
-	const tomorrow = computed(() => new Date(today.value.getFullYear(), today.value.getMonth(), today.value.getDate() + 1));
-	const isDueToday = (task: DashboardTask) => Boolean(task.dueDate && new Date(task.dueDate) >= today.value && new Date(task.dueDate) < tomorrow.value);
-	const isOverdue = (task: DashboardTask) => Boolean(task.dueDate && new Date(task.dueDate) < today.value && task.status !== "done");
+	const timezone = useUserTimezone();
+	const isDueToday = (task: DashboardTask) => isDueTodayIn(task.dueDate, timezone.value);
+	const isOverdue = (task: DashboardTask) => task.status !== "done" && isOverdueIn(task.dueDate, timezone.value);
 
 	const openTasks = computed(() => tasks.value.filter((task) => task.status !== "done"));
 	const completedTasks = computed(() => tasks.value.filter((task) => task.status === "done"));

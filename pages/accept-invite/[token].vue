@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-definePageMeta({ layout: false, name: "accept-invite" });
+definePageMeta({ layout: false, name: "accept-invite", title: "Invitation" });
 
 const route = useRoute();
 const token = computed(() => (typeof route.params.token === "string" ? route.params.token.trim() : ""));
@@ -49,8 +49,10 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div class="relative container mx-auto flex min-h-screen flex-col items-center justify-center p-6">
+	<div class="bg-canvas relative container mx-auto flex min-h-screen flex-col items-center justify-center p-6">
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[380px]">
+			<AppBrandMark show-name size="sm" class="mx-auto" />
+
 			<div class="flex flex-col items-center space-y-4 text-center">
 				<div
 					class="flex h-14 w-14 items-center justify-center rounded-full"

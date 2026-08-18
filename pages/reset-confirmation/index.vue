@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import type { ApiResponse } from "~/types";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { toast } from "vue-sonner";
 
-definePageMeta({ layout: "auth", name: "reset-confirmation" });
+definePageMeta({ layout: "auth", name: "reset-confirmation", title: "Set a new password" });
 
 const route = useRoute();
 const router = useRouter();
@@ -25,7 +26,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 	try {
 		isSubmitting.value = true;
-		const { success, error, message } = await useApiFetch<{ success: boolean; error?: string; message?: string }>(API_ENDPOINTS.auth.resetPassword, {
+		const { success, error, message } = await useApiFetch<ApiResponse>(API_ENDPOINTS.auth.resetPassword, {
 			method: "POST",
 			body: {
 				token: resetToken.value,

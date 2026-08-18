@@ -17,8 +17,7 @@ const {
 } = useQuery({
 	queryKey: ["workspace-tasks", useRoute().params.slug],
 	queryFn: async () => {
-		const { success, data: tasks } = await useApiFetch<{ success: boolean; data: Task[] }>(API_ENDPOINTS.workspaces.tasks(useRoute().params.slug));
-		if (!tasks || !success) throw new Error("Unable to load workspace tasks. Try again.");
+		const { data: tasks } = await fetchAllPages<Task>(API_ENDPOINTS.workspaces.tasks(String(useRoute().params.slug)));
 		return tasks;
 	},
 });

@@ -27,6 +27,8 @@ export const API_ENDPOINTS = {
 	},
 	notifications: {
 		byUser: (userId: unknown) => `/api/notifications/${toPath(userId)}`,
+		preferences: "/api/notifications/preferences",
+		workspacePreferences: (slug: unknown) => `/api/notifications/preferences/${toPath(slug)}`,
 	},
 	media: {
 		upload: "/media/upload",
@@ -41,11 +43,27 @@ export const API_ENDPOINTS = {
 		teamStatistics: (slug: unknown, period: unknown) => `/workspaces/${toPath(slug)}/team/statistics?period=${toPath(period)}`,
 		tasks: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks`,
 		taskById: (slug: unknown, taskId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}`,
+		taskRead: (slug: unknown, taskId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/read`,
 		taskActivities: (slug: unknown, taskId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/activities`,
 		taskComments: (slug: unknown, taskId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/comments`,
 		taskCommentReplies: (slug: unknown, taskId: unknown, commentId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/comments/${toPath(commentId)}/replies`,
 		memberTasks: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/tasks`,
 		memberActivities: (slug: unknown, memberId: unknown) => `/workspaces/${toPath(slug)}/members/${toPath(memberId)}/activities`,
 		batchAssignTasks: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/batch-assign`,
+		taskSearch: (slug: unknown) => `/workspaces/${toPath(slug)}/tasks/search`,
+		taskExport: (slug: unknown, format: "csv" | "pdf") => `/workspaces/${toPath(slug)}/tasks/export/${format}`,
+		taskCommentLike: (slug: unknown, taskId: unknown, commentId: unknown) => `/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/comments/${toPath(commentId)}/like`,
+		events: (slug: unknown) => `/workspaces/${toPath(slug)}/events`,
+		tags: (slug: unknown) => `/workspaces/${toPath(slug)}/tags`,
+		tagById: (slug: unknown, tagId: unknown) => `/workspaces/${toPath(slug)}/tags/${toPath(tagId)}`,
+	},
+	/**
+	 * Attachments are mounted at `/attachments`, and the router inside it repeats
+	 * the workspace segment — hence the doubled prefix on the delete path.
+	 */
+	attachments: {
+		forTask: (slug: unknown, taskId: unknown) => `/attachments/workspaces/${toPath(slug)}/tasks/${toPath(taskId)}/attachments`,
+		forComment: (slug: unknown, commentId: unknown) => `/attachments/workspaces/${toPath(slug)}/comments/${toPath(commentId)}/attachments`,
+		byId: (attachmentId: unknown) => `/attachments/attachments/${toPath(attachmentId)}`,
 	},
 } as const;

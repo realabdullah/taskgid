@@ -2,6 +2,7 @@
 import TaskRichTextEditor from "@/components/ui/tiptap/TipTapEditor.vue";
 import type { Task } from "~/types";
 import { useTaskEditor } from "~/features/tasks/composables/useTaskEditor";
+import { TagPicker } from "~/features/tags";
 import TaskAssigneePicker from "./TaskAssigneePicker.vue";
 
 const props = defineProps<{ workspaceSlug: string; task?: Task }>();
@@ -115,6 +116,9 @@ const onSubmitShortcut = (event: KeyboardEvent) => {
 
 					<span class="text-text-secondary self-start pt-2 text-sm">People</span>
 					<TaskAssigneePicker v-model="draft.assignees" :members="teams ?? []" :loading="!teams" />
+
+					<span class="text-text-secondary self-start pt-2 text-sm">Tags</span>
+					<TagPicker v-model="draft.tags" :workspace-slug="workspaceSlug" />
 				</div>
 			</div>
 		</form>

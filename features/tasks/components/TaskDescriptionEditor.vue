@@ -2,7 +2,7 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import TaskRichTextEditor from "@/components/ui/tiptap/TipTapEditor.vue";
-import type { Task } from "~/types";
+import type { ApiResponse, Task } from "~/types";
 
 const props = defineProps<{
 	task: Task;
@@ -35,7 +35,7 @@ const invalidateTask = async () => {
 const patchTask = async (body: Partial<Pick<Task, "title" | "description">>) => {
 	try {
 		isSaving.value = true;
-		const { success } = await useApiFetch<{ success: boolean }>(API_ENDPOINTS.workspaces.taskById(props.workspaceSlug, props.task.id), {
+		const { success } = await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskById(props.workspaceSlug, props.task.id), {
 			method: "PATCH",
 			body,
 		});

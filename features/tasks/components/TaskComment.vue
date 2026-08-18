@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import type { Comment } from "@/types";
 import { useQuery } from "@tanstack/vue-query";
+import { useCommentReactions } from "../composables/useCommentReactions";
 import TaskCommentEditor from "./TaskCommentEditor.vue";
 
 defineOptions({ name: "TaskComment" });
 
-const { comment, isNested } = defineProps<{ comment: Comment; isNested?: boolean }>();
+const { comment, isNested, workspaceSlug, taskId } = defineProps<{ comment: Comment; isNested?: boolean; workspaceSlug: string; taskId: string }>();
 
 const showCommentReplies = ref(false);
-const route = useRoute();
+const { toggle } = useCommentReactions({ workspaceSlug, taskId });
 
 const {
 	data: replies,
@@ -19,11 +20,7 @@ const {
 } = useQuery({
 	queryKey: ["task-replies", comment.id],
 	queryFn: async () => {
-		const { success, data } = await useApiFetch<{
-			success: boolean;
-			data: Comment[];
-		}>(API_ENDPOINTS.workspaces.taskCommentReplies(route.params.slug, route.params.id, comment.id));
-		if (!data || !success) throw new Error("Unable to load replies. Try again.");
+		const { data } = await fetchAllPages<Comment>(API_ENDPOINTS.workspaces.taskCommentReplies(workspaceSlug, taskId, comment.id));
 		return data;
 	},
 	enabled: () => showCommentReplies.value && comment.replyCount > 0,
@@ -52,7 +49,15 @@ const {
 					<span class="text-xs tabular-nums">{{ comment.replyCount }} {{ comment.replyCount === 1 ? "reply" : "replies" }}</span>
 				</div>
 				<div class="flex items-center justify-center gap-1 p-1">
-					<Button variant="ghost" class="h-5 cursor-pointer p-0"><Icon name="hugeicons:thumbs-up" :size="16" /> </Button>
+					<Button
+						variant="ghost"
+						class="h-5 cursor-pointer p-0"
+						:aria-pressed="comment.likedByMe"
+						:aria-label="comment.likedByMe ? 'Remove your like' : 'Like this comment'"
+						@click="toggle.mutate({ comment })"
+					>
+						<Icon name="hugeicons:thumbs-up" :size="16" :class="comment.likedByMe ? 'text-primary' : ''" />
+					</Button>
 					<span class="text-xs tabular-nums">{{ comment.likeCount }} {{ comment.likeCount === 1 ? "like" : "likes" }}</span>
 				</div>
 			</div>
@@ -72,12 +77,12 @@ const {
 						</div>
 					</template>
 					<template v-else-if="replies?.length">
-						<TaskComment v-for="reply in replies" :key="reply.id" :comment="reply" is-nested />
+						<TaskComment v-for="reply in replies" :key="reply.id" :comment="reply" :workspace-slug="workspaceSlug" :task-id="taskId" is-nested />
 					</template>
 					<p v-else class="text-text-tertiary text-xs">No replies yet.</p>
 				</div>
 
-				<TaskCommentEditor :parent-id="comment.id" />
+				<TaskCommentEditor :parent-id="comment.id" :workspace-slug="workspaceSlug" :task-id="taskId" />
 			</div>
 		</div>
 	</div>

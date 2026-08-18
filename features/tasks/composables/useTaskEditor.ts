@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
-import type { Task } from "~/types";
+import type { ApiResponse, Task } from "~/types";
 import { useWorkspaceStore } from "~/features/workspaces/stores";
 
 type TaskDraft = {
@@ -11,6 +11,8 @@ type TaskDraft = {
 	priority: Task["priority"];
 	dueDate: string;
 	assignees: string[];
+	/** Tag **names** — the task endpoints resolve them to records themselves. */
+	tags: string[];
 };
 
 type TaskEditorOptions = {
@@ -26,23 +28,19 @@ const toDraft = (task?: Task): TaskDraft => ({
 	priority: task?.priority ?? "medium",
 	dueDate: task?.dueDate ? task.dueDate.slice(0, 10) : "",
 	assignees: task?.assignees.map((assignee) => assignee.username) ?? [],
+	tags: task?.tags?.map((tag) => tag.name) ?? [],
 });
 
-/** `YYYY-MM-DD` in the user's own timezone, which is what `<input type="date">` expects. */
-const toDateInputValue = (date: Date) => {
-	const offset = date.getTimezoneOffset() * 60_000;
-	return new Date(date.getTime() - offset).toISOString().slice(0, 10);
-};
-
-const addDays = (days: number) => {
-	const date = new Date();
-	date.setDate(date.getDate() + days);
-	return toDateInputValue(date);
-};
+/**
+ * Due-date presets, resolved against the user's stored timezone rather than the
+ * browser's, so "today" agrees with what the server considers overdue.
+ */
+const addDays = (days: number, timezone: string) => addDaysToKey(todayKey(timezone), days);
 
 export const useTaskEditor = (options: TaskEditorOptions) => {
 	const queryClient = useQueryClient();
 	const { teams } = storeToRefs(useWorkspaceStore());
+	const timezone = useUserTimezone();
 	const draft = reactive<TaskDraft>(toDraft(options.task));
 	const isSubmitting = ref(false);
 	const titleError = computed(() => (!draft.title.trim() ? "Add a task title." : ""));
@@ -50,9 +48,9 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 
 	/** Shortcuts for the dates people actually pick, so the calendar stays optional. */
 	const dueDatePresets = computed(() => [
-		{ label: "Today", value: addDays(0) },
-		{ label: "Tomorrow", value: addDays(1) },
-		{ label: "Next week", value: addDays(7) },
+		{ label: "Today", value: addDays(0, timezone.value) },
+		{ label: "Tomorrow", value: addDays(1, timezone.value) },
+		{ label: "Next week", value: addDays(7, timezone.value) },
 	]);
 
 	watch(
@@ -75,7 +73,7 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 			isSubmitting.value = true;
 			const isEditing = Boolean(options.task);
 			const url = isEditing ? API_ENDPOINTS.workspaces.taskById(options.workspaceSlug, options.task?.id) : API_ENDPOINTS.workspaces.tasks(options.workspaceSlug);
-			const { success, data, error } = await useApiFetch<{ success: boolean; data: Task; error?: string }>(url, {
+			const { success, data, error } = await useApiFetch<ApiResponse<Task>>(url, {
 				method: isEditing ? "PATCH" : "POST",
 				body: {
 					...draft,
@@ -85,7 +83,11 @@ export const useTaskEditor = (options: TaskEditorOptions) => {
 				},
 			});
 			if (!success || !data) throw new Error(error || "Unable to save the task. Try again.");
-			await queryClient.invalidateQueries({ queryKey: ["workspace-tasks", options.workspaceSlug] });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["workspace-tasks", options.workspaceSlug] }),
+				queryClient.invalidateQueries({ queryKey: ["workspace-tasks-column", options.workspaceSlug] }),
+				queryClient.invalidateQueries({ queryKey: ["workspace-tags", options.workspaceSlug] }),
+			]);
 			toast.success(isEditing ? "Task updated." : "Task created.");
 			options.onSaved(data);
 		} catch (error) {
