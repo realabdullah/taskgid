@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { VueDraggable } from "vue-draggable-plus";
 import { TagChip } from "~/features/tags";
+import ChecklistBadge from "./ChecklistBadge.vue";
 import type { Task } from "~/types";
 
 const props = defineProps<{
@@ -96,7 +97,10 @@ const statusLabels: Record<Task["status"], string> = { todo: "To do", in_progres
 				</div>
 
 				<div class="mt-5 flex items-center justify-between gap-2">
-					<BadgePriority :priority="task.priority" />
+					<div class="flex items-center gap-2">
+						<BadgePriority :priority="task.priority" />
+						<ChecklistBadge :task="task" />
+					</div>
 					<span class="text-text-tertiary text-xs">{{ task.dueDate ? formatDate(task.dueDate, "MMM D") : "No date" }}</span>
 				</div>
 			</div>

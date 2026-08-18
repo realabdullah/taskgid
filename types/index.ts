@@ -115,6 +115,11 @@ export interface Task {
 	status: "todo" | "in_progress" | "done";
 	priority: "low" | "medium" | "high";
 	dueDate: string | null;
+	/** When work should begin; with dueDate it gives the task a span. */
+	startDate: string | null;
+	/** Effort in minutes, so the API never has to guess the unit. */
+	estimateMinutes: number | null;
+	checklist: ChecklistItem[];
 	workspaceId: string;
 	createdById: string;
 	createdAt: string;
@@ -125,6 +130,12 @@ export interface Task {
 	/** Comments from other people since this user last opened the task. */
 	unreadCommentCount?: number;
 	tags: Tag[];
+}
+
+export interface ChecklistItem {
+	id: string;
+	text: string;
+	done: boolean;
 }
 
 export interface Tag {

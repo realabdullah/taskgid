@@ -3,6 +3,7 @@ import type { Task } from "~/types";
 import { useTaskInspector } from "../composables/useTaskInspector";
 import { TagChip } from "~/features/tags";
 import TaskAttachments from "./TaskAttachments.vue";
+import TaskChecklist from "./TaskChecklist.vue";
 import TaskDescriptionEditor from "./TaskDescriptionEditor.vue";
 import TaskMetadataHorizontal from "./TaskMetadataHorizontal.vue";
 import TaskTimeline from "./TaskTimeline.vue";
@@ -60,6 +61,7 @@ const {
 					<TagChip v-for="tag in task.tags" :key="tag.id" :tag="tag" />
 				</div>
 			</div>
+			<div class="border-border border-b p-5"><TaskChecklist :task="task" :workspace-slug="workspaceSlug" /></div>
 			<div class="border-border border-b p-5"><TaskAttachments :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 			<div class="p-5"><TaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 		</div>
