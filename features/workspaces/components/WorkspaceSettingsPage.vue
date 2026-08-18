@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import NotificationSettings from "~/features/settings/components/NotificationSettings.vue";
 import { TagManager } from "~/features/tags";
+import { RecurrenceManager } from "~/features/recurrence";
 import WorkspaceInviteDialog from "~/features/workspaces/components/WorkspaceInviteDialog.vue";
 import { useWorkspaceSettings } from "~/features/workspaces/composables/useWorkspaceSettings";
 
@@ -74,6 +75,10 @@ const canManageTags = computed(() => ["admin", "owner"].includes(String(workspac
 			</div>
 			<section class="product-panel p-5 sm:p-7">
 				<TagManager :workspace-slug="String(route.params.slug ?? '')" :can-manage="canManageTags" />
+			</section>
+
+			<section class="product-panel p-5 sm:p-7">
+				<RecurrenceManager :workspace-slug="String(route.params.slug ?? '')" />
 			</section>
 
 			<div>

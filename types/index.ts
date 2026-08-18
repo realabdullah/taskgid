@@ -122,6 +122,10 @@ export interface Task {
 	checklist: ChecklistItem[];
 	/** The task this one is nested under, or null when it is top-level. */
 	parentId: string | null;
+	/** The schedule that produced this task, if it came from one. */
+	recurrenceId: string | null;
+	/** Which occurrence of that schedule this task is. */
+	occurrenceDate: string | null;
 	/** How many subtasks this task has, and how many of those are done. */
 	subtaskCount?: number;
 	subtaskDoneCount?: number;
@@ -141,6 +145,38 @@ export interface ChecklistItem {
 	id: string;
 	text: string;
 	done: boolean;
+}
+
+/**
+ * A schedule that produces tasks.
+ *
+ * Held apart from the tasks it creates: completing or deleting one instance
+ * leaves the schedule alone, which is the point of spawning instances rather
+ * than moving a single task's due date forward.
+ */
+export interface TaskRecurrence {
+	id: string;
+	/** An RFC 5545 rule, including its DTSTART. */
+	rrule: string;
+	timezone: string;
+	title: string;
+	description: string | null;
+	priority: Task["priority"];
+	estimateMinutes: number | null;
+	/** Copied onto each instance with every item reset to undone. */
+	checklist: ChecklistItem[];
+	assigneeIds: string[];
+	tagIds: string[];
+	isActive: boolean;
+	/** The most recent occurrence already turned into a task. */
+	lastSpawnedAt: string | null;
+	/** The next occurrence this rule will produce, or null when exhausted. */
+	nextOccurrence: string | null;
+	workspaceId: string;
+	createdById: string;
+	creator?: BaseUser;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface Tag {

@@ -3,6 +3,7 @@ import { VueDraggable } from "vue-draggable-plus";
 import { TagChip } from "~/features/tags";
 import ChecklistBadge from "./ChecklistBadge.vue";
 import SubtaskBadge from "./SubtaskBadge.vue";
+import { RecurrenceBadge } from "~/features/recurrence";
 import type { Task } from "~/types";
 
 const props = defineProps<{
@@ -100,6 +101,7 @@ const statusLabels: Record<Task["status"], string> = { todo: "To do", in_progres
 				<div class="mt-5 flex items-center justify-between gap-2">
 					<div class="flex items-center gap-2">
 						<BadgePriority :priority="task.priority" />
+						<RecurrenceBadge :task="task" />
 						<SubtaskBadge :task="task" />
 						<ChecklistBadge :task="task" />
 					</div>
