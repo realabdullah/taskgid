@@ -9,6 +9,8 @@ export type TaskPatch = Partial<Pick<Task, "status" | "priority" | "title" | "de
 	estimateMinutes?: number | null;
 	assignees?: string[];
 	tags?: string[];
+	/** Nests the task under a parent, or `null` to promote it back to the top level. */
+	parentId?: string | null;
 };
 
 /** How long a deleted task can be brought back before the request is actually sent. */
@@ -33,6 +35,9 @@ export const useTaskMutations = (workspaceSlug: MaybeRefOrGetter<string>) => {
 			...taskListFilters.map((filter) => client.invalidateQueries(filter)),
 			client.invalidateQueries({ queryKey: ["dashboard-overview"] }),
 			client.invalidateQueries({ queryKey: ["workspace-stats", slug.value] }),
+			// A subtask's status feeds its parent's "3 of 5" figure, so the
+			// parent's children list has to settle alongside the task lists.
+			client.invalidateQueries({ queryKey: ["task-subtasks"] }),
 		]);
 	};
 
