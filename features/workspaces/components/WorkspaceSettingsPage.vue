@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import NotificationSettings from "~/features/settings/components/NotificationSettings.vue";
+import { SlackSettings } from "~/features/slack";
 import WorkspaceInviteDialog from "~/features/workspaces/components/WorkspaceInviteDialog.vue";
 import { useWorkspaceSettings } from "~/features/workspaces/composables/useWorkspaceSettings";
 
 const { draft, hasChanges, isInviteOpen, isSaving, resetWorkspace, route, saveWorkspace, workspace } = useWorkspaceSettings();
+
+const canManageSlack = computed(() => ["admin", "owner", "creator"].includes(String(workspace.value?.userRole ?? "").toLowerCase()));
 </script>
 
 <template>
@@ -61,6 +64,14 @@ const { draft, hasChanges, isInviteOpen, isSaving, resetWorkspace, route, saveWo
 					</div>
 					<Button @click="isInviteOpen = true">Invite people</Button>
 				</div>
+			</section>
+
+			<div>
+				<h2 class="text-lg font-semibold">Integrations</h2>
+				<p class="text-text-secondary mt-1 text-sm leading-6">Send workspace activity somewhere the team already lives.</p>
+			</div>
+			<section class="product-panel p-5 sm:p-7">
+				<SlackSettings :workspace-slug="String(route.params.slug ?? '')" :can-manage="canManageSlack" />
 			</section>
 
 			<div>

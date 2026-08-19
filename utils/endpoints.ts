@@ -61,6 +61,9 @@ export const API_ENDPOINTS = {
 		tagById: (slug: unknown, tagId: unknown) => `/workspaces/${toPath(slug)}/tags/${toPath(tagId)}`,
 		recurrences: (slug: unknown) => `/workspaces/${toPath(slug)}/recurrences`,
 		recurrenceById: (slug: unknown, recurrenceId: unknown) => `/workspaces/${toPath(slug)}/recurrences/${toPath(recurrenceId)}`,
+		slack: (slug: unknown) => `/workspaces/${toPath(slug)}/slack`,
+		slackConnect: (slug: unknown) => `/workspaces/${toPath(slug)}/slack/connect`,
+		slackChannels: (slug: unknown) => `/workspaces/${toPath(slug)}/slack/channels`,
 	},
 	/**
 	 * Attachments are mounted at `/attachments`, and the router inside it repeats
