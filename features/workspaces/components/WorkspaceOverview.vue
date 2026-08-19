@@ -15,7 +15,10 @@ const { createTask, isStatsError, isStatsLoading, refetchStats, statOverview, st
 				<p class="page-intro mt-2">Review task activity, ownership, and what needs attention next.</p>
 			</div>
 
-			<Button @click="createTask"><Icon name="lucide:plus" :size="16" /> New task</Button>
+			<div class="flex items-center gap-2">
+				<Button variant="secondary" @click="navigateTo(`/app/workspaces/${workspaceSlug}/settings`)"><Icon name="lucide:settings" :size="16" /> Settings</Button>
+				<Button @click="createTask"><Icon name="lucide:plus" :size="16" /> New task</Button>
+			</div>
 		</div>
 
 		<div v-if="isStatsLoading" class="divide-border border-border grid divide-y overflow-hidden rounded-lg border md:grid-cols-3 md:divide-x md:divide-y-0">
