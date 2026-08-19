@@ -37,6 +37,7 @@ const periodOptions: Array<{ label: string; value: "7d" | "30d" | "90d" }> = [
 
 			<AppEmptyState
 				v-else-if="isStatsError"
+				class="col-span-full"
 				heading="Unable to load team statistics"
 				:body="getServerError(statsError, 'Check your connection and try again.')"
 				icon="lucide:alert-circle"
@@ -51,7 +52,7 @@ const periodOptions: Array<{ label: string; value: "7d" | "30d" | "90d" }> = [
 				</article>
 			</template>
 
-			<AppEmptyState v-else heading="No team statistics yet" body="Team statistics will appear after members start working on tasks." icon="lucide:bar-chart-3" />
+			<AppEmptyState v-else class="col-span-full" heading="No team statistics yet" body="Team statistics will appear after members start working on tasks." icon="lucide:bar-chart-3" />
 		</div>
 	</section>
 </template>

@@ -14,7 +14,7 @@ const props = defineProps<{ workspaceSlug: string; taskId: string }>();
 const emit = defineEmits<{ close: []; edit: [task: Task]; deleted: [] }>();
 const {
 	data: task,
-	isFetching,
+	isPending,
 	isError,
 	error,
 	refetch,
@@ -27,11 +27,15 @@ const {
 </script>
 
 <template>
-	<aside class="product-panel flex min-h-0 flex-col overflow-hidden">
+	<aside class="product-panel flex min-h-0 flex-col overflow-hidden" :aria-label="task ? `Task details: ${task.title}` : 'Task details'">
 		<header class="border-border flex items-center justify-between gap-3 border-b px-5 py-4">
+			<!--
+				The header is the only part that survives scrolling, so it carries the
+				title. The id stays because it is what people quote to each other.
+			-->
 			<div class="min-w-0">
-				<p class="product-eyebrow">Task details</p>
-				<p class="text-text-tertiary mt-1 truncate font-mono text-xs">{{ taskId }}</p>
+				<p class="text-text-primary truncate text-sm font-semibold">{{ task?.title || "Task details" }}</p>
+				<p class="text-text-tertiary mt-0.5 truncate font-mono text-xs">{{ taskId }}</p>
 			</div>
 			<div class="flex items-center gap-1">
 				<Button v-if="task" type="button" variant="ghost" size="sm" @click="emit('edit', task)"><Icon name="lucide:pencil" :size="15" /> Edit</Button>
@@ -47,7 +51,12 @@ const {
 			</div>
 		</header>
 
-		<div v-if="isFetching" class="space-y-4 p-5"><Skeleton class="h-9 w-2/3" /><Skeleton class="h-24 w-full" /><Skeleton class="h-48 w-full" /></div>
+		<!--
+			Tied to having nothing to show, not to fetching: editing a field or marking
+			the task read refetches it, and a skeleton there would blank the panel
+			under the reader mid-edit.
+		-->
+		<div v-if="isPending" class="space-y-4 p-5"><Skeleton class="h-9 w-2/3" /><Skeleton class="h-24 w-full" /><Skeleton class="h-48 w-full" /></div>
 		<AppEmptyState
 			v-else-if="isError"
 			heading="Unable to load this task"
