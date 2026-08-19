@@ -3,8 +3,11 @@ import type { Task } from "~/types";
 import { useTaskInspector } from "../composables/useTaskInspector";
 import { TagChip } from "~/features/tags";
 import TaskAttachments from "./TaskAttachments.vue";
+import TaskChecklist from "./TaskChecklist.vue";
 import TaskDescriptionEditor from "./TaskDescriptionEditor.vue";
 import TaskMetadataHorizontal from "./TaskMetadataHorizontal.vue";
+import TaskParentLink from "./TaskParentLink.vue";
+import TaskSubtasks from "./TaskSubtasks.vue";
 import TaskTimeline from "./TaskTimeline.vue";
 
 const props = defineProps<{ workspaceSlug: string; taskId: string }>();
@@ -54,12 +57,15 @@ const {
 		/>
 		<div v-else-if="task" class="min-h-0 flex-1 overflow-y-auto">
 			<div class="border-border space-y-5 border-b p-5">
+				<TaskParentLink v-if="task.parentId" :parent-id="task.parentId" :workspace-slug="workspaceSlug" />
 				<TaskDescriptionEditor :task="task" :workspace-slug="workspaceSlug" />
 				<TaskMetadataHorizontal :task="task" />
 				<div v-if="task.tags?.length" class="flex flex-wrap gap-1.5">
 					<TagChip v-for="tag in task.tags" :key="tag.id" :tag="tag" />
 				</div>
 			</div>
+			<div v-if="!task.parentId" class="border-border border-b p-5"><TaskSubtasks :task="task" :workspace-slug="workspaceSlug" /></div>
+			<div class="border-border border-b p-5"><TaskChecklist :task="task" :workspace-slug="workspaceSlug" /></div>
 			<div class="border-border border-b p-5"><TaskAttachments :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 			<div class="p-5"><TaskTimeline :workspace-slug="workspaceSlug" :task-id="task.id" /></div>
 		</div>

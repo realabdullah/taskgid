@@ -3,6 +3,9 @@ import { TagChip } from "~/features/tags";
 import { useTaskWorkbench } from "~/features/tasks/composables/useTaskWorkbench";
 import SavedViewBar from "./SavedViewBar.vue";
 import TaskBoardColumn from "./TaskBoardColumn.vue";
+import ChecklistBadge from "./ChecklistBadge.vue";
+import SubtaskBadge from "./SubtaskBadge.vue";
+import { RecurrenceBadge } from "~/features/recurrence";
 import TaskBulkBar from "./TaskBulkBar.vue";
 import TaskEditorPanel from "./TaskEditorPanel.vue";
 import TaskFilterBar from "./TaskFilterBar.vue";
@@ -148,6 +151,9 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 								>
 									{{ task.unreadCommentCount }} new
 								</span>
+								<RecurrenceBadge :task="task" />
+								<SubtaskBadge :task="task" />
+								<ChecklistBadge :task="task" />
 								<TagChip v-for="tag in (task.tags ?? []).slice(0, 3)" :key="tag.id" :tag="tag" />
 							</div>
 						</Pressable>

@@ -59,6 +59,8 @@ export const API_ENDPOINTS = {
 		events: (slug: unknown) => `/workspaces/${toPath(slug)}/events`,
 		tags: (slug: unknown) => `/workspaces/${toPath(slug)}/tags`,
 		tagById: (slug: unknown, tagId: unknown) => `/workspaces/${toPath(slug)}/tags/${toPath(tagId)}`,
+		recurrences: (slug: unknown) => `/workspaces/${toPath(slug)}/recurrences`,
+		recurrenceById: (slug: unknown, recurrenceId: unknown) => `/workspaces/${toPath(slug)}/recurrences/${toPath(recurrenceId)}`,
 	},
 	/**
 	 * Attachments are mounted at `/attachments`, and the router inside it repeats

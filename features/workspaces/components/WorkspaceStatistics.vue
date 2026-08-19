@@ -47,6 +47,14 @@ const tasksStats = computed(() => {
 	];
 });
 
+/*
+ * Kept apart from the figures above, which count top-level work only. Folding
+ * subtasks into them would move every historical number on the day subtasks
+ * shipped, and nobody would be able to tell the change in the product from a
+ * change in the team.
+ */
+const subtasks = computed(() => props.stats?.subtasks);
+
 const { getLabel, getDescription } = useActivityLabel();
 const {
 	data: activities,
@@ -82,6 +90,18 @@ const {
 					</div>
 					<div class="bg-surface-2 mt-1.5 h-1.5 overflow-hidden"><div class="h-full" :class="[summary.color]" :style="{ width: `${summary.percentage}%` }" /></div>
 				</div>
+			</div>
+		</section>
+
+		<section v-if="subtasks?.total" class="border-border mt-6 border-t pt-4">
+			<h3 class="text-text-primary text-sm font-bold">Subtasks</h3>
+			<p class="text-text-tertiary mt-1 text-xs">Counted separately — the figures above cover top-level tasks only.</p>
+			<div class="mt-3">
+				<div class="flex items-center justify-between gap-3 text-xs">
+					<span class="text-text-secondary">Done</span
+					><span class="text-text-primary font-mono font-semibold tabular-nums">{{ subtasks.completed }} of {{ subtasks.total }} · {{ subtasks.percentage }}%</span>
+				</div>
+				<div class="bg-surface-2 mt-1.5 h-1.5 overflow-hidden"><div class="bg-status-done h-full" :style="{ width: `${subtasks.percentage}%` }" /></div>
 			</div>
 		</section>
 
