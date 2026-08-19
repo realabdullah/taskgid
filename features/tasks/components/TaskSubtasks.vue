@@ -80,11 +80,11 @@ const subtaskUrl = (subtask: Task) => `/app/workspaces/${props.workspaceSlug}/ta
 				v-model="draft"
 				class="h-8 flex-1 text-sm"
 				:placeholder="isFull ? `Limit of ${MAX_SUBTASKS} subtasks reached` : 'Add a subtask…'"
-				:disabled="isFull"
+				:disabled="isFull || addSubtask.isPending.value"
 				aria-label="New subtask"
 				@keydown.enter.prevent="add"
 			/>
-			<Button size="sm" variant="secondary" :disabled="!draft.trim() || isFull || addSubtask.isPending.value" @click="add">Add</Button>
+			<Button size="sm" variant="secondary" :disabled="!draft.trim() || isFull" :loading="addSubtask.isPending.value" loading-label="Adding" @click="add">Add</Button>
 		</div>
 
 		<p class="text-text-tertiary text-xs">Subtasks are their own tasks — they keep an assignee and a due date, and completing them all does not complete this one.</p>
