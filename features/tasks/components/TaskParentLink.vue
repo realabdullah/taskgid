@@ -20,10 +20,7 @@ const { data: parent } = useQuery({
 </script>
 
 <template>
-	<NuxtLink
-		:to="`/app/workspaces/${workspaceSlug}/tasks?taskId=${parentId}`"
-		class="focus-ring text-text-tertiary hover:text-text-primary inline-flex max-w-full items-center gap-1.5 text-xs"
-	>
+	<NuxtLink :to="`/app/workspaces/${workspaceSlug}/tasks?taskId=${parentId}`" class="focus-ring text-text-tertiary hover:text-text-primary inline-flex max-w-full items-center gap-1.5 text-xs">
 		<Icon name="lucide:corner-left-up" :size="13" class="shrink-0" />
 		<span class="shrink-0">Subtask of</span>
 		<span class="truncate font-medium">{{ parent?.title ?? "…" }}</span>
