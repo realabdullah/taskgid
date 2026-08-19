@@ -31,7 +31,8 @@ const {
 	handleSaved,
 	isError,
 	isExporting,
-	isFetching,
+	isLoading,
+	isRefreshing,
 	isFiltered,
 	isPanelOpen,
 	loadMoreInColumn,
@@ -89,7 +90,10 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 					<Icon name="lucide:search" :size="16" class="text-text-tertiary absolute start-3 top-1/2 -translate-y-1/2" />
 					<Input v-model="searchInput" class="ps-9" placeholder="Search tasks…" aria-label="Search tasks" />
 				</div>
-				<SegmentedControl v-model="viewMode" :options="viewOptions" label="Task view" size="md" class="sm:ms-auto" />
+				<span v-if="isRefreshing" class="text-text-tertiary flex items-center gap-1.5 text-xs sm:ms-auto" role="status">
+					<AppSpinner class="size-3.5" border-color="border-text-tertiary" /> Refreshing
+				</span>
+				<SegmentedControl v-model="viewMode" :options="viewOptions" label="Task view" size="md" :class="isRefreshing ? '' : 'sm:ms-auto'" />
 			</div>
 
 			<TaskFilterBar
@@ -118,7 +122,7 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 
 		<div class="grid min-h-[calc(100dvh-14rem)] gap-6" :class="isPanelOpen ? 'xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]' : 'grid-cols-1'">
 			<section class="product-panel min-w-0 overflow-hidden" :class="isPanelOpen ? 'hidden xl:block' : ''">
-				<div v-if="isFetching" class="space-y-2 p-4"><Skeleton v-for="index in 7" :key="index" class="h-14 w-full" /></div>
+				<div v-if="isLoading" class="space-y-2 p-4"><Skeleton v-for="index in 7" :key="index" class="h-14 w-full" /></div>
 				<AppEmptyState
 					v-else-if="isError"
 					heading="Unable to load tasks"
@@ -226,7 +230,7 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 			@clear="selection.clear"
 		/>
 
-		<p v-if="!isFetching && !isError && viewMode === 'list' && totalTasks > 0 && pageCount <= 1" class="text-text-tertiary px-1 text-xs tabular-nums">
+		<p v-if="!isLoading && !isError && viewMode === 'list' && totalTasks > 0 && pageCount <= 1" class="text-text-tertiary px-1 text-xs tabular-nums">
 			{{ totalTasks }} task{{ totalTasks === 1 ? "" : "s" }}
 		</p>
 	</div>

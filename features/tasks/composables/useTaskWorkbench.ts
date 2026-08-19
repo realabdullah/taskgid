@@ -95,7 +95,15 @@ export const useTaskWorkbench = () => {
 	const { downloadCsv, isExporting, openPrintView } = useTaskExport(workspaceSlug, filters);
 
 	const isBoard = computed(() => filters.value.view === "board");
-	const isFetching = computed(() => (isBoard.value ? board.isBoardLoading.value : list.isFetching.value));
+
+	/*
+	 * Only the first load has nothing to show. A refetch — a window regaining
+	 * focus, a page change holding its previous rows — still has the current list
+	 * on screen, and replacing it with a skeleton loses the reader's place and
+	 * their scroll position for a result that usually comes back identical.
+	 */
+	const isLoading = computed(() => (isBoard.value ? board.isBoardLoading.value : list.isPending.value));
+	const isRefreshing = computed(() => !isBoard.value && list.isFetching.value && !list.isPending.value);
 	const isError = computed(() => (isBoard.value ? board.isBoardError.value : list.isError.value));
 	const error = computed(() => (isBoard.value ? board.boardError.value : list.error.value));
 	const refetch = () => (isBoard.value ? board.refetchBoard() : list.refetch());
@@ -174,7 +182,8 @@ export const useTaskWorkbench = () => {
 		handleSaved,
 		isError,
 		isExporting,
-		isFetching,
+		isLoading,
+		isRefreshing,
 		isFiltered,
 		isPanelOpen,
 		loadMoreInColumn: board.loadMore,
