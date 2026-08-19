@@ -22,7 +22,7 @@ export type OnboardingStep = {
  */
 export const useOnboarding = () => {
 	const { user } = storeToRefs(useStore());
-	const { workspaces } = storeToRefs(useWorkspacesStore());
+	const { workspaces, isLoadingWorkspaces } = storeToRefs(useWorkspacesStore());
 	const dismissed = useLocalStorage("taskgid:onboarding-dismissed", false);
 
 	const firstWorkspace = computed(() => workspaces.value?.[0]);
@@ -33,7 +33,13 @@ export const useOnboarding = () => {
 	 * Two counts, one request each: how many tasks exist at all, and how many are
 	 * done. `limit: 1` is deliberate — only the pagination total is read.
 	 */
-	const { data: taskCounts } = useQuery({
+	const countsEnabled = computed(() => Boolean(user.value?.id && firstWorkspace.value?.slug && !dismissed.value));
+
+	const {
+		data: taskCounts,
+		isSuccess: countsLoaded,
+		isError: countsFailed,
+	} = useQuery({
 		queryKey: computed(() => ["onboarding-progress", firstWorkspace.value?.slug]),
 		queryFn: async () => {
 			const slug = firstWorkspace.value?.slug;
@@ -44,7 +50,7 @@ export const useOnboarding = () => {
 			]);
 			return { total: all?.pagination?.total ?? 0, done: done?.pagination?.total ?? 0 };
 		},
-		enabled: computed(() => Boolean(user.value?.id && firstWorkspace.value?.slug && !dismissed.value)),
+		enabled: countsEnabled,
 	});
 
 	const hasTask = computed(() => (taskCounts.value?.total ?? 0) > 0);
@@ -95,10 +101,18 @@ export const useOnboarding = () => {
 	const isComplete = computed(() => completedCount.value === steps.value.length);
 
 	/*
+	 * Every step reads as undone until the data behind it arrives, so showing the
+	 * checklist before then offers a finished account a list of things it has
+	 * already done, and then withdraws it. Nothing renders until each source has
+	 * either answered or been ruled out.
+	 */
+	const isSettled = computed(() => !isLoadingWorkspaces.value && (!countsEnabled.value || countsLoaded.value || countsFailed.value));
+
+	/*
 	 * The checklist disappears on its own once finished, so nobody has to dismiss
 	 * a thing that no longer applies.
 	 */
-	const isVisible = computed(() => !dismissed.value && !isComplete.value);
+	const isVisible = computed(() => isSettled.value && !dismissed.value && !isComplete.value);
 	const dismiss = () => (dismissed.value = true);
 
 	return { completedCount, dismiss, isComplete, isVisible, nextStep, steps, totalSteps: computed(() => steps.value.length) };
