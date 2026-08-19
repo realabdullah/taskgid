@@ -2,6 +2,9 @@
 import getCaretCoordinates from "textarea-caret";
 import { useWorkspaceStore } from "~/features/workspaces/stores";
 
+const props = withDefaults(defineProps<{ placeholder?: string }>(), { placeholder: "Write a comment. Use @ to mention someone." });
+const emit = defineEmits<{ submit: [] }>();
+
 const { teams } = storeToRefs(useWorkspaceStore());
 const comment = defineModel<string>({ required: true });
 
@@ -37,6 +40,13 @@ const positionPopup = () => {
 };
 
 const onKeydown = (e: KeyboardEvent) => {
+	// Plain Enter is a newline in a comment, so sending needs a modifier. The
+	// mention list claims Enter first, to pick the highlighted name.
+	if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !showList.value) {
+		e.preventDefault();
+		emit("submit");
+		return;
+	}
 	if (!showList.value) return;
 	if (e.key === "ArrowDown") {
 		e.preventDefault();
@@ -67,6 +77,26 @@ const select = (i: number) => {
 	showList.value = false;
 	nextTick(() => ta.focus());
 };
+
+/** Lets the composer drop an emoji where the caret is instead of at the end. */
+const insertAtCaret = (text: string) => {
+	const ta = textarea.value;
+	if (!ta) {
+		comment.value += text;
+		return;
+	}
+	const start = ta.selectionStart;
+	const end = ta.selectionEnd;
+	comment.value = comment.value.slice(0, start) + text + comment.value.slice(end);
+	nextTick(() => {
+		ta.focus();
+		ta.setSelectionRange(start + text.length, start + text.length);
+	});
+};
+
+const focus = () => textarea.value?.focus();
+
+defineExpose({ focus, insertAtCaret });
 </script>
 
 <template>
@@ -75,7 +105,7 @@ const select = (i: number) => {
 			ref="textarea"
 			v-model="comment"
 			class="border-input bg-background ring-offset-background placeholder:text-muted-foreground text-md min-h-[100px] w-full rounded-md border px-3 pt-4 pb-10 transition-[border-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
-			placeholder="Write a comment. Use @ to mention someone."
+			:placeholder="props.placeholder"
 			@input="onInput"
 			@keydown="onKeydown"
 		></textarea>

@@ -82,7 +82,7 @@ const {
 					<p v-else class="text-text-tertiary text-xs">No replies yet.</p>
 				</div>
 
-				<TaskCommentEditor :parent-id="comment.id" :workspace-slug="workspaceSlug" :task-id="taskId" />
+				<TaskCommentEditor :parent-id="comment.id" :workspace-slug="workspaceSlug" :task-id="taskId" placeholder="Write a reply. Use @ to mention someone." autofocus />
 			</div>
 		</div>
 	</div>

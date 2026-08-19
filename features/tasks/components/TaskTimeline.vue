@@ -2,7 +2,7 @@
 import { useActivityLabel } from "~/features/activity/composables/useActivityLabel";
 import { useCommentReactions } from "~/features/tasks/composables/useCommentReactions";
 import { useTaskTimeline } from "~/features/tasks/composables/useTaskTimeline";
-import TaskMentionTextarea from "./TaskMentionTextarea.vue";
+import TaskCommentEditor from "./TaskCommentEditor.vue";
 
 const props = defineProps<{
 	workspaceSlug: string;
@@ -13,13 +13,10 @@ const { getLabel, getDescription } = useActivityLabel();
 const {
 	activeStream,
 	activitiesError,
-	addComment,
-	commentDraft,
 	commentsError,
 	commentsResponse,
 	isActivitiesError,
 	isActivitiesLoading,
-	isAddingComment,
 	isCommentsError,
 	isCommentsLoading,
 	refetchActivities,
@@ -130,16 +127,8 @@ const { toggle } = useCommentReactions({ workspaceSlug: props.workspaceSlug, tas
 			<p v-else class="text-text-tertiary text-sm">{{ activeStream === "comments" ? "No comments yet." : "No history recorded yet." }}</p>
 		</div>
 
-		<div class="border-border bg-surface-0/85 sticky bottom-0 z-20 border-t pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur">
-			<div class="relative">
-				<TaskMentionTextarea v-model="commentDraft" />
-				<div class="absolute end-3 bottom-3">
-					<Button type="button" class="h-11 px-4" :disabled="!commentDraft.trim() || isAddingComment" @click="addComment">
-						<Icon name="hugeicons:arrow-right-04" :size="16" />
-						<span>Send</span>
-					</Button>
-				</div>
-			</div>
+		<div v-if="activeStream === 'comments'" class="border-border bg-surface-0/85 sticky bottom-0 z-20 border-t pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur">
+			<TaskCommentEditor :workspace-slug="props.workspaceSlug" :task-id="props.taskId" />
 		</div>
 	</section>
 </template>

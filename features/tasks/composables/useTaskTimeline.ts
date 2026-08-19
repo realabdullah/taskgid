@@ -1,13 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { toast } from "vue-sonner";
-import type { ActivityDetails, ApiResponse, Comment, PaginatedResponse } from "~/types";
+import { useQuery } from "@tanstack/vue-query";
+import type { ActivityDetails, Comment, PaginatedResponse } from "~/types";
 
 type TaskTimelineOptions = { workspaceSlug: string; taskId: string };
 
 export const useTaskTimeline = (options: TaskTimelineOptions) => {
-	const client = useQueryClient();
-	const commentDraft = ref("");
-	const isAddingComment = ref(false);
 	const activeStream = ref<"comments" | "history">("comments");
 
 	const {
@@ -49,39 +45,13 @@ export const useTaskTimeline = (options: TaskTimelineOptions) => {
 	const sortedActivities = computed(() => [...(activities.value ?? [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 	const sortedComments = computed(() => [...(commentsResponse.value?.comments ?? [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 
-	const addComment = async () => {
-		const content = commentDraft.value.trim();
-		if (!content) return;
-		try {
-			isAddingComment.value = true;
-			const { success } = await useApiFetch<ApiResponse>(API_ENDPOINTS.workspaces.taskComments(options.workspaceSlug, options.taskId), {
-				method: "POST",
-				body: { content },
-			});
-			if (!success) throw new Error("Unable to add your comment. Try again.");
-			commentDraft.value = "";
-			await Promise.all([
-				client.invalidateQueries({ queryKey: ["task-comments", options.workspaceSlug, options.taskId] }),
-				client.invalidateQueries({ queryKey: ["task-activities", options.workspaceSlug, options.taskId] }),
-			]);
-			toast.success("Comment added.");
-		} catch (error) {
-			toast.error(getServerError(error));
-		} finally {
-			isAddingComment.value = false;
-		}
-	};
-
 	return {
 		activeStream,
 		activitiesError,
-		addComment,
-		commentDraft,
 		commentsError,
 		commentsResponse,
 		isActivitiesError,
 		isActivitiesLoading,
-		isAddingComment,
 		isCommentsError,
 		isCommentsLoading,
 		refetchActivities,
