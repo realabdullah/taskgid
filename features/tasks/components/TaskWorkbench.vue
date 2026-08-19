@@ -80,6 +80,7 @@ const viewOptions: Array<{ label: string; value: "list" | "board"; icon: string 
 						<DropdownMenuItem @select="openPrintView"><Icon name="lucide:printer" :size="15" /> Print view</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
+				<Button variant="outline" @click="navigateTo(`/app/workspaces/${$route.params.slug}/tasks/recurring`)"><Icon name="lucide:repeat" :size="16" /> Recurring</Button>
 				<Button @click="startCreating"><Icon name="lucide:plus" :size="16" /> New task</Button>
 			</div>
 		</header>

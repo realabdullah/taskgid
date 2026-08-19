@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
+import { useWorkspacesStore } from "~/features/workspaces/stores";
 import type { ApiResponse, Tag } from "~/types";
 
 export type TagDraft = { name: string; color: string; description?: string };
@@ -12,6 +13,14 @@ export const useWorkspaceTags = (workspaceSlug: MaybeRefOrGetter<string>) => {
 	const client = useQueryClient();
 	const slug = computed(() => toValue(workspaceSlug));
 	const tagsKey = computed(() => ["workspace-tags", slug.value]);
+
+	// Renaming and deleting are admin-only server-side; the UI reflects that
+	// rather than offering a control whose request will be refused.
+	const { workspaces } = storeToRefs(useWorkspacesStore());
+	const canManage = computed(() => {
+		const role = workspaces.value?.find((workspace) => workspace.slug === slug.value)?.userRole;
+		return ["admin", "owner", "creator"].includes(String(role ?? "").toLowerCase());
+	});
 
 	const query = useQuery({
 		queryKey: tagsKey,
@@ -72,6 +81,7 @@ export const useWorkspaceTags = (workspaceSlug: MaybeRefOrGetter<string>) => {
 	});
 
 	return {
+		canManage,
 		createTag,
 		deleteTag,
 		error: query.error,
