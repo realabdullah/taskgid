@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ACCEPTED_UPLOAD_TYPES } from "../composables/useTaskAttachments";
+
 const props = defineProps<{ isUploading: boolean; validate: (file: File) => string }>();
 const emit = defineEmits<{ select: [file: File] }>();
 
@@ -36,13 +38,13 @@ const onChange = (event: Event) => {
 			@dragleave.prevent="isDragging = false"
 			@drop.prevent="onDrop"
 		>
-			<input ref="input" type="file" class="sr-only" @change="onChange" />
+			<input ref="input" type="file" class="sr-only" :accept="ACCEPTED_UPLOAD_TYPES.join(',')" @change="onChange" />
 			<Icon name="lucide:paperclip" :size="18" class="text-text-tertiary mx-auto" />
 			<p class="text-text-secondary mt-2 text-sm">
 				Drop a file here, or
 				<Button type="button" variant="link" static class="h-auto p-0 align-baseline" :disabled="isUploading" @click="input?.click()">browse</Button>
 			</p>
-			<p class="text-text-tertiary mt-1 text-xs">Images, PDFs and documents up to 5 MB.</p>
+			<p class="text-text-tertiary mt-1 text-xs">Images, PDFs, documents and JSON up to 5 MB.</p>
 			<p v-if="isUploading" class="text-text-secondary mt-2 text-xs">Uploading…</p>
 		</div>
 		<p v-if="rejection" class="text-danger text-xs" role="alert">{{ rejection }}</p>
