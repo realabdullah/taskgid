@@ -6,7 +6,7 @@ const { workspaces } = storeToRefs(useWorkspacesStore());
 const workspaceSlug = computed(() => (typeof route.params.slug === "string" ? route.params.slug : workspaces.value?.[0]?.slug));
 const workspaceRoot = computed(() => (workspaceSlug.value ? `/app/workspaces/${workspaceSlug.value}` : "/app"));
 const isWorkspaceActive = computed(() => route.name === "workspaces-slug" || route.name === "workspaces-slug-settings");
-const isTasksActive = computed(() => route.name === "tasks" || route.name === "task-id");
+const isTasksActive = computed(() => route.name === "tasks" || route.name === "task-id" || route.name === "tasks-recurring");
 
 const createTask = () => window.dispatchEvent(new CustomEvent("taskgid:new-task-intent"));
 const openAccountSettings = () => navigateTo("/app/settings");
