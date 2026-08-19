@@ -129,5 +129,7 @@ const move = (item: ChecklistItem, direction: -1 | 1) => {
 			/>
 			<Button size="sm" variant="secondary" :disabled="!draft.trim() || isFull" @click="addItem">Add</Button>
 		</div>
+
+		<p class="text-text-tertiary text-xs">Checklist items are steps inside this task — a line of text and a tick, with no assignee, due date or page of their own.</p>
 	</section>
 </template>
