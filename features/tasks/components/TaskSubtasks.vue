@@ -87,6 +87,6 @@ const subtaskUrl = (subtask: Task) => `/app/workspaces/${props.workspaceSlug}/ta
 			<Button size="sm" variant="secondary" :disabled="!draft.trim() || isFull || addSubtask.isPending.value" @click="add">Add</Button>
 		</div>
 
-		<p class="text-text-tertiary text-xs">Subtasks are their own tasks — they keep an assignee and a due date, and completing them all does not complete this one.</p>
+		<p class="text-text-tertiary text-xs">Subtasks are tasks in their own right — each keeps its own assignee, due date and page. Completing every one of them does not complete this task.</p>
 	</section>
 </template>
