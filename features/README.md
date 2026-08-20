@@ -5,6 +5,7 @@ Product code is organized by capability. Each feature owns its interface, workfl
 ```text
 features/
   activity/       # Activity descriptions and presentation rules
+  api-keys/       # Workspace API keys and MCP client setup
   auth/           # Sign-in and account creation
   dashboard/      # Cross-workspace home and focus queue
   identity/       # Shared identity capabilities such as passkeys
