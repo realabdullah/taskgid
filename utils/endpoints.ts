@@ -64,6 +64,8 @@ export const API_ENDPOINTS = {
 		slack: (slug: unknown) => `/workspaces/${toPath(slug)}/slack`,
 		slackConnect: (slug: unknown) => `/workspaces/${toPath(slug)}/slack/connect`,
 		slackChannels: (slug: unknown) => `/workspaces/${toPath(slug)}/slack/channels`,
+		apiKeys: (slug: unknown) => `/workspaces/${toPath(slug)}/api-keys`,
+		apiKeyById: (slug: unknown, keyId: unknown) => `/workspaces/${toPath(slug)}/api-keys/${toPath(keyId)}`,
 	},
 	/**
 	 * Attachments are mounted at `/attachments`, and the router inside it repeats

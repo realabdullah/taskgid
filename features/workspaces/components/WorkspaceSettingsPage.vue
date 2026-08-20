@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ApiKeySettings } from "~/features/api-keys";
 import NotificationSettings from "~/features/settings/components/NotificationSettings.vue";
 import { SlackSettings } from "~/features/slack";
 import WorkspaceInviteDialog from "~/features/workspaces/components/WorkspaceInviteDialog.vue";
@@ -72,6 +73,14 @@ const canManageSlack = computed(() => ["admin", "owner", "creator"].includes(Str
 			</div>
 			<section class="product-panel p-5 sm:p-7">
 				<SlackSettings :workspace-slug="String(route.params.slug ?? '')" :can-manage="canManageSlack" />
+			</section>
+
+			<div>
+				<h2 class="text-lg font-semibold">Agents and API access</h2>
+				<p class="text-text-secondary mt-1 text-sm leading-6">Connect Claude, Cursor, or any MCP client so it can work inside this workspace as you.</p>
+			</div>
+			<section class="product-panel p-5 sm:p-7">
+				<ApiKeySettings :workspace-slug="String(route.params.slug ?? '')" />
 			</section>
 
 			<div>
